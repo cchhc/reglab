@@ -1,0 +1,1588 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="監管實驗室">
+<meta name="theme-color" content="#16233B">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;-webkit-text-size-adjust:100%}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>監管實驗室</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+HK:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a regulator's desk — hub of four "case files"; each opens a playable level. Stamps deliver verdicts. */
+:root{
+  --bg:#EDF0EA; --surface:#FFFFFF; --surface2:#F6F8F4; --ink:#16233B; --muted:#5E6B7A; --line:#D2D8CF;
+  --accent:#3D4BD6; --accent-soft:#E3E6FB;
+  --good:#1E8A57; --warn:#B57A06; --bad:#C2362C;
+  --area-a:#C2362C; --area-c:#E3A600; --area-cs:#3D4BD6;
+  --f-display:"LXGW WenKai TC","Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151F; --surface:#18202D; --surface2:#1E2735; --ink:#E8ECF3; --muted:#9AA6B8; --line:#2C3647;
+  --accent:#8F99FF; --accent-soft:#262E52; --good:#4CC38A; --warn:#E9B949; --bad:#F07167;
+  --area-a:#F07167; --area-c:#E9B949; --area-cs:#8F99FF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151F; --surface:#18202D; --surface2:#1E2735; --ink:#E8ECF3; --muted:#9AA6B8; --line:#2C3647;
+  --accent:#8F99FF; --accent-soft:#262E52; --good:#4CC38A; --warn:#E9B949; --bad:#F07167;
+  --area-a:#F07167; --area-c:#E9B949; --area-cs:#8F99FF; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65;margin:0}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.25;margin:0}
+h1{font-size:clamp(30px,6vw,46px);font-weight:700}
+h2{font-size:clamp(22px,4vw,30px);font-weight:700}
+h3{font-size:19px;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:1.5px solid var(--ink);background:var(--surface);border-radius:999px;padding:9px 18px;font-weight:700;transition:transform .12s, background .12s}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:var(--ink);color:var(--bg)}
+.btn.ghost{border-color:var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);background:var(--surface2)}
+.tag.mine{border-color:var(--warn);color:var(--warn)}
+.src{font-size:12.5px;color:var(--muted)}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
+.top .home{background:none;border:none;font-family:var(--f-display);font-size:20px;font-weight:700;padding:0}
+.top .home span{color:var(--accent)}
+
+/* hub */
+.hero{display:grid;gap:12px;margin-bottom:26px}
+.hero p{max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.file{position:relative;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:18px 18px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;transition:border-color .15s,transform .15s}
+.file:hover{border-color:var(--ink);transform:translateY(-2px)}
+.file .q{font-family:var(--f-display);font-size:21px;font-weight:700;line-height:1.3}
+.file .what{font-size:14px;color:var(--muted)}
+.file .lv{font-family:var(--f-mono);font-size:12px;color:var(--accent);font-weight:600}
+.file .done{position:absolute;top:14px;right:14px;font-size:12px;font-weight:700;color:var(--good);border:1.5px solid var(--good);border-radius:5px;padding:0 6px;transform:rotate(6deg)}
+.thread{margin-top:28px;background:var(--surface2);border:1px dashed var(--line);border-radius:var(--r);padding:16px 18px}
+.thread ol{margin:8px 0 0;padding-left:22px}
+
+/* panels */
+.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
+.lvhead{display:grid;gap:6px;margin-bottom:18px}
+.progress{height:6px;background:var(--line);border-radius:4px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .3s}
+
+/* stamp */
+.stamp{display:inline-block;font-family:var(--f-display);font-weight:700;font-size:22px;padding:2px 14px;border:3px solid currentColor;border-radius:8px;transform:rotate(-6deg);animation:stamp .35s cubic-bezier(.2,1.6,.4,1)}
+.stamp.good{color:var(--good)} .stamp.warn{color:var(--warn)} .stamp.bad{color:var(--bad)}
+@keyframes stamp{from{transform:rotate(-6deg) scale(1.8);opacity:0}to{transform:rotate(-6deg) scale(1);opacity:1}}
+.reveal{border-top:1.5px dashed var(--line);margin-top:16px;padding-top:16px;display:grid;gap:10px}
+.reveal ul{margin:0;padding-left:20px}
+
+/* swipe game */
+.card{background:var(--surface);border:1.5px solid var(--ink);border-radius:18px;padding:26px 22px;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:10px;box-shadow:6px 6px 0 var(--line)}
+.card .txt{font-family:var(--f-display);font-size:clamp(20px,4vw,26px);font-weight:700;line-height:1.4}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.choice{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 8px;font-weight:700;display:grid;gap:2px;text-align:center}
+.choice small{font-weight:400;color:var(--muted);font-size:12px}
+.choice:hover{border-color:var(--ink)}
+.target{display:grid;place-items:center;margin:4px 0 0}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.chk{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px;background:var(--surface2)}
+.chk b{display:block;font-size:12px;color:var(--muted);font-weight:700}
+
+/* lobby */
+.meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.meter{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+.meter .lab{font-size:12.5px;color:var(--muted);font-weight:700}
+.meter .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+.meter .bar i{display:block;height:100%;transition:width .5s}
+.opts{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}
+.opt{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;display:grid;gap:2px;min-width:0}
+.opt:hover{border-color:var(--ink)}
+.opt b{font-size:16px}
+.opt span{font-size:13.5px;color:var(--muted)}
+.opt.picked{border-color:var(--accent);background:var(--accent-soft)}
+.log{font-size:14px;display:grid;gap:4px;margin-top:14px}
+.scene{background:var(--surface2);border-left:4px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 14px}
+
+/* price */
+.pricegrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px}
+@media (max-width:760px){.pricegrid{grid-template-columns:1fr}}
+.chart{width:100%;height:auto;max-width:100%;display:block}
+.sl{width:100%;accent-color:var(--accent)}
+.nums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.num{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface2)}
+.num .k{font-size:12.5px;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:6px}
+.num .v{font-family:var(--f-mono);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px}
+.lens{display:flex;flex-wrap:wrap;gap:8px}
+.lens button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700}
+.lens button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.verdict{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:15px}
+.toggle{display:flex;gap:8px;align-items:center;font-size:14.5px;font-weight:700}
+.chal{display:grid;gap:8px}
+.chal div{display:flex;gap:8px;align-items:flex-start;font-size:14.5px}
+.chal .box{flex:none;width:20px;height:20px;border:1.5px solid var(--line);border-radius:5px;display:grid;place-items:center;font-size:13px;margin-top:3px}
+.chal .ok .box{background:var(--good);border-color:var(--good);color:#fff}
+
+
+/* tutorial */
+.tut{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:760px){.tut{grid-template-columns:1fr}}
+.tut .say{display:grid;gap:12px}
+.tut .say p{max-width:60ch}
+.big{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600}
+.eq{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px}
+.check{border:1.5px dashed var(--accent);border-radius:12px;padding:12px 14px;display:grid;gap:10px;background:var(--accent-soft)}
+.check .opts{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--line);display:inline-block}
+.dots i.on{background:var(--accent)}
+details.help{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px}
+details.help summary{cursor:pointer;font-weight:700}
+details.help dl{margin:10px 0 0;display:grid;gap:8px}
+details.help dt{font-weight:700}
+details.help dd{margin:0;color:var(--muted);font-size:14.5px}
+.primer{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.term{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:6px;min-width:0}
+.term h3{font-size:17px}
+.term .eg{font-size:14px;color:var(--muted)}
+
+
+/* nav */
+.nav{display:flex;flex-wrap:wrap;gap:6px}
+.nav a{font-size:14px;font-weight:700;text-decoration:none;color:var(--muted);border:1.5px solid transparent;border-radius:999px;padding:5px 12px}
+.nav a.on{color:var(--ink);border-color:var(--ink)}
+.nav a:hover{color:var(--ink)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.tab{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13.5px;font-weight:700}
+.tab.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.btn.sm{padding:5px 12px;font-size:13.5px}
+.chip{display:inline-block;font-size:13px;font-weight:700;text-decoration:none;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:2px 10px;background:var(--surface)}
+.chip.ok{color:var(--good);border-color:var(--good)}
+.links{gap:8px;margin-top:4px}
+.nbody{display:grid;gap:8px}
+.nbody ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.readchk{font-size:14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.route{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.route span.step{border:1px solid var(--line);border-radius:8px;padding:3px 9px;background:var(--surface)}
+/* judge */
+.lensgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
+.lenscard{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface2);display:grid;gap:6px;min-width:0}
+.lenscard .lh{font-weight:700;font-size:14px;color:var(--muted)}
+.lenscard .lv2{font-family:var(--f-display);font-size:19px;font-weight:700;color:var(--accent)}
+/* flashcards */
+.fcard{min-height:260px;border:1.5px solid var(--ink);border-radius:18px;background:var(--surface);box-shadow:6px 6px 0 var(--line);padding:24px 22px;display:grid;align-items:center;cursor:pointer;margin-top:10px}
+.fcard.flip{background:var(--surface2)}
+.fcard.done{cursor:default;text-align:center}
+.ff,.fb{display:grid;gap:12px}
+.fq{font-family:var(--f-display);font-size:clamp(21px,4vw,28px);font-weight:700;line-height:1.4}
+.fa{font-size:17px;font-weight:500}
+.fcard blockquote{margin:0;border-left:3px solid var(--accent);padding:4px 12px;font-size:14.5px;color:var(--muted);font-style:italic}
+/* visuals */
+.vis{width:100%;height:auto;max-width:100%;display:block;font-family:var(--f-body)}
+.viswrap{overflow-x:auto;margin-top:8px}
+.viswrap .vis{min-width:560px}
+.fo{font-size:12.5px;line-height:1.45;color:var(--ink);display:grid;gap:4px}
+.fo p{margin:0}.fo.c{text-align:center}
+/* map */
+.tablewrap{overflow-x:auto;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r)}
+table.map{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+table.map th{text-align:left;font-size:12px;letter-spacing:.06em;color:var(--muted);padding:10px 12px;border-bottom:1.5px solid var(--line)}
+table.map td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.map td.c{text-align:center}
+table.map tr.nh td{background:var(--surface2)}
+table.map a{color:var(--ink)}
+.okb{font-size:12px;font-weight:700;color:var(--good);border:1.5px solid var(--good);border-radius:5px;padding:0 6px}
+
+@media (max-width:520px){.choices{grid-template-columns:1fr}.meters{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px">
+ <form id="gf" style="display:grid;gap:12px;max-width:320px;width:100%;text-align:center">
+  <div style="font-family:var(--f-display);font-size:30px;font-weight:700">監管<span style="color:var(--accent)">實驗室</span></div>
+  <label for="gp" class="muted">輸入密碼</label>
+  <input id="gp" type="password" inputmode="numeric" autocomplete="current-password" style="font-size:22px;text-align:center;padding:10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)">
+  <button class="btn primary" type="submit">入去</button>
+  <p id="ge" style="color:var(--bad);min-height:1.4em"></p>
+ </form></div>
+<script>(function(){const H='d83036ffb5b49a153bc391fd12b4a10df06bbb200f39fed97c331b03b6833ce7',K='reglab-ok',g=document.getElementById('gate');
+ try{if(localStorage.getItem(K)===H){g.remove();return;}}catch(e){}
+ document.getElementById('gf').addEventListener('submit',async e=>{e.preventDefault();
+  const v=document.getElementById('gp').value.trim();
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const x=[...new Uint8Array(b)].map(n=>n.toString(16).padStart(2,'0')).join('');
+  if(x===H){try{localStorage.setItem(K,H)}catch(e){} g.remove();} else document.getElementById('ge').textContent='密碼唔啱，再試一次';});
+})();</script>
+<div class="wrap">
+  <div class="top">
+    <button class="home" id="homeBtn" aria-label="返去主頁">監管<span>實驗室</span></button>
+    <nav class="nav" id="nav"><a href="#" data-r="">關卡</a><a href="#notes" data-r="notes">讀懂版</a><a href="#cards" data-r="cards">快速卡</a><a href="#visuals" data-r="visuals">圖解</a><a href="#map" data-r="map">進度地圖</a></nav>
+  </div>
+  <main id="app"></main>
+</div>
+
+<script>
+(() => {
+const $ = (s, el=document) => el.querySelector(s);
+const app = $('#app');
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem('reglab') || '{}'); } catch(e){ return {}; } },
+  set(k,v){ try { const o=this.get(); o[k]=v; localStorage.setItem('reglab', JSON.stringify(o)); } catch(e){} }
+};
+const esc = s => String(s);
+const MINE = '<span class="tag mine">例子係我作嘅</span>';
+
+/* ===================== HUB ===================== */
+const LEVELS = [
+  {id:'swipe', n:'Level 1', q:'算唔算監管？', what:'睇一個做法，判佢係「核心監管」、「邊緣」定「唔算」；再加時估吓研究數據。', note:'筆記 01'},
+  {id:'lobby', n:'Level 2', q:'你係游說集團', what:'代表一個行業向政府攞著數。親身睇吓好處點樣到手，又點樣被蝕走、點樣放寬。', note:'筆記 06、02'},
+  {id:'families', n:'Level 3', q:'四大家族偵探', what:'13 個個案：每個用公共利益、利益團體、理念定制度解釋最好？仲有四種政治同點解要授權。', note:'筆記 02'},
+  {id:'price', n:'Level 4', q:'一個價，兩筆數', what:'先有 6 步入門教學，由一杯咖啡砌到成幅圖；之後拉價格滑桿，睇「浪費咗」同「搬咗位」兩筆數。', note:'筆記 03、07'},
+  {id:'judge', n:'Level 5', q:'判案小法官', what:'14 宗案（CECED、工會、超市、國家冠軍……），你先判，再睇三副眼鏡點判。', note:'筆記 03、07'},
+  {id:'agency', n:'Level 6', q:'合定拆？', what:'先用日常例子講清五個基本詞；之後你做設計機構嘅人：幾個目標，交畀一個機構定幾個？', note:'筆記 04'},
+  {id:'develop', n:'Level 7', q:'新手競爭機構', what:'你係發展中國家新成立嘅競爭機構：定目標、應付五類障礙、搵盟友、諗清楚點樣獨立。', note:'筆記 05'}
+];
+function hub(){
+  const s = store.get();
+  app.innerHTML = `
+  <section class="hero">
+    <span class="eyebrow">七個關卡＋讀懂版＋232 張卡＋11 幅圖 · 唔使記人名，只要明條邏輯</span>
+    <h1>監管係乜、點解有、為咗乜</h1>
+    <p class="muted">每一關都係「你先揀，再睇點解」。答錯唔緊要，重點係睇返講解，明白每個答案背後嘅推理。標住 <span class="tag mine">例子係我作嘅</span> 嘅係練習用嘅例子，唔係筆記原文；講解入面嘅道理就跟足筆記。</p>
+    <div class="route"><b>建議用法：</b><span class="step">① 讀懂版（一篇）</span>→<span class="step">② 玩對應關卡</span>→<span class="step">③ 嗰篇嘅快速卡</span>→<span class="step">④ 圖解一眼溫</span>→<span class="step">⑤ 進度地圖睇漏咗乜</span></div>
+    <p class="muted" style="font-size:14px">成個 folder 嘅筆記共 7 篇 47 節，每一節都至少有讀懂版同快速卡；有推理嘅部分再有關卡同圖。</p>
+  </section>
+  <div class="grid">
+    ${LEVELS.map(l=>`
+      <button class="file" data-go="${l.id}">
+        ${s[l.id]?'<span class="done">完成</span>':''}
+        <span class="lv">${l.n} · ${l.note}</span>
+        <span class="q">${l.q}</span>
+        <span class="what">${l.what}</span>
+      </button>`).join('')}
+  </div>
+  <div class="thread">
+    <h3>成條主線（玩完七關返嚟睇）</h3>
+    <ol>
+      <li><b>監管係乜：</b>有意圖去干預人或機構嘅行為；最典型係直接、有約束力、睇得住、罰得落手嗰種。</li>
+      <li><b>點解有：</b>可能真係為大眾修補市場，亦可能係有組織嘅少數「買」返嚟；思想同制度設計都會左右結果。</li>
+      <li><b>為咗乜：</b>淨係追效率，定係都要理錢搬咗去邊？冇一個標準係完全中立。</li>
+      <li><b>幾多個目標：</b>目標多就要多啲工具同協調；最傷係對同一班人又扶持又約束。</li>
+    </ol>
+  </div>`;
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{location.hash=b.dataset.go;});
+}
+
+/* ===================== LEVEL 1: SWIPE ===================== */
+const CARDS = [
+  {t:'室內唔准食煙，違者罰款', a:'core', mine:false,
+   checks:['有意圖 ✓','直接打落行為 ✓','有約束力＋罰則 ✓','公營管私人 ✓'],
+   why:'標準直接打落「食煙」呢個行為度，有約束力、有人監察、違反會罰。四個特徵齊晒，就係原型監管嘅正中心。', src:'筆記 01 §二、§四'},
+  {t:'加煙草稅，令煙貴啲', a:'edge', mine:false,
+   checks:['有意圖 ✓','直接？✗ 改變環境','約束力：冇規定你點做'],
+   why:'有意圖想你少食煙，但佢冇規定你點做，只係改變你做決定嘅環境（價錢）。呢種係間接干預。文獻最核心嘅用法通常唔包稅、資助同強制披露，所以佢喺邊緣：唔係唔算，只係唔係核心。', src:'筆記 01 §二、§四'},
+  {t:'冇牌唔准執業，犯咗係刑事罪', a:'core', mine:true,
+   checks:['有意圖 ✓','直接 ✓','有約束力＋罰則 ✓'],
+   why:'標準直接管邊個可以做呢行，違反有制裁，係典型嘅直接干預。（Level 2 會見返佢：發牌亦係行業最想爭取嘅保護。）', src:'筆記 01 §四；06 §四'},
+  {t:'政府資助市民買電動車', a:'edge', mine:true,
+   checks:['有意圖 ✓','直接？✗ 用錢引導'],
+   why:'有意圖改變行為，但係靠改變誘因（畀錢），唔係直接定標準要你點做。資助同稅一樣，屬於間接工具，喺邊緣。', src:'筆記 01 §二、§四'},
+  {t:'上市公司要強制公開董事薪酬', a:'edge', mine:true,
+   checks:['有意圖 ✓','直接？✗ 管資訊環境'],
+   why:'強制披露冇規定薪酬要幾多，只係改變市場睇到乜資訊。文獻嘅核心用法通常唔包強制披露，所以放喺邊緣。', src:'筆記 01 §四'},
+  {t:'朋友圈覺得食煙好老土，大家自然少食咗', a:'not', mine:true,
+   checks:['有意圖？✗ 冇人刻意干預'],
+   why:'冇一個人有意圖去干預。所有被分析嘅文章都當監管係「有意圖」嘅過程。如果連社會規範都計做監管，監管就冇邊界，亦冇分析價值。', src:'筆記 01 §二、§三'},
+  {t:'行業協會自己訂守則，違反就踢出會', a:'edge', mine:true,
+   checks:['有意圖 ✓','直接 ✓','監管者係公營？✗ 私營'],
+   why:'有意圖、亦係直接定標準，但訂規則嘅係非國家組織。最寬嘅本質定義容許私營監管者，但原型係公營管私營，所以佢喺放射狀類別嘅外圈。', src:'筆記 01 §二、§四'},
+  {t:'一個監管機構去規管另一個政府部門', a:'edge', mine:true,
+   checks:['有意圖 ✓','直接 ✓','被監管者係私營？✗ 公營'],
+   why:'原型係「公營機構管私營經濟活動」。被管嘅係公營機構，就唔喺正中心，但仍然係有意圖嘅干預，所以算邊緣。', src:'筆記 01 §四'},
+  {t:'原料短缺，價錢自然上升，大家少咗買', a:'not', mine:true,
+   checks:['有意圖？✗ 冇人刻意干預'],
+   why:'行為係改變咗，但冇人有意圖去干預，只係市場自己郁。冇意圖就唔係監管，同陣風吹到你轉方向一樣。', src:'筆記 01 §三'}
+];
+const LAB = {core:'核心監管', edge:'邊緣', not:'唔算監管'};
+function swipe(){
+  let i=0, score=0;
+  function render(){
+    if(i>=CARDS.length){
+      store.set('swipe',true);
+      app.innerHTML = `
+      <div class="lvhead"><span class="eyebrow">Level 1 · 完成</span><h2>你答啱 ${score} / ${CARDS.length}</h2></div>
+      <div class="panel stack">
+        <h3>帶走呢三句</h3>
+        <ul>
+          <li><b>最低門檻：</b>有意圖去干預一群人嘅活動。冇意圖（市場自己郁、社會風氣）就唔算。</li>
+          <li><b>核心（原型）：</b>再加「直接」：有約束力嘅標準＋監察＋制裁，通常係公營機構管私營經濟活動。</li>
+          <li><b>邊緣：</b>稅、資助、披露（間接），或者私營監管者、公營被監管者。唔係唔算，只係唔喺正中心。定義太闊，監管就同「政策」分唔開。</li>
+        </ul>
+        <p class="src">出處：筆記 01 §三–§四</p>
+        <div class="row"><button class="btn primary" data-go="swipeData">加時：數據講咩（3 題）→</button><button class="btn ghost" id="again">再玩一次</button></div>
+      </div>`;
+      $('#again').onclick=()=>{i=0;score=0;render();};
+      app.querySelector('[data-go]').onclick=()=>{location.hash='swipeData';};
+      return;
+    }
+    const c=CARDS[i];
+    app.innerHTML = `
+    <div class="lvhead">
+      <span class="eyebrow">Level 1 · 算唔算監管？ · ${i+1} / ${CARDS.length}</span>
+      <div class="progress"><i style="width:${(i/CARDS.length)*100}%"></i></div>
+    </div>
+    <div class="card">
+      ${c.mine?MINE:''}
+      <div class="txt">「${c.t}」</div>
+    </div>
+    <div class="choices" id="ch">
+      <button class="choice" data-a="core">核心監管<small>正中心</small></button>
+      <button class="choice" data-a="edge">邊緣<small>算，但唔核心</small></button>
+      <button class="choice" data-a="not">唔算監管<small>出咗界</small></button>
+    </div>
+    <div id="rv"></div>`;
+    app.querySelectorAll('#ch button').forEach(b=>b.onclick=()=>answer(b.dataset.a));
+  }
+  function answer(a){
+    const c=CARDS[i]; const ok=a===c.a; if(ok) score++;
+    app.querySelectorAll('#ch button').forEach(b=>{b.disabled=true; if(b.dataset.a===c.a) b.style.borderColor='var(--good)'; if(b.dataset.a===a&&!ok) b.style.borderColor='var(--bad)';});
+    $('#rv').innerHTML = `
+    <div class="reveal">
+      <div class="row"><span class="stamp ${ok?'good':'bad'}">${ok?'判啱':'再諗'}</span><span>答案：<b>${LAB[c.a]}</b></span></div>
+      <div class="checks">${c.checks.map(x=>`<div class="chk">${x}</div>`).join('')}</div>
+      <p>${c.why}</p>
+      <p class="src">出處：${c.src}</p>
+      <div><button class="btn primary" id="nx">${i+1<CARDS.length?'下一張':'睇結果'} →</button></div>
+    </div>`;
+    $('#nx').onclick=()=>{i++;render();};
+    $('#nx').focus();
+  }
+  render();
+}
+
+/* ===================== LEVEL 2: LOBBY ===================== */
+function lobby(){
+  const st={rent:0, opp:10, pol:30, step:0, log:[]};
+  const clamp=v=>Math.max(0,Math.min(100,v));
+  function meters(){
+    return `<div class="meters">
+      <div class="meter"><div class="lab">你行業嘅額外好處（租金）</div><div class="bar"><i style="width:${st.rent}%;background:var(--good)"></i></div></div>
+      <div class="meter"><div class="lab">反對聲音</div><div class="bar"><i style="width:${st.opp}%;background:var(--bad)"></i></div></div>
+      <div class="meter"><div class="lab">政客幫你嘅意欲</div><div class="bar"><i style="width:${st.pol}%;background:var(--accent)"></i></div></div>
+    </div>`;
+  }
+  const STEPS=[
+    { // 0 request
+      scene:`你代表全城幾百間驗樓公司。你哋人唔多，但每間都想賺多啲。政府嘅獨有武器係「強制力」：可以收稅、可以唔使你同意就規定市場點運作。${MINE}`,
+      q:'你最想向政府要乜？', allowRetry:true,
+      opts:[
+        {k:'現金補貼', d:'政府每年直接畀錢', fx:{rent:+15,pol:+5},
+         res:'錢到手，但好快就有新公司見有著數，爭住入行。每間分到嘅越嚟越少。', why:'除非有辦法限制受惠者，否則補貼會被越嚟越多新對手攤薄。所以現金反而唔係最吸引。'},
+        {k:'限制新人入行（發牌）', d:'冇牌唔准做，犯咗係刑事罪', fx:{rent:+45,pol:+5},
+         res:'閘門一關，新對手入唔到嚟，好處留喺現有公司手上。', why:'有足夠政治力量嘅行業，最想要嘅通常係控制入行。牌照有效，因為冇牌執業係刑事罪。'},
+        {k:'打壓替代品', d:'例如規定某啲 DIY 驗樓工具唔准賣', fx:{rent:+25,pol:+5},
+         res:'少咗替代品同你爭，生意好咗啲，但新公司照樣可以入行分餅。', why:'影響替代品同互補品係行業可以要嘅政策之一，例如牛油商想打壓植物牛油。'},
+        {k:'由政府定價', d:'定一個最低收費', fx:{rent:+30,pol:+5},
+         res:'價錢定高咗，但一入政治程序，細公司嘅聲音大咗，仲有外人坐埋嚟議事，條數唔係你一個話事。', why:'政治過程會限制行業攞到嘅好處：細公司嘅影響力會大過喺自由市場；程序有成本；外人會被拉入行業嘅議事桌。'}
+      ], src:'筆記 06 §二'
+    },
+    { // 1 payment
+      scene:'政府肯考慮。不過政治人物都有自己想要嘅嘢。',
+      q:'你點樣「畀錢」買呢個監管？',
+      opts:[
+        {k:'用選票', d:'動員業界同家屬投票', fx:{pol:+15}, res:'有啲用，但你哋人數唔多。', why:'政黨最需要兩樣嘢：選票同資源。淨係畀一樣，效果有限。'},
+        {k:'用資源', d:'捐款、幫手籌款、請黨工', fx:{pol:+15}, res:'有啲用，但冇選票撐，政客要承擔嘅政治風險都大。', why:'政黨最需要兩樣嘢：選票同資源。淨係畀一樣，效果有限。'},
+        {k:'選票＋資源一齊畀', d:'兩樣都出', fx:{pol:+35}, res:'政客好樂意幫你。', why:'要監管嘅行業要準備用政黨最需要嘅兩樣嘢付款：選票同資源。'},
+        {k:'寫份報告講道理', d:'證明對公眾有益', fx:{pol:+3}, res:'政客禮貌咁收低，冇乜下文。', why:'經濟理論假設政客都係顧住自己利益。想改變結果，靠說教冇用，要改變佢背後嘅政治支持。'}
+      ], src:'筆記 06 §三、§五'
+    },
+    { // 2 greed
+      scene:'政客準備落實。消費者人多，但每人損失好細，好少人會專登出聲。不過政客會計數：如果畀少少好處消費者，換到佢哋啲選票，值唔值？',
+      q:'你要晒全部好處，定分少少出去？',
+      opts:[
+        {k:'要晒全部', d:'一毫子都唔讓', fx:{rent:-10,opp:+40,pol:-15}, res:'消費者組織起嚟反對，連其他行業都加入。政客最後都係要削減你嘅好處，攞去換選票。', why:'只要有消費者肯為少少讓步畀選票或錢，政客純粹保護生產者通常唔係最著數嘅策略。好處大到一個點，反對嘅人亦會動員起嚟爭，冇租金可以長存。'},
+        {k:'分少少畀消費者', d:'例如偏遠地區收平啲', fx:{rent:-5,opp:+5,pol:+10}, res:'大家相安無事，你保住大部分好處。', why:'政客會將好處分畀唔同群體，所以會出現交叉補貼。集中而有組織嘅群體依然得益最多，但唔會全部攞晒。'}
+      ], src:'筆記 02 §三–四；06 §六'
+    },
+    { // 3 erosion
+      scene:'十年後：樓市長期淡靜，需求跌咗；入唔到行，大家就鬥送贈品、鬥大裝修，用服務競爭蝕晒利潤；新科技亦令替代品出現。你嘅額外好處越嚟越少。',
+      q:'你估接落會發生乜？', fxBefore:{rent:-40}, predict:true,
+      opts:[
+        {k:'政府會加強保護', d:'幫你頂住', fx:{}, ok:false},
+        {k:'監管會被放寬', d:'閘門重開', fx:{opp:-10}, ok:true},
+        {k:'乜都唔會變', d:'維持現狀', fx:{}, ok:false}
+      ],
+      answer:'監管會被放寬',
+      res:'如果只剩好少財富可以分，就搵唔到理由繼續監管。放寬監管唔一定係政府遲咗發現錯誤，而可以係同一套利益邏輯推出嚟：監管製造誘因令好處被蝕走，最後返去冇監管反而更吸引。',
+      src:'筆記 06 §七'
+    },
+    { // 4 anomaly
+      scene:'現實有一個行業：業主同工會仲享受緊大筆額外好處，反對到最後一刻，但都被放寬咗監管（美國貨車業）。',
+      q:'頭先嗰套「利益邏輯」解釋唔解釋到？', predict:true,
+      opts:[{k:'解釋到',d:'',fx:{},ok:false},{k:'解釋唔到',d:'',fx:{},ok:true}],
+      answer:'解釋唔到',
+      res:'呢個係反例：好處未蝕晒，有力嘅利益反對，都照樣放寬，現有版本嘅利益理論解釋唔到。淨係睇利益唔夠，所以解釋監管仲有其他家族：公共利益、理念、制度（Level 3）。<span class="tag mine">連結係我整嘅</span> 筆記冇講邊家解釋到貨車業；不過「理念」家族正正用放寬監管嘅年代做例子，可以係一個方向。',
+      src:'筆記 06 §七；02 §一、§五–六'
+    }
+  ];
+  function render(picked){
+    if(st.step>=STEPS.length){ return end(); }
+    const s=STEPS[st.step];
+    if(s.fxBefore && !s._applied){ for(const k in s.fxBefore) st[k]=clamp(st[k]+s.fxBefore[k]); s._applied=true; }
+    app.innerHTML = `
+    <div class="lvhead">
+      <span class="eyebrow">Level 2 · 你係游說集團 · 第 ${st.step+1} / ${STEPS.length} 幕</span>
+      <div class="progress"><i style="width:${(st.step/STEPS.length)*100}%"></i></div>
+    </div>
+    ${meters()}
+    <div class="panel stack">
+      <div class="scene">${s.scene}</div>
+      <h3>${s.q}</h3>
+      <div class="opts" id="opts">${s.opts.map((o,j)=>`<button class="opt" data-j="${j}"><b>${o.k}</b>${o.d?`<span>${o.d}</span>`:''}</button>`).join('')}</div>
+      <div id="rv"></div>
+    </div>`;
+    app.querySelectorAll('#opts .opt').forEach(b=>b.onclick=()=>choose(+b.dataset.j));
+  }
+  let base=null;
+  function choose(j){
+    const s=STEPS[st.step], o=s.opts[j];
+    if(!base) base={...st};
+    if(s.allowRetry){ Object.assign(st,{rent:base.rent,opp:base.opp,pol:base.pol}); }
+    for(const k in o.fx) st[k]=clamp(st[k]+o.fx[k]);
+    if(s.allowRetry && j===0){ st.rent=clamp(st.rent-10); }
+    $('.meters').outerHTML=meters();
+    app.querySelectorAll('#opts .opt').forEach(b=>{b.classList.toggle('picked',+b.dataset.j===j); if(!s.allowRetry) b.disabled=true;});
+    let html;
+    if(s.predict){
+      const ok=o.ok;
+      html=`<div class="row"><span class="stamp ${ok?'good':'bad'}">${ok?'估中':'估錯'}</span><span>理論嘅答案：<b>${s.answer}</b></span></div><p>${s.res}</p>`;
+    } else {
+      html=`<p><b>結果：</b>${o.res}</p><p><b>點解：</b>${o.why}</p>`;
+    }
+    $('#rv').innerHTML=`<div class="reveal">${html}<p class="src">出處：${s.src}</p>
+      <div class="row">${s.allowRetry?'<span class="muted" style="font-size:14px">可以撳其他選項比較吓，揀定就繼續。</span>':''}<button class="btn primary" id="nx">下一幕 →</button></div></div>`;
+    $('#nx').onclick=()=>{base=null;st.step++;render();};
+  }
+  function end(){
+    store.set('lobby',true);
+    STEPS.forEach(s=>delete s._applied);
+    app.innerHTML=`
+    <div class="lvhead"><span class="eyebrow">Level 2 · 完成</span><h2>你親身行咗一次「監管市場」</h2></div>
+    ${meters()}
+    <div class="panel stack">
+      <h3>帶走呢五句</h3>
+      <ul>
+        <li><b>監管可以係一件商品：</b>行業係買家，政治係賣家，價錢係選票同資源。</li>
+        <li><b>細而集中嘅贏大而分散嘅：</b>每個業者利益大、肯出力；每個市民損失細、懶理。</li>
+        <li><b>行業最想要「關閘」：</b>現金會被新對手攤薄，控制入行先保得住好處。</li>
+        <li><b>好處會被蝕走：</b>反對者動員、政客要分畀其他人、競爭轉去其他方面。冇得分嘅時候，監管就可能放寬。</li>
+        <li><b>利益邏輯有盲點：</b>有啲放寬監管佢解釋唔到，所以仲要睇思想同制度；亦唔好忘記另一個講法：監管者可能真係為公眾、真係利他。</li>
+      </ul>
+      <p class="src">出處：筆記 02 §二–六；06 §一–七</p>
+      <div class="row"><button class="btn primary" id="go3">下一關：四大家族偵探 →</button><button class="btn ghost" id="again">再玩一次</button></div>
+    </div>`;
+    $('#go3').onclick=()=>{location.hash='families';};
+    $('#again').onclick=()=>lobby();
+  }
+  render();
+}
+
+/* ===================== LEVEL 3: PRICE ===================== */
+function price(){
+  const st={P:45, merger:false, lens:'eff', done:{a:false,b:false,c:false}, tut:0};
+  const MC0=20;
+  const calc=(P,MC)=>{ P=Math.max(P,MC); const Q=Math.max(0,100-P); const CS=0.5*Q*(100-P); const PS=(P-MC)*Q; const TW=CS+PS; const A=0.5*(P-MC)*(P-MC); return {P,Q,CS,PS,TW,A}; };
+  const baseline=calc(MC0,MC0); // competitive, pre-merger
+  function chart(r,MC){
+    const W=360,H=300,L=40,B=34,T=12,R=12;
+    const x=q=>L+(q/100)*(W-L-R), y=p=>H-B-(p/100)*(H-B-T);
+    const {P,Q}=r;
+    const csPts=`${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}`;
+    const cPts=`${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}`;
+    const aPts=`${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(100-MC)},${y(MC)}`;
+    const dim=k=>({eff:{cs:.18,c:.18,a:.85},dist:{cs:.25,c:.85,a:.2},con:{cs:.85,c:.3,a:.3}}[st.lens][k]);
+    const ticks=[0,20,40,60,80,100];
+    return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="需求線、成本線同價格；三塊面積分別係消費者剩餘、搬咗位嘅錢 C、同浪費咗嘅 A">
+      ${ticks.map(t=>`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`).join('')}
+      ${ticks.map(t=>`<text x="${x(t)}" y="${H-B+15}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`).join('')}
+      <text x="${x(100)}" y="${H-4}" text-anchor="end" font-size="11" fill="var(--muted)">數量 Q</text>
+      <text x="${L+4}" y="${T+8}" font-size="11" fill="var(--muted)">價錢 P</text>
+      <polygon points="${csPts}" fill="var(--area-cs)" fill-opacity="${dim('cs')}"/>
+      <polygon points="${cPts}" fill="var(--area-c)" fill-opacity="${dim('c')}"/>
+      <polygon points="${aPts}" fill="var(--area-a)" fill-opacity="${dim('a')}"/>
+      <line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="5 4"/>
+      ${st.merger?`<line x1="${x(0)}" y1="${y(MC0)}" x2="${x(100)}" y2="${y(MC0)}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 4"/><text x="${x(100)}" y="${y(MC0)-4}" text-anchor="end" font-size="10" fill="var(--muted)">合併前成本 20</text>`:''}
+      <line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/>
+      <circle cx="${x(Q)}" cy="${y(P)}" r="5" fill="var(--accent)"/>
+      <text x="${x(78)}" y="${y(30)}" font-size="11" fill="var(--ink)">需求</text>
+      <text x="${x(100)}" y="${y(MC)+14}" text-anchor="end" font-size="11" fill="var(--ink)">成本 MC＝${MC}</text>
+      ${Q>8?`<text x="${x(Q*0.22)}" y="${y((100+P)/2)+18}" font-size="12" font-weight="700" fill="var(--ink)">CS</text>`:''}
+      ${P-MC>6?`<text x="${x(Q/2)}" y="${y((P+MC)/2)+4}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">C</text>`:''}
+      ${P-MC>10?`<text x="${x(Q+(100-MC-Q)/3)}" y="${y(MC+(P-MC)/3)+4}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">A</text>`:''}
+    </svg>`;
+  }
+  function verdict(r,MC){
+    const f=n=>Math.round(n).toLocaleString('en');
+    if(st.lens==='eff'){
+      return r.A<1? `<b>效率眼鏡：</b>A＝0，冇浪費。價錢等於成本，總福利最大。<br><span class="muted">但要留意將來：利潤咁薄，企業可能冇誘因投資同創新。</span>`
+        : `<b>效率眼鏡：</b>呢個價浪費咗 <span class="mono">${f(r.A)}</span>（A）。有啲人肯畀高過成本嘅價，但因為價太高而冇買，呢部分冇人得益。<br><span class="muted">只睇效率嘅人，關心嘅係 A；C 只係錢由一邊搬去另一邊，總數冇變，佢哋話交畀稅制處理。</span>`;
+    }
+    if(st.lens==='dist'){
+      return r.P<=MC? `<b>分配眼鏡：</b>C＝0，冇錢由消費者搬去企業。`
+        : `<b>分配眼鏡：</b><span class="mono">${f(r.PS)}</span>（C）由消費者袋搬咗去企業袋。<br><span class="muted">反方嘅講法：管唔管呢個價，本身就係決定 C 落喺邊個袋，所以分配永遠趕唔走；「之後用稅制分返」亦唔一定做得到。</span>`;
+    }
+    // consumer lens
+    const d=r.CS-baseline.CS, t=r.TW-baseline.TW;
+    let s=`<b>消費者眼鏡：</b>消費者剩餘 <span class="mono">${f(r.CS)}</span>，比完全競爭（價＝20）時${d<0?'少':'多'}咗 <span class="mono">${f(Math.abs(d))}</span>。`;
+    if(st.merger) s+=`<br>同一刻，總福利${t>=0?'升':'跌'}咗 <span class="mono">${f(Math.abs(t))}</span>。${t>0&&d<0?'<br><b>兩個標準分岔咗：</b>只睇總福利嘅監管者會批准呢宗合併；用消費者標準嘅會唔批。':''}`;
+    return s;
+  }
+
+  /* ---- guided tutorial ---- */
+  function tchart(P, show, MC=MC0){
+    const W=360,H=300,L=40,B=34,T=12,R=12;
+    const x=q=>L+(q/100)*(W-L-R), y=p=>H-B-(p/100)*(H-B-T);
+    const Q=100-P; const has=k=>show.includes(k);
+    const ticks=[0,20,40,60,80,100];
+    let g='';
+    g+=ticks.map(t=>`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`).join('');
+    g+=ticks.map(t=>`<text x="${x(t)}" y="${H-B+15}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`).join('');
+    g+=`<text x="${x(100)}" y="${H-4}" text-anchor="end" font-size="11" fill="var(--muted)">排第幾個客（數量 Q）</text><text x="${L+16}" y="${T+8}" font-size="11" fill="var(--muted)">$（價錢 P）</text>`;
+    if(has('cs')) g+=`<polygon points="${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--area-cs)" fill-opacity=".55"/>`;
+    if(has('c')) g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="var(--area-c)" fill-opacity=".6"/>`;
+    if(has('a')) g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(100-MC)},${y(MC)}" fill="var(--area-a)" fill-opacity=".7"/>`;
+    if(has('line')) g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2"/><text x="${x(58)}" y="${y(50)}" font-size="11" fill="var(--ink)">需求線</text>`;
+    if(has('dots')){
+      for(let k=0;k<20;k++){ const q=2.5+k*5, wtp=100-q; const buy=has('price')&&wtp>=P; const lost=has('a')&&!buy&&wtp>=MC;
+        g+=`<circle cx="${x(q)}" cy="${y(wtp)}" r="4.2" fill="${buy?'var(--accent)':(lost?'var(--area-a)':'var(--surface)')}" stroke="${buy?'var(--accent)':(lost?'var(--area-a)':'var(--muted)')}" stroke-width="1.5"/>`; }
+    }
+    if(has('mc')) g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+14}" text-anchor="end" font-size="11" fill="var(--ink)">每件成本 ${MC}</text>`;
+    if(has('price')) g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(100)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2" stroke-dasharray="1 0"/><text x="${x(99)}" y="${y(P)-5}" text-anchor="end" font-size="11" font-weight="700" fill="var(--accent)">售價 ${P}</text>`;
+    if(has('qline')) g+=`<line x1="${x(Q)}" y1="${y(0)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-dasharray="3 3"/><text x="${x(Q)}" y="${y(0)-5}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent)">${Q} 人買</text>`;
+    if(has('cs')) g+=`<text x="${x(Q*0.22)}" y="${y((100+P)/2)+18}" font-size="12" font-weight="700" fill="var(--ink)">CS</text>`;
+    if(has('c')) g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+4}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">C</text>`;
+    if(has('a')) g+=`<text x="${x(Q+(100-MC-Q)/3)}" y="${y(MC+(P-MC)/3)+4}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">A</text>`;
+    return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="教學圖">${g}</svg>`;
+  }
+  const TUT=[
+    {h:'第 1 步：由一杯咖啡講起', chart:null,
+     body:`<p>你好想飲杯咖啡，心入面<b>最多肯畀 $40</b>。結果舖頭只收 <b>$30</b>。</p>
+       <div class="eq">你「賺」咗：$40 − $30 ＝ <span class="big">$10</span>　← 呢個叫<b>消費者剩餘</b>（consumer surplus, CS）</div>
+       <p>咖啡舖整杯咖啡嘅成本係 <b>$20</b>，收你 $30。</p>
+       <div class="eq">舖頭賺咗：$30 − $20 ＝ <span class="big">$10</span>　← 呢個叫<b>生產者剩餘</b>（producer surplus），即係利潤</div>
+       <div class="eq">兩個加埋：$10 ＋ $10 ＝ <span class="big">$20</span>　← 呢個叫<b>總福利</b>（total welfare）。即係呢單交易幫成個社會「創造」咗幾多價值。</div>
+       <p class="src">例子出自筆記 03 §二嘅「生活例子」</p>`,
+     check:{q:'如果舖頭加價到 $35，你仲會買（因為你肯畀 $40）。你嘅消費者剩餘剩返幾多？', opts:['$15','$10','$5'], ans:2,
+       ex:'$40 − $35 ＝ $5。你少咗 $5，舖頭就多咗 $5（$35 − $20 ＝ $15）。總福利仍然係 $5 ＋ $15 ＝ $20，<b>冇變</b>。錢只係由你嘅袋搬咗去舖頭嘅袋。記住呢點：<b>加價本身唔一定令個餅變細，但會改變點切。</b>'}},
+    {h:'第 2 步：由一個人變一百個人＝需求線', chart:{P:30,show:['line','dots']},
+     body:`<p>而家想像有一百個客排隊。每個人「最多肯畀幾多」都唔同：排第一嗰個最想要，肯畀 $100；排最尾嗰個幾乎唔想要，只肯畀 $0。</p>
+       <p>將佢哋由最肯畀到最唔肯畀排好，一個點代表一個人（圖入面每粒點代表 5 個人），連埋就係一條斜落嘅線，叫<b>需求線</b>（demand curve）。</p>
+       <div class="eq">讀法：橫軸係「排第幾個」，直軸係「呢個人最多肯畀幾多」。</div>`,
+     check:{q:'排第 70 個嘅客，最多肯畀幾多？（提示：需求線 P＝100－Q）', opts:['$70','$30','$50'], ans:1,
+       ex:'100 − 70 ＝ $30。越排後嘅人，越唔肯畀錢。'}},
+    {h:'第 3 步：定一個價，邊個會買？', chart:{P:30,show:['line','dots','price','qline']},
+     body:`<p>舖頭定價 <b>$30</b>。邊個會買？規則好簡單：<b>你肯畀嘅 ≥ 售價，你就買</b>。</p>
+       <p>圖入面藍色實心點就係買嘅人：由第 1 個排到第 70 個。第 71 個之後嘅人肯畀少過 $30，就唔買。</p>
+       <div class="eq">售價越高 → 買嘅人越少。售價 $30 → <span class="big">70</span> 人買。</div>`,
+     check:{q:'如果售價加到 $60，有幾多人買？', opts:['60 人','40 人','70 人'], ans:1, ex:'肯畀 $60 或以上嘅人，係排頭 40 個（100 − 60 ＝ 40）。價高咗，買嘅人少咗。'}},
+    {h:'第 4 步：加條成本線', chart:{P:30,show:['line','dots','price','qline','mc']},
+     body:`<p>舖頭每整一件貨，成本係 <b>$20</b>（簡化咗：每件都一樣）。圖入面嗰條虛線就係成本線（marginal cost, MC）。</p>
+       <p>關鍵諗法：<b>只要一個人肯畀嘅錢高過 $20，呢單交易就值得做</b>，因為佢對件貨嘅估值高過整佢嘅成本，做咗就有價值產生。</p>
+       <div class="eq">所以「最理想」嘅情況：所有肯畀 $20 或以上嘅人都買到，即係 <span class="big">80</span> 人。</div>`,
+     check:{q:'有個客最多肯畀 $25，成本係 $20。呢單交易「值唔值得」做？', opts:['值得','唔值得'], ans:0, ex:'值得。佢估值 $25，成本 $20，做咗就產生 $5 價值。問題係：如果售價係 $30，佢唔會買，呢 $5 就冇咗。下一步就係講呢樣嘢。'}},
+    {h:'第 5 步：三塊面積，一次過睇', chart:{P:30,show:['line','dots','price','qline','mc','cs','c','a']},
+     body:`<p>售價 $30、成本 $20，個圖分出三塊：</p>
+       <div class="eq"><span class="sw" style="background:var(--area-cs)"></span> <b>CS（消費者剩餘）</b>：買到嘅 70 個人，每人「肯畀 − 實付」加埋。即係第 1 步你嗰種「賺咗」，不過每個人賺嘅數唔同：排得越前，賺得越多。</div>
+       <div class="eq"><span class="sw" style="background:var(--area-c)"></span> <b>C（搬咗位嘅錢）</b>：每件賺 $10 × 70 件 ＝ 企業利潤。如果售價係成本價 $20，呢筆錢本來會留喺消費者袋。所以 C 係<b>由消費者搬去企業</b>。</div>
+       <div class="eq"><span class="sw" style="background:var(--area-a)"></span> <b>A（浪費咗）</b>：紅點嗰班人（第 71 至 80 個）肯畀高過成本，本來值得做嘅交易，因為價太高冇做到。<b>冇人得益，價值就咁消失</b>。叫無謂損失（deadweight loss）。</div>
+       <p class="src">area A／area C 嘅講法出自筆記 07 §六</p>`,
+     check:{q:'售價越加越高，邊塊面積會越嚟越大？', opts:['只係 C','只係 A','A 會變大；C 會先變大後變細'], ans:2,
+       ex:'A 一定越嚟越大（越多值得做嘅交易冇做到）。C 就唔一定：價高咗每件賺多咗，但買嘅人少咗，所以去到某個價（呢個例子係 $60）之後，C 反而會縮。企業最想要嘅，就係令 C 最大嗰個價。'}},
+    {h:'第 6 步：所以成場爭論係爭乜？', chart:{P:30,show:['line','mc','price','cs','c','a']},
+     body:`<p>將三塊面積對返入爭論：</p>
+       <div class="eq"><b>個餅大細＝效率問題。</b>A 令個餅變細。總福利（CS＋C）就係個餅有幾大。</div>
+       <div class="eq"><b>個餅點切＝分配問題。</b>C 喺消費者同企業之間點分，唔影響個餅大細，只影響邊個攞多啲。</div>
+       <p><b>立場一：</b>監管者淨係理個餅大細（追總福利），點切交畀稅制「再切過」。<br>
+          <b>立場二：</b>點切都要理，因為所有標準其實都會搬錢，事後再切又唔一定做到。</p>
+       <p><b>兩把尺：</b>「總福利標準」計 CS＋C；「消費者福利標準」只計 CS。大部分時候兩把尺結論一樣，但有啲情況會分岔，例如一宗合併慳咗好多成本（餅大咗）但加價（消費者分少咗）。你喺遊戲入面嘅「合併模式」會親手見到。</p>
+       <p class="src">出處：筆記 03 §二–三；07 §一–二</p>`,
+     check:{q:'一宗合併令總福利上升，但消費者剩餘下跌。用「消費者福利標準」嘅監管者會點判？', opts:['批准','唔批准'], ans:1,
+       ex:'唔批准。消費者福利標準只睇 CS；CS 跌咗就唔批。用總福利標準嘅就會批，因為個餅大咗。呢個就係兩把尺分岔嘅地方。'}}
+  ];
+  function tutorial(){
+    const k=st.tut, t=TUT[k];
+    app.innerHTML=`
+    <div class="lvhead"><span class="eyebrow">Level 4 · 入門教學 · ${k+1} / ${TUT.length}</span>
+      <div class="progress"><i style="width:${(k/TUT.length)*100}%"></i></div></div>
+    <div class="panel">
+      <div class="${t.chart?'tut':''}">
+        ${t.chart?`<div>${tchart(t.chart.P,t.chart.show)}<p class="src" style="margin-top:6px">圖嘅數字係我設嘅簡化例子：需求線 P＝100－Q，成本 $20。</p></div>`:''}
+        <div class="say"><h2>${t.h}</h2>${t.body}
+          <div class="check"><b>考吓自己：${t.check.q}</b>
+            <div class="opts" id="tq">${t.check.opts.map((o,j)=>`<button class="opt" data-j="${j}"><b>${o}</b></button>`).join('')}</div>
+            <div id="tex"></div></div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:16px;justify-content:space-between">
+        <div class="row">${k>0?'<button class="btn ghost" id="tb">← 上一步</button>':''}<button class="btn ghost" id="skip">跳過教學，直接玩</button></div>
+        <button class="btn primary" id="tn">${k+1<TUT.length?'下一步 →':'開始玩 →'}</button>
+      </div>
+    </div>`;
+    app.querySelectorAll('#tq .opt').forEach(b=>b.onclick=()=>{
+      const j=+b.dataset.j, ok=j===t.check.ans;
+      app.querySelectorAll('#tq .opt').forEach(x=>x.classList.toggle('picked',x===b));
+      $('#tex').innerHTML=`<div class="row"><span class="stamp ${ok?'good':'bad'}">${ok?'啱':'再諗'}</span>${ok?'':`<span>答案：<b>${t.check.opts[t.check.ans]}</b></span>`}</div><p style="margin-top:6px">${t.check.ex}</p>`;
+    });
+    $('#tn').onclick=()=>{ if(k+1<TUT.length){st.tut++;tutorial();} else {st.tut=null; store.set('priceTut',true); shell();} window.scrollTo(0,0); };
+    const tb=$('#tb'); if(tb) tb.onclick=()=>{st.tut--;tutorial();window.scrollTo(0,0);};
+    $('#skip').onclick=()=>{st.tut=null; store.set('priceTut',true); shell();};
+  }
+  const HELP=`<details class="help"><summary>唔記得基本概念？撳呢度</summary><dl>
+    <dt>需求線</dt><dd>每個客「最多肯畀幾多」由高排到低。售價以上嘅人會買。</dd>
+    <dt>成本線（MC＝20）</dt><dd>每整一件嘅成本。肯畀高過成本嘅交易，就值得做。</dd>
+    <dt>CS 消費者剩餘</dt><dd>買到嘅人「肯畀 − 實付」加埋。</dd>
+    <dt>C 搬咗位嘅錢</dt><dd>（售價 − 成本）× 賣出數量＝利潤。本來可以留喺消費者袋，而家搬咗去企業。影響「點切餅」。</dd>
+    <dt>A 浪費咗</dt><dd>肯畀高過成本、但因為價太高冇買嘅交易。冇人得益，令「個餅變細」。</dd>
+    <dt>總福利＝CS＋C</dt><dd>個餅有幾大。唔理點切。</dd>
+    <dt>消費者福利標準</dt><dd>只計 CS。總福利標準就計 CS＋C。</dd>
+    </dl><div style="margin-top:10px"><button class="btn ghost" id="retut">重睇教學</button></div></details>`;
+
+  function shell(){
+    const MC=st.merger?8:MC0;
+    app.innerHTML=`
+    <div class="lvhead"><span class="eyebrow">Level 4 · 一個價，兩筆數</span>
+      <p class="muted">同教學一樣嘅市場：需求線 P＝100－Q，每件成本 20。<span class="tag mine">數字係我設嘅</span> 拉價格，睇三塊面積點變；撳唔同眼鏡，睇唔同立場點判。</p></div>
+    <div class="pricegrid">
+      <div class="panel stack">
+        <div id="chartBox"></div>
+        <label for="pr" style="font-weight:700">價錢 P：<span class="mono" id="pv"></span></label>
+        <input class="sl" type="range" id="pr" min="${MC}" max="80" step="1" value="${st.P}">
+        <label class="toggle"><input type="checkbox" id="mg" ${st.merger?'checked':''}> 合併模式：兩間公司合併，每件成本由 20 跌到 8</label>
+      </div>
+      <div class="stack">
+        <div class="nums" id="nums"></div>
+        <div class="lens" role="group" aria-label="揀眼鏡">
+          <button data-l="eff">效率眼鏡</button>
+          <button data-l="dist">分配眼鏡</button>
+          <button data-l="con">消費者眼鏡</button>
+        </div>
+        <div class="verdict" id="vd"></div>
+        <div class="panel chal" id="chal"></div>
+        ${HELP}
+      </div>
+    </div>
+    <div id="sum"></div>`;
+    $('#retut').onclick=()=>{st.tut=0;tutorial();window.scrollTo(0,0);};
+    $('#pr').addEventListener('input',e=>{st.P=+e.target.value; update();});
+    $('#mg').onchange=e=>{st.merger=e.target.checked; st.P=Math.max(st.P, st.merger?8:MC0); if(st.merger) st.lens='con'; shell();};
+    app.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{st.lens=b.dataset.l;update();});
+    update();
+  }
+  function update(){
+    const MC=st.merger?8:MC0; const r=calc(st.P,MC);
+    const f=n=>Math.round(n).toLocaleString('en');
+    if(!st.merger && Math.abs(r.P-MC0)<.5) st.done.a=true;
+    if(!st.merger && Math.abs(r.P-60)<.5) st.done.b=true;
+    if(st.merger && r.CS<baseline.CS && r.TW>baseline.TW) st.done.c=true;
+    const all=st.done.a&&st.done.b&&st.done.c; if(all) store.set('price',true);
+    $('#chartBox').innerHTML=chart(r,MC);
+    $('#pv').textContent=r.P;
+    $('#nums').innerHTML=`
+          <div class="num"><div class="k"><span class="sw" style="background:var(--area-cs)"></span>消費者剩餘 CS</div><div class="v">${f(r.CS)}</div></div>
+          <div class="num"><div class="k"><span class="sw" style="background:var(--area-c)"></span>C：搬去企業（＝利潤）</div><div class="v">${f(r.PS)}</div></div>
+          <div class="num"><div class="k"><span class="sw" style="background:var(--area-a)"></span>A：浪費咗</div><div class="v">${f(r.A)}</div></div>
+          <div class="num"><div class="k">總福利 CS＋C</div><div class="v">${f(r.TW)}</div></div>`;
+    app.querySelectorAll('[data-l]').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.l===st.lens)));
+    $('#vd').innerHTML=verdict(r,MC);
+    $('#chal').innerHTML=`
+          <h3>三個挑戰</h3>
+          <div class="${st.done.a?'ok':''}"><span class="box">${st.done.a?'✓':''}</span><span>搵一個價令 A＝0（冇浪費）。</span></div>
+          <div class="${st.done.b?'ok':''}"><span class="box">${st.done.b?'✓':''}</span><span>搵企業利潤最大嘅價。睇吓呢個時候 A 有幾大。</span></div>
+          <div class="${st.done.c?'ok':''}"><span class="box">${st.done.c?'✓':''}</span><span>開合併模式，搵一個價：總福利高過合併前，但消費者福利低過合併前。</span></div>`;
+    const sum=$('#sum');
+    if(all && !sum.dataset.shown){
+      sum.dataset.shown='1';
+      sum.innerHTML=`<div class="panel stack" style="margin-top:18px">
+      <div class="row"><span class="stamp good">三關全過</span></div>
+      <h3>帶走呢四句</h3>
+      <ul>
+        <li><b>總福利＝消費者剩餘＋企業剩餘</b>，完全唔理錢喺兩邊點分。</li>
+        <li><b>A 係效率問題，C 係分配問題。</b>只追效率嘅立場話：監管淨係理 A，分配交畀稅制；而且唔好逼死利潤，將來先有投資同創新。</li>
+        <li><b>兩個標準會分岔：</b>慳成本嘅合併可以令總福利升、消費者福利跌。用邊個標準，直接決定批唔批。</li>
+        <li><b>反方：冇標準係中立。</b>總福利表面一視同仁，實際成日將錢搬去企業；事後再分配靠唔住；而且管唔管本身就決定 C 歸邊個。</li>
+      </ul>
+      <p class="src">出處：筆記 03 §二–四、§七；07 §二–三、§六–八</p>
+      <div><button class="btn primary" id="go4">下一關：判案小法官 →</button></div></div>`;
+      $('#go4').onclick=()=>{location.hash='judge';};
+    }
+  }
+  tutorial();
+}
+
+/* ===================== LEVEL 4: AGENCY ===================== */
+function agency(){
+  const SC=[
+    {t:'熱身：一件工具，兩個目標', mine:false,
+     s:'你想同時「減肥」同「儲錢」，但你只有一件工具：少啲出街食飯。',
+     opts:[
+       {k:'夠用，一件搞掂兩樣', g:'bad', w:'兩個目標都會郁少少，但好難兩樣都達標。'},
+       {k:'再加一件工具（每日行一萬步）', g:'good', w:'每件工具負責一個目標，就容易好多。有幾多個獨立目標，就起碼要幾多件獨立工具。'}
+     ], take:'工具好少只影響一個目標。用咗佢，通常都會溢出去其他目標，所以工具之間要協調。', src:'筆記 04 §一–§三'},
+    {t:'個案一：又批地，又規管', mine:false,
+     s:'一個機構負責兩件事：①將海上油田租畀石油公司開採、收租；②規管同一班石油公司嘅安全。漏油事故之後，有人話一定要拆。',
+     opts:[
+       {k:'一個機構做晒', g:'bad', w:'對同一班人又要扶持又要約束，正正係最傷嘅情況：有呢種衝突嘅機構，表現分平均低 11 分；員工亦唔清楚自己份工點連到機構目標。'},
+       {k:'拆做兩個機構', g:'good', w:'拆開可以去除「又扶又管」嘅衝突。代價係兩邊冇咗靈活調配資源、共用資訊嘅協調好處。'},
+       {k:'同一機構，內部分開兩組', g:'warn', w:'可以減少含糊，但分開咗嘅兩組之間可能有張力同唔健康嘅競爭。'},
+       {k:'排先後，集中做一樣', g:'warn', w:'目標清晰咗，但排後面嗰個（例如安全）可能被忽略，而佢對社會福利可能好重要。'}
+     ], take:'問題唔係任務多，而係任務點互動。所有補救都有代價。', src:'筆記 04 §七'},
+    {t:'個案二：定利率，又監管銀行', mine:true,
+     s:'央行要①定利率穩物價，②監管銀行穩唔穩陣。兩個目標有關，但唔係完全一致。監管銀行時得返嚟嘅資料，對定利率有用。',
+     opts:[
+       {k:'一個機構做晒', g:'good', w:'合埋可以喺睇到實際情況之後，將資源喺兩個任務之間搬嚟搬去，資料亦流得通。目標「唔強烈衝突、又唔高度一致」嘅時候，多任務機構最有價值。代價：機構唔清楚上頭最重視邊樣，可能會「對沖」，將資源分得太平均。'},
+       {k:'拆做兩個機構', g:'warn', w:'目標清晰咗，但冇咗協調：資料唔一定傳到，資源亦搬唔到。'},
+       {k:'同一機構，內部分開兩組', g:'warn', w:'保留部分協調，但兩組之間可能有張力。'},
+       {k:'排先後，集中做一樣', g:'warn', w:'清晰，但另一個目標可能被忽略。'}
+     ], take:'合併有兩股力互相抵銷：協調係合埋嘅理由，目標含糊係拆開嘅理由。正因為咁，機構安排可能周而復始咁拆完又合。', src:'筆記 04 §六'},
+    {t:'個案三：水質，四個部門', mine:false,
+     s:'一條河嘅水質，同時受交通、農業、建設幾個部門嘅政策影響。經濟增長好快，樣樣都變得好快。',
+     opts:[
+       {k:'各自做好自己嗰份', g:'bad', w:'每個部門嘅政策都溢出去水質。變化快嘅時候，過去唔再係預測其他部門會做乜嘅可靠指引，各自做好容易撞板。'},
+       {k:'加強協調，甚至合併職責', g:'good', w:'溢出越大，協調嘅好處越大，甚至值得合併成一個行政單位。不過要記住：協調喺最需要嘅時候（變化快）亦最難做。'}
+     ], take:'就算目標同工具互相獨立，只要工具冇完全對準自己嘅目標，就會有溢出，所以協調好少可以忽略。', src:'筆記 04 §三'},
+    {t:'個案四：國家層面嘅取捨', mine:false,
+     s:'一個大經濟體生產力增長追唔上，但同時想做到三樣：科技領先、氣候責任、對外獨立自主。',
+     opts:[
+       {k:'三樣一齊做，唔使揀', g:'bad', w:'如果生產力提升唔到，就唔可以一次過做晒三樣；強行一齊做，減碳都可能同競爭力背道而馳。'},
+       {k:'承認要取捨，並且協調政策', g:'good', w:'要嘛提升生產力，要嘛喺目標之間揀。減碳同競爭力要一個聯合計劃，唔協調就會相撞。'}
+     ], take:'目標本身都可能要互相取捨，唔止係工具之間嘅衝突。', src:'筆記 04 §五'}
+  ];
+
+  const PRIMER=`
+    <div class="lvhead"><span class="eyebrow">Level 6 · 入門：五個基本詞</span><h2>開始之前，先搞清楚五樣嘢</h2>
+      <p class="muted">呢關講「畀監管者幾多個目標、點樣分工」。先用日常例子講清楚五個詞，之後嘅個案就易明好多。</p></div>
+    <div class="primer">
+      <div class="term"><h3>① 目標 vs 工具</h3><p><b>目標</b>係你想達到嘅結果；<b>工具</b>係你用嚟達到佢嘅手段。仲有第三類：<b>數據</b>，即係你改變唔到、只可以接受嘅嘢。</p>
+        <p class="eg">例：「減肥」係目標，「每日行一萬步」係工具，「天氣」係數據。容易搞亂嘅：勞動生產力睇落似目標，其實係手段，真正目標係高工資、多產出。（筆記 04 §一）</p></div>
+      <div class="term"><h3>② 一個目標，一件工具</h3><p>有幾多個獨立目標，就起碼要幾多件獨立工具。一件工具追兩個目標，好難兩樣都達標。</p>
+        <p class="eg">例：淨係「少啲出街食飯」，想同時減肥又儲錢，兩樣都只郁少少。（筆記 04 §一）</p></div>
+      <div class="term"><h3>③ 溢出 → 協調</h3><p><b>溢出</b>（spillover）：一件工具除咗影響自己個目標，仲影響埋其他目標。溢出越大，負責唔同目標嘅人就越要<b>協調</b>，甚至合併做一個機構。</p>
+        <p class="eg">例：行一萬步會餓，可能令你食多咗、使多咗錢，溢出去「儲錢」嗰邊。${'<span class="tag mine">例子係我作嘅</span>'}（道理：筆記 04 §三）</p></div>
+      <div class="term"><h3>④ 目標含糊 → 對沖</h3><p>一個機構有兩個任務，但唔知上頭最重視邊個，佢就會「對沖」（hedge）：兩邊平均分資源，以防估錯。結果兩邊都可能唔夠力。呢個係<b>拆開</b>機構嘅理由；<b>合埋</b>嘅理由就係方便協調、搬資源。</p>
+        <p class="eg">例：老闆同時叫你做兩份 project，又唔講邊份緊要，你唯有兩份都做一半。${'<span class="tag mine">例子係我作嘅</span>'}（道理：筆記 04 §六）</p></div>
+      <div class="term"><h3>⑤ 又扶又管</h3><p>最傷嘅唔係任務多，而係要對<b>同一班人</b>同時扶持又約束。員工唔知自己份工點連到機構目標，表現就差。</p>
+        <p class="eg">例：一個機構又要租油田畀石油公司賺錢，又要規管同一班石油公司嘅安全。（筆記 04 §七）</p></div>
+      <div class="term"><h3>記住：冇完美答案</h3><p>合併有協調好處但目標會含糊；拆開清晰但冇咗協調；排先後會忽略低優先目標；內部分開會有張力。<b>每個安排都有代價</b>，遊戲要你諗嘅係「邊個代價最值得付」。</p>
+        <p class="eg">（筆記 04 §六–七）</p></div>
+    </div>
+    <div class="row" style="margin-top:18px"><button class="btn primary" id="startA">明白，開始個案 →</button></div>`;
+  const GLOSS=`<details class="help" style="margin-top:4px"><summary>唔記得啲詞？撳呢度</summary><dl>
+    <dt>目標 vs 工具</dt><dd>目標＝想要嘅結果；工具＝手段。</dd>
+    <dt>溢出</dt><dd>一件工具影響埋其他目標。溢出大 → 要協調，甚至合併。</dd>
+    <dt>目標含糊／對沖</dt><dd>唔知邊個目標最重要 → 資源平均分 → 兩邊都唔夠力。係拆開嘅理由。</dd>
+    <dt>協調</dt><dd>合埋一個機構，可以按情況搬資源、共用資料。係合埋嘅理由。</dd>
+    <dt>又扶又管</dt><dd>對同一班人同時扶持同約束，最影響表現。</dd></dl></details>`;
+  let i=-1, score=0;
+  function render(){
+    if(i<0){ app.innerHTML=PRIMER; $('#startA').onclick=()=>{i=0;render();window.scrollTo(0,0);}; return; }
+    if(i>=SC.length) return end();
+    const c=SC[i];
+    app.innerHTML=`
+    <div class="lvhead"><span class="eyebrow">Level 6 · 合定拆？ · ${i+1} / ${SC.length}</span>
+      <div class="progress"><i style="width:${(i/SC.length)*100}%"></i></div></div>
+    <div class="panel stack">
+      <div class="row"><h3>${c.t}</h3>${c.mine?MINE:''}</div>
+      <div class="scene">${c.s}</div>
+      <p style="font-weight:700">你點安排？</p>
+      <div class="opts" id="opts">${c.opts.map((o,j)=>`<button class="opt" data-j="${j}"><b>${o.k}</b></button>`).join('')}</div>
+      <div id="rv"></div>
+    </div>
+    ${GLOSS}`;
+    app.querySelectorAll('#opts .opt').forEach(b=>b.onclick=()=>pick(+b.dataset.j));
+  }
+  let tried=false;
+  function pick(j){
+    const c=SC[i], o=c.opts[j];
+    if(!tried){ if(o.g==='good') score++; tried=true; }
+    app.querySelectorAll('#opts .opt').forEach(b=>b.classList.toggle('picked',+b.dataset.j===j));
+    const lab={good:'最貼近',warn:'有代價',bad:'會撞板'}[o.g];
+    $('#rv').innerHTML=`<div class="reveal">
+      <div class="row"><span class="stamp ${o.g}">${lab}</span></div>
+      <p>${o.w}</p>
+      <p><b>重點：</b>${c.take}</p>
+      <p class="src">出處：${c.src}</p>
+      <div class="row"><span class="muted" style="font-size:14px">可以撳其他選項睇佢哋嘅代價。</span><button class="btn primary" id="nx">${i+1<SC.length?'下一個':'睇總結'} →</button></div></div>`;
+    $('#nx').onclick=()=>{i++;tried=false;render();};
+  }
+  function end(){
+    store.set('agency',true);
+    app.innerHTML=`
+    <div class="lvhead"><span class="eyebrow">Level 6 · 完成</span><h2>第一次就揀中「最貼近」：${score} / ${SC.length}</h2></div>
+    <div class="panel stack">
+      <h3>帶走呢四句</h3>
+      <ul>
+        <li><b>幾多個目標，就要幾多件工具。</b>工具會溢出去其他目標，溢出越大越要協調，甚至合併。</li>
+        <li><b>合定拆係兩股力嘅拉扯：</b>合埋可以協調，但目標會含糊；拆開清晰，但冇咗協調。</li>
+        <li><b>最傷係對同一班人又扶持又約束。</b>任務數目本身唔係重點，任務點互動先係。</li>
+        <li><b>每個補救都有代價：</b>排先後會忽略低優先目標；內部分開會有張力。</li>
+      </ul>
+      <h3>預告下一關：唔同地方要唔要唔同目標？</h3>
+      <p>同一條邏輯搬去發展中國家：效率可以係其中一個目標，但唔一定係唯一一個；發展、對國家壟斷做倡議、建立競爭文化、經濟同政治自由都可能係目標。資源少、法治弱、市場細又散，對每個目標嘅傷害都唔同。機構要對大企業保持自主，但亦要嵌入政治同社會，冇支持就乜都做唔到。</p>
+      <p class="src">出處：筆記 04 §一–七；05 §一、§四–五</p>
+      <div class="row"><button class="btn primary" id="home2">下一關：新手競爭機構 →</button><button class="btn ghost" id="again">再玩一次</button></div>
+    </div>`;
+    $('#home2').onclick=()=>{location.hash='develop';};
+    $('#again').onclick=()=>{i=0;score=0;render();};
+  }
+  render();
+}
+
+const CARDS_DATA=[{"id": 0, "n": "01", "s": 1, "t": "fact", "f": "有人話「監管」呢個概念有咩問題？（研究嘅出發點）", "b": "監管研究文獻普遍認為「監管」呢個概念缺乏共同理解", "q": "The concept of regulation is believed to suffer from a lack of shared understanding.", "loc": "KoopLodge2017 p.95"}, {"id": 1, "n": "01", "s": 1, "t": "definition", "f": "最闊嗰種理解，將監管當成乜？", "b": "Baldwin、Scott 同 Hood 嘅第三種監管理解將監管視為所有社會控制機制，包括無意圖同非國家嘅過程", "q": "all mechanisms of social control – including unintentional and non-state processes", "loc": "Baldwin, Scott & Hood (1998), in KoopLodge2017 p.95"}, {"id": 2, "n": "01", "s": 2, "t": "conceptual", "f": "唔同學科嘅作者喺最抽象層面，同意監管係乜？", "b": "喺抽象層面，各學科作者都同意監管係對個人或機構行為或活動嘅干預", "q": "First, at an abstract level, authors agree that regulation is about intervention in the behavior or activities of individual and/or corporate actors.", "loc": "KoopLodge2017 p.97"}, {"id": 3, "n": "01", "s": 2, "t": "evaluation", "f": "點解有人反對將社會規範同文化都當成監管？", "b": "Black 認為將社會規範同文化納入監管概念會令監管冇邊界，分析價值好低", "q": "provides no boundaries as to where regulation might end, and some other influencing factors take effect, and so provides very little analytical purchase", "loc": "Black (2002), in KoopLodge2017 p.98"}, {"id": 4, "n": "01", "s": 2, "t": "definition", "f": "「直接干預」係乜意思？", "b": "直接干預係訂立或執行直接適用於特定人群目標行為或特徵嘅標準", "q": "the introduction and/or implementation of standards that directly apply to the target behavior or characteristics of a specified population", "loc": "KoopLodge2017 p.98"}, {"id": 5, "n": "01", "s": 2, "t": "definition", "f": "「間接干預」係乜意思？", "b": "間接干預係訂立或執行適用於特定人群目標行為產生嘅環境嘅標準", "q": "the introduction and/or implementation of standards that apply to the context in which the target behavior or characteristics of a specified population are generated", "loc": "KoopLodge2017 p.98"}, {"id": 6, "n": "01", "s": 3, "t": "fact", "f": "最多人引用嘅監管文章入面，有幾多寫明咗定義？", "b": "喺 Koop 同 Lodge 分析嘅最多人引用監管文章入面，只有 14% 寫明咗監管嘅定義", "q": "Explicit definitions are uncommon; only 14 percent include a definition.", "loc": "KoopLodge2017 p.102"}, {"id": 7, "n": "01", "s": 3, "t": "fact", "f": "有幾多篇文章將監管理解為「有意圖」嘅過程？", "b": "Koop 同 Lodge 分析嘅 101 篇文章全部都將監管理解為有意圖嘅過程", "q": "regulation is conceived as an intentional process in all 101 articles", "loc": "KoopLodge2017 p.102"}, {"id": 8, "n": "01", "s": 3, "t": "fact", "f": "文章對「間接干預算唔算監管」嘅態度係點？", "b": "喺 Koop 同 Lodge 嘅樣本入面，只有 41% 文章將間接干預納入監管，另外 55% 冇表態", "q": "Indirect intervention, in contrast, is only included in 41 percent of the articles, while another 55 percent leave that option open.", "loc": "KoopLodge2017 p.103"}, {"id": 9, "n": "01", "s": 3, "t": "fact", "f": "文獻有冇討論監管者同被監管者使唔使係兩個唔同嘅人？", "b": "監管文獻幾乎完全冇討論監管者同被監管者是否需要係分開嘅行為者", "q": "the authors are almost exclusively silent on whether regulator and regulatee need to be separate actors (98%)", "loc": "KoopLodge2017 p.104"}, {"id": 10, "n": "01", "s": 4, "t": "definition", "f": "「本質定義」點樣定義監管？", "b": "按 Koop 同 Lodge 嘅本質定義，監管係對某目標人群活動嘅有意圖干預", "q": "Accordingly, regulation can be defined as the intentional intervention in the activities of a target population.", "loc": "KoopLodge2017 p.104"}, {"id": 11, "n": "01", "s": 4, "t": "conceptual", "f": "最精簡嘅本質定義有咩代價？", "b": "監管嘅最精簡本質定義令監管概念過闊，難以同「政策」概念區分", "q": "However, the minimal definition leads to a rather broad conception of regulation, which makes it hard to distinguish it from the concept of policy.", "loc": "KoopLodge2017 p.104"}, {"id": 12, "n": "01", "s": 4, "t": "definition", "f": "「模式定義」（原型監管）比本質定義多咗乜？", "b": "按 Koop 同 Lodge 嘅模式定義，監管係對目標人群活動嘅有意圖干預，而該干預通常係直接嘅", "q": "regulation can be defined as intentional intervention in the activities of a target population, where the intervention is typically direct", "loc": "KoopLodge2017 p.105"}, {"id": 13, "n": "01", "s": 4, "t": "conceptual", "f": "原型監管通常包唔包稅、資助同強制披露？", "b": "原型監管通常唔包括徵稅、資助同強制披露等管治工具", "q": "typically, regulation does not refer to tools of governance, such as taxation, subsidization, and imposing disclosure requirements", "loc": "KoopLodge2017 p.105"}, {"id": 14, "n": "01", "s": 5, "t": "fact", "f": "研究關注點嘅差異，可唔可以歸咎於學科唔同？", "b": "監管文獻中研究關注點嘅差異唔可以歸因於學科差異", "q": "Fourth, while there is considerable variation in research concerns, this variation cannot be attributed to disciplinary differences.", "loc": "KoopLodge2017 p.95"}, {"id": 15, "n": "01", "s": 5, "t": "fact", "f": "邊個學科最少將間接干預計入監管？", "b": "政治學文章將間接干預納入監管概念嘅次數，顯著少過經濟學、法律同社會學文章", "q": "in political science, indirect intervention is significantly less often included than in the three other fields", "loc": "KoopLodge2017 p.103"}, {"id": 16, "n": "01", "s": 5, "t": "evaluation", "f": "所以，當代監管研究係咪真係「冇共同理解」？", "b": "Koop 同 Lodge 嘅分析唔支持「當代監管研究缺乏共同理解」嘅說法", "q": "All in all, our analysis does not support the portrayal of the contemporary field of regulation as one that lacks a shared understanding.", "loc": "KoopLodge2017 p.106"}, {"id": 17, "n": "02", "s": 1, "t": "conceptual", "f": "解釋監管點樣出現嘅理論，可以用乜分界分兩大類？", "b": "解釋監管嘅理論可以分為強調外在因素（利益團體、主流思想、經濟本質）同強調內在因素（例如機構文化）兩類", "q": "those approaches that emphasize exogenous (external) factors that shape the evolution of regulation (such as the force of interest groups, dominant ideas, or the underlying nature of the economy) and those emphasizing endogenous factors such as institutional cultures", "loc": "BaldwinCaveLodge2012Ch4 p.40"}, {"id": 18, "n": "02", "s": 2, "t": "conceptual", "f": "公共利益理論點樣睇推動監管嘅人？", "b": "公共利益理論將推動監管嘅人視為代表公眾利益行事嘅好心代理人", "q": "Proponents of regulation are thus seen as acting as benevolent agents for the public interest.", "loc": "BaldwinCaveLodge2012Ch4 p.41"}, {"id": 19, "n": "02", "s": 2, "t": "conceptual", "f": "公共利益理論對執法同守法有咩假設？", "b": "公共利益理論假設監管嘅執行同守法都可以冇問題咁做到", "q": "The public interest approach also assumes the possibility of unproblematic enforcement and compliance.", "loc": "BaldwinCaveLodge2012Ch4 p.41"}, {"id": 20, "n": "02", "s": 2, "t": "evaluation", "f": "公共利益理論嘅第一個困難係乜？", "b": "公共利益理論嘅第一個困難係難以搵到一個大家同意嘅公眾利益概念", "q": "A first difficulty is that an agreed conception of the public interest may be hard to identify.", "loc": "BaldwinCaveLodge2012Ch4 p.41"}, {"id": 21, "n": "02", "s": 2, "t": "evaluation", "f": "俘虜論者批評公共利益理論低估咗乜？", "b": "俘虜理論者認為公共利益理論低估咗經濟同政治權力對監管嘅影響", "q": "capture theorists, discussed in more detail below, may suggest that public interest theory understates the degree to which economic and political power influences regulation", "loc": "capture theorists, in BaldwinCaveLodge2012Ch4 p.42"}, {"id": 22, "n": "02", "s": 2, "t": "normative", "f": "有人點樣為公共利益理論辯護，保留一種規範性問法？", "b": "Breyer 主張評估一個監管計劃時，應該問佢合理咁可以追求咩人類目標，而唔理佢點樣出現", "q": "what reasonable human goals a program might sensibly have, regardless of its historical origins", "loc": "Breyer, in BaldwinCaveLodge2012Ch4 p.43"}, {"id": 23, "n": "02", "s": 3, "t": "conceptual", "f": "監管經濟理論對人有咩基本假設？", "b": "監管經濟理論假設參與監管嘅行為者本質上顧住自己，並以最大化自身物質利益為目標", "q": "The economic theory of regulation builds on the assumption that actors are inherently self-regarding and orientated at maximizing their own (material) interest.", "loc": "BaldwinCaveLodge2012Ch4 p.43"}, {"id": 24, "n": "02", "s": 3, "t": "cause", "f": "「俘虜」論嘅中心結論係乜？", "b": "Stigler 認為監管一般係由行業爭取返嚟，並主要為行業利益而設計同運作", "q": "as a rule regulation is acquired by the industry and is designed and operated primarily for its benefit", "loc": "Stigler (1971), in BaldwinCaveLodge2012Ch4 p.43"}, {"id": 25, "n": "02", "s": 3, "t": "cause", "f": "點解會出現一個「監管市場」？", "b": "按正統監管經濟理論，受監管行業有誘因去影響監管者以獲取監管租金，從而形成監管市場", "q": "The regulated industry thus will have an incentive to influence the regulator so as to benefit from a ‘regulatory rent’, and there will be a market for regulation.", "loc": "orthodox economic theory (Stigler; Posner), in BaldwinCaveLodge2012Ch4 p.44"}, {"id": 26, "n": "02", "s": 3, "t": "cause", "f": "集中有組織嘅利益同分散嘅群體，通常邊個贏？", "b": "按正統監管經濟理論，集中而有組織嘅利益通常會犧牲分散群體而勝出", "q": "Compact, organized interests (say, solicitors) will usually win at the expense of a diffused group (say, users of legal services).", "loc": "orthodox economic theory, in BaldwinCaveLodge2012Ch4 p.44"}, {"id": 27, "n": "02", "s": 3, "t": "normative", "f": "「集中贏分散」呢個邏輯，可以點樣用嚟支持監管者偏向消費者？", "b": "Motta 轉述一個論點：因為消費者分散而生產者集中，競爭管理機構可以透過平衡兩組經濟行為者嘅游說力量而發揮作用", "q": "The competition authority might then have a role to play if it contributes to balancing the different lobbying powers of the two groups of economic agents in question.", "loc": "Motta2004 p.20"}, {"id": 28, "n": "02", "s": 4, "t": "cause", "f": "行業攞到壟斷租金之後，點解冇租金可以長存？", "b": "Becker 認為行業攞到嘅壟斷租金會引發反對利益動員，最終冇壟斷租金可以存活", "q": "In the end, no ‘monopoly rent’ will survive.", "loc": "Becker (1983), in BaldwinCaveLodge2012Ch4 p.44"}, {"id": 29, "n": "02", "s": 4, "t": "cause", "f": "監管租金可以點樣被消除？", "b": "Peltzman 認為監管租金可以被監管本身消除", "q": "regulatory rents can be eradicated by regulation itself", "loc": "Peltzman (1989), in BaldwinCaveLodge2012Ch4 p.45"}, {"id": 30, "n": "02", "s": 4, "t": "cause", "f": "「生命周期」論話一個監管制度會點樣變？", "b": "Bernstein 嘅生命周期理論認為監管制度會老化，由最初為公眾利益變成被受監管行業俘虜", "q": "an ageing process in which an initial ‘public interest’ regulatory regime gives way to capture by the regulated industry", "loc": "Bernstein (1955), in BaldwinCaveLodge2012Ch4 p.47"}, {"id": 31, "n": "02", "s": 4, "t": "conceptual", "f": "「創業家政治」係乜情況？", "b": "Wilson 嘅創業家政治指監管喺行業集中反對下，只靠分散利益支持而獲採納", "q": "In this world, regulation is adopted in the face of concentrated industry opposition and is advanced with only the support of diffused interests.", "loc": "Wilson (1980), in BaldwinCaveLodge2012Ch4 p.48"}, {"id": 32, "n": "02", "s": 4, "t": "cause", "f": "環保標準提高，有時係因為邊兩類人結盟？", "b": "Vogel 認為行業同綠色利益之間嘅聯盟促成咗環保標準提高", "q": "coalitions between industry and ‘green interests’ were responsible for raising environmental standards", "loc": "Vogel (1995), in BaldwinCaveLodge2012Ch4 p.48"}, {"id": 33, "n": "02", "s": 4, "t": "evaluation", "f": "對監管經濟理論嘅一個批評：監管者可能出於乜嘢動機？", "b": "Baldwin、Cave 同 Lodge 指出環境監管者實際上可能出於對環境質素嘅利他關懷行事", "q": "Environmental regulators may actually be motivated by altruistic concerns about environmental quality!", "loc": "BaldwinCaveLodge2012Ch4 p.46"}, {"id": 34, "n": "02", "s": 5, "t": "conceptual", "f": "「思想氣候」點樣影響監管？", "b": "「理念重要」分析指出，整體思想氣候會顯著影響邊類監管工具同制度被視為可取", "q": "the wider intellectual climate significantly shapes the type of regulatory instruments and institutions that are regarded as desirable", "loc": "BaldwinCaveLodge2012Ch4 p.50"}, {"id": 35, "n": "02", "s": 5, "t": "conceptual", "f": "面對監管問題，文化理論話有幾多種世界觀？", "b": "文化理論指出有四種互相競爭嘅世界觀，各自對監管問題有唔同診斷同解決方案", "q": "Cultural theory points to four rival worldviews, with their contrasting and competing diagnoses and solutions to regulatory problems.", "loc": "cultural theory (Douglas; Hood), in BaldwinCaveLodge2012Ch4 p.50"}, {"id": 36, "n": "02", "s": 5, "t": "conceptual", "f": "點解有人話要明白監管，就要明白溝通？", "b": "Black 認為監管本質上係溝通過程，因此理解溝通對理解監管過程至關重要", "q": "since regulation is inherently a communicative process, a better understanding of communication is critical for understanding (and arguably advancing) the regulatory process", "loc": "Black (2002), in BaldwinCaveLodge2012Ch4 p.52"}, {"id": 37, "n": "02", "s": 5, "t": "fact", "f": "近年有學者點樣形容當今嘅經濟同政治年代？", "b": "Naidu、Rodrik 同 Zucman 認為當今係一個不平等驚人、政治波動而寡頭化嘅年代", "q": "We live in an age of astonishing inequality, together with volatile and oligarchic politics.", "loc": "NaiduRodrikZucman2020 p.366"}, {"id": 38, "n": "02", "s": 5, "t": "evaluation", "f": "新自由主義係咪現代經濟學嘅一貫應用？", "b": "Naidu、Rodrik 同 Zucman 認為新自由主義唔係現代經濟學嘅一貫應用，而係佢原始而簡化嘅扭曲", "q": "is not the consistent application of modern economics but its primitive, simplistic perversion", "loc": "NaiduRodrikZucman2020 p.367"}, {"id": 39, "n": "02", "s": 5, "t": "conceptual", "f": "現代經濟學對大部分問題嘅答案通常係點？", "b": "Naidu、Rodrik 同 Zucman 認為經濟學幾乎每條問題嘅答案都係「睇情況」，再解釋睇乜同點解", "q": "“it depends,” followed by an exegesis on what it depends on and why", "loc": "NaiduRodrikZucman2020 p.368"}, {"id": 40, "n": "02", "s": 5, "t": "conceptual", "f": "市場同制度係咩關係？", "b": "Naidu、Rodrik 同 Zucman 借 Polanyi 認為市場依賴一大批制度，係嵌入喺制度入面", "q": "Clearly markets rely on a wide range of institutions; they are “embedded” in institutions, as Karl Polanyi would say.", "loc": "Polanyi, in NaiduRodrikZucman2020 p.369"}, {"id": 41, "n": "02", "s": 5, "t": "conceptual", "f": "經濟學唔畀固定答案，咁佢畀乜？", "b": "Naidu、Rodrik 同 Zucman 認為經濟學唔提供固定答案，而係指出唔同制度安排嘅可能後果", "q": "Instead, it highlights the potential consequences of different arrangements.", "loc": "NaiduRodrikZucman2020 p.369"}, {"id": 42, "n": "02", "s": 5, "t": "definition", "f": "「包容」要睇結果嘅乜嘢？", "b": "Naidu、Rodrik 同 Zucman 所講嘅「包容」要求考慮成個結果分佈，而唔止平均數", "q": "the whole distribution of outcomes, not simply the average", "loc": "NaiduRodrikZucman2020 p.366"}, {"id": 43, "n": "02", "s": 5, "t": "normative", "f": "全球經濟整合係目的定手段？", "b": "Naidu、Rodrik 同 Zucman 認為全球經濟整合係手段而唔係目的", "q": "global economic integration is a means and not an end", "loc": "NaiduRodrikZucman2020 p.370"}, {"id": 44, "n": "02", "s": 6, "t": "conceptual", "f": "制度主義者共同同意乜？", "b": "制度主義者一致認為制度結構、安排同社會過程會顯著塑造監管", "q": "structure and arrangements, as well as social processes, significantly shape regulation", "loc": "BaldwinCaveLodge2012Ch4 p.53"}, {"id": 45, "n": "02", "s": 6, "t": "conceptual", "f": "制度設計文獻係回應邊個論點？", "b": "制度設計文獻係對「所有監管都係關於俘虜」呢個論點嘅回應", "q": "This literature represents the response to the argument that all regulation was about capture", "loc": "BaldwinCaveLodge2012Ch4 p.54"}, {"id": 46, "n": "03", "s": 1, "t": "fact", "f": "競爭法歷史上追求嘅目標係咪一致？", "b": "Motta 指出反壟斷同競爭法經常受社會同歷史因素影響，並可能回應非常唔同嘅目標", "q": "antitrust and competition laws are often influenced by social and historical factors, and might respond to quite different objectives", "loc": "Motta2004 p.17"}, {"id": 47, "n": "03", "s": 2, "t": "definition", "f": "一個行業嘅「經濟福利」點計？", "b": "Motta 將一個行業嘅經濟福利定義為總剩餘，即消費者剩餘加生產者剩餘", "q": "In each given industry, welfare is given by total surplus, that is the sum of consumer surplus and producer surplus.", "loc": "Motta2004 p.18"}, {"id": 48, "n": "03", "s": 2, "t": "conceptual", "f": "經濟福利呢個概念點樣處理分配問題？", "b": "Motta 指出經濟福利概念完全唔理收入喺消費者同生產者之間點樣分配", "q": "It is important to notice that this concept of welfare completely overlooks the issue of income distribution among consumers and producers.", "loc": "Motta2004 p.18"}, {"id": 49, "n": "03", "s": 2, "t": "conceptual", "f": "點解福利標準可以唔理分配？", "b": "Motta 認為福利標準唔考慮分配，理據係原則上可以用再分配計劃令消費者同生產者一齊好過或者一齊差過", "q": "the rationale for not considering distributional issues is that in principle it is possible to operate redistribution schemes such that consumers and producers are both either better off or worse off", "loc": "Motta2004 p.18"}, {"id": 50, "n": "03", "s": 2, "t": "cause", "f": "如果長期將價錢壓到邊際成本，將來會點？", "b": "Motta 認為如果競爭管理機構長期將價錢壓到邊際成本，廠商唔再投資，將來嘅福利會因冇新產品同創新而下降", "q": "in such a hypothetical situation future welfare will be reduced, as new products would not be introduced, innovations would not be made", "loc": "Motta2004 p.19"}, {"id": 51, "n": "03", "s": 3, "t": "fact", "f": "咩情況下總福利升、但消費者福利跌？", "b": "Motta 指出一宗大幅減低固定成本嘅合併，可以因利潤增加而提高總福利，同時因加價而降低消費者福利", "q": "a merger that allows the merging firms to decrease significantly their fixed costs might increase total welfare (due to larger profits) while increasing prices and thus decreasing consumer welfare", "loc": "Motta2004 p.19"}, {"id": 52, "n": "03", "s": 3, "t": "evaluation", "f": "實際上管理機構同法院偏向邊個標準？", "b": "Motta 認為好難講競爭管理機構同法院實際上偏向消費者福利定總福利目標", "q": "It is difficult to say whether competition authorities and courts favour in practice a consumer welfare or a total welfare objective.", "loc": "Motta2004 p.19"}, {"id": 53, "n": "03", "s": 3, "t": "fact", "f": "歐盟有啲條文可能表示佢嘅終極目標之一係乜？", "b": "Motta 認為 Art 81(3) EC 同歐盟合併規例嘅效率抗辯條文，可能表示消費者福利係歐盟競爭法嘅終極目標之一", "q": "These provisions might indicate that consumer welfare is among the ultimate objectives of competition law.", "loc": "Motta2004 p.19"}, {"id": 54, "n": "03", "s": 3, "t": "fact", "f": "美國喺合併案上傾向邊個標準？", "b": "Motta 指出美國法院同反壟斷機構起碼喺合併案上傾向消費者福利標準", "q": "In the US, both the courts and the anti-trust agencies seem to tend toward a consumer welfare standard too, at least as far as mergers are concerned.", "loc": "Motta2004 p.20"}, {"id": 55, "n": "03", "s": 3, "t": "fact", "f": "加拿大、澳洲、新西蘭傾向邊個標準？", "b": "Motta 引 Lyons 指加拿大、澳洲同新西蘭嘅競爭管理機構傾向總福利標準", "q": "In other jurisdictions, such as in Canada, Australia and New Zealand, competition authorities seem instead to lean towards a total welfare standard", "loc": "Lyons (2002), in Motta2004 p.20"}, {"id": 56, "n": "03", "s": 4, "t": "normative", "f": "支持消費者福利嘅「政治經濟學」理由係乜？", "b": "Motta 轉述一個政治經濟學論點：因為消費者分散而生產者集中，俾消費者剩餘多過生產者剩餘嘅權重可以幫手將天平拉返向消費者", "q": "attaching a heavier weight to consumer surplus than to producer surplus might help redress the balance towards consumers", "loc": "Motta2004 p.20"}, {"id": 57, "n": "03", "s": 4, "t": "normative", "f": "支持消費者福利嘅「資訊不對稱」理由係乜？", "b": "Besanko 同 Spulber 認為採用只批准提高消費者福利嘅合併嘅消費者福利標準，可以抵銷合併公司對管理機構嘅資訊優勢", "q": "the adoption of a consumer welfare standard (that is, accepting the merger only if it increases consumer welfare, no matter the effects on profits and therefore on total welfare) might counter-balance this asymmetry", "loc": "Besanko and Spulber (1993), in Motta2004 p.21"}, {"id": 58, "n": "03", "s": 4, "t": "normative", "f": "支持消費者福利嘅「簡單」理由係乜？", "b": "Motta 轉述一個論點：消費者福利標準只需評估對價錢嘅影響，所以比總福利標準更易用", "q": "A consumer welfare standard, instead, would not need such an exercise, since it could limit itself to the (relatively) simpler assessment of the effects on prices.", "loc": "Motta2004 p.21"}, {"id": 59, "n": "03", "s": 4, "t": "evaluation", "f": "結論：管理機構應唔應該採用消費者福利目標？", "b": "Motta 認為競爭管理機構採用消費者福利目標並唔明智", "q": "Although these arguments might have some merit, it would not be wise for competition authorities to adopt a consumer welfare objective, for several reasons.", "loc": "Motta2004 p.21"}, {"id": 60, "n": "03", "s": 4, "t": "fact", "f": "反駁一：今日嘅消費者同公司係咩關係？", "b": "Motta 指出喺今日嘅先進經濟，消費者經常直接或者透過退休金同投資基金擁有公司", "q": "in today's advanced economies consumers often own firms (partly or fully), directly or through pension and investment funds", "loc": "Motta2004 p.21"}, {"id": 61, "n": "03", "s": 4, "t": "cause", "f": "反駁三（最重要）：低價低利潤會點？", "b": "Motta 認為較低嘅價錢同利潤會令廠商失去創新、投資同推出新產品嘅誘因", "q": "lower prices and profits would have the effect of depriving firms from the necessary incentives to innovate, invest, and introduce new products", "loc": "Motta2004 p.21"}, {"id": 62, "n": "03", "s": 4, "t": "evaluation", "f": "呢個立場最後偏好邊個標準？", "b": "Motta 同大多數經濟學家一樣，偏好以總福利作為競爭政策嘅標準", "q": "Like most economists, I also prefer the welfare standard.", "loc": "Motta2004 p.22"}, {"id": 63, "n": "03", "s": 5, "t": "evaluation", "f": "人為咁幫唔夠規模嘅細企生存，同福利目標有咩關係？", "b": "Motta 認為人為地幫助未達有效生產規模嘅細企生存，同經濟福利目標相違背", "q": "artificially helping small firms to survive when they are not operating at an efficient scale of production is in contrast with economic welfare objectives", "loc": "Motta2004 p.22"}, {"id": 64, "n": "03", "s": 5, "t": "evaluation", "f": "「促進市場整合」係咩性質嘅目標？", "b": "Motta 認為歐盟競爭政策促進市場整合係一個政治目標，未必同經濟福利一致", "q": "This is a political objective which is not necessarily consistent with economic welfare.", "loc": "Motta2004 p.23"}, {"id": 65, "n": "03", "s": 5, "t": "fact", "f": "德國競爭法背後嘅主要理據係乜？", "b": "Motta 認為保障經濟自由大概係德國競爭法背後嘅主要理據", "q": "to guarantee economic freedom is probably the main rationale behind competition laws in Germany", "loc": "Motta2004 p.24"}, {"id": 66, "n": "03", "s": 5, "t": "evaluation", "f": "競爭法可唔可以有效咁壓通脹？", "b": "Motta 懷疑競爭法可以有效咁用嚟達到壓抑通脹嘅目的", "q": "it seems doubtful that competition law might efficiently be used to attain such purposes", "loc": "Motta2004 p.24"}, {"id": 67, "n": "03", "s": 5, "t": "evaluation", "f": "限制大超市減價去保護細舖頭，會點？", "b": "Motta 認為限制大型連鎖超市以較低價錢銷售嘅能力去保護細舖頭，會損害福利", "q": "Interfering in this process by limiting the ability of larger firms to charge lower prices would damage welfare.", "loc": "Motta2004 p.26"}, {"id": 68, "n": "03", "s": 5, "t": "evaluation", "f": "咩情況下超市低價既唔公平又損福利？", "b": "Motta 認為一間高市佔超市有計劃咁低於成本定價以逼走細對手嘅掠奪性定價，既唔公平又損害福利", "q": "In this case, this practice (which is called predatory) is both unfair and welfare detrimental.", "loc": "Motta2004 p.26"}, {"id": 69, "n": "03", "s": 5, "t": "normative", "f": "邊種「公平」同競爭政策相容？", "b": "Motta 認為事前公平（廠商起步機會相同）同競爭政策相容，因為競爭政策應該保證所有廠商有公平競爭環境", "q": "ex ante equity (that is, the fact that firms have the same initial opportunities in the marketplace) is compatible with competition policy, which should guarantee a level playing field for all the firms", "loc": "Motta2004 p.26"}, {"id": 70, "n": "03", "s": 6, "t": "evaluation", "f": "經濟衰退時容許企業勾結避免倒閉，好唔好？", "b": "Motta 認為容許企業勾結去解決經濟衰退時嘅倒閉問題，好可能係比問題本身更差嘅藥方", "q": "allowing firms to collude to solve the problem is likely to be a remedy worse than the problem itself", "loc": "Motta2004 p.27"}, {"id": 71, "n": "03", "s": 6, "t": "cause", "f": "競爭政策嘅一個政治理由係乜？", "b": "Motta 指出少數公民同群體控制大部分資源時，民主可能會受威脅，呢點係競爭政策嘅政治理由之一", "q": "it might be feared that democracy could be put at risk when a few citizens and groups dominate a large share of resources", "loc": "Motta2004 p.27"}, {"id": 72, "n": "03", "s": 6, "t": "fact", "f": "CECED 案點解協議會被批准？", "b": "喺 CECED 案，歐盟委員會以環境效益為理由，批准咗洗衣機生產商停產最唔慳電型號嘅協議", "q": "the Commission considered that the agreement will benefit society in environmental terms", "loc": "Motta2004 p.28"}, {"id": 73, "n": "03", "s": 6, "t": "normative", "f": "用競爭政策追效率以外嘅目的時，要問咩問題？", "b": "Motta 認為每當競爭政策被用嚟追求效率以外嘅目的，都要問呢個係咪最佳解決方法", "q": "whenever competition policy is used for other purposes than efficiency, one has to wonder whether this is the optimal solution", "loc": "Motta2004 p.28"}, {"id": 74, "n": "03", "s": 6, "t": "evaluation", "f": "有人要扶植「國家冠軍」，呢個立場點回應？", "b": "Motta 認為競爭政策本身就係最好嘅產業政策", "q": "My view is that competition policy is the best possible industrial policy", "loc": "Motta2004 p.29"}, {"id": 75, "n": "03", "s": 7, "t": "definition", "f": "用經濟福利去定義，競爭政策係乜？", "b": "Motta 將競爭政策定義為確保市場競爭唔會受到降低經濟福利嘅限制嘅一套政策同法律", "q": "the set of policies and laws which ensure that competition in the marketplace is not restricted in such a way as to reduce economic welfare", "loc": "Motta2004 p.30"}, {"id": 76, "n": "03", "s": 7, "t": "normative", "f": "政府想追其他目標，應該用乜工具？", "b": "Motta 認為政府要達到經濟效率以外嘅目標，唔應該用競爭政策，而應該用對競爭扭曲最少嘅政策工具", "q": "if a government wanted to achieve them, it should not use competition policy but resort to policy instruments that distort competition as little as possible", "loc": "Motta2004 p.30"}, {"id": 77, "n": "03", "s": 7, "t": "normative", "f": "經濟同其他考慮有衝突，邊個決定優先？", "b": "Motta 認為經濟考慮同其他考慮有衝突時邊樣優先，應該由政客、法官或者社會學家等其他人決定，而唔係經濟學家", "q": "It will be up to others, be they politicians or judges or sociologists, to decide whether to give priority to economic or other considerations when conflicts arise.", "loc": "Motta2004 p.30"}, {"id": 78, "n": "03", "s": 7, "t": "normative", "f": "再分配後果，對監管者嚟講應該係目標定約束？", "b": "Majone 認為監管政策嘅再分配後果，對監管者嚟講應該係政策約束而唔係政策目標", "q": "Regulatory policies, like all public policies, have redistributive consequences … should represent potential policy constraints rather than policy objectives", "loc": "Majone1997 p.162"}, {"id": 79, "n": "04", "s": 1, "t": "conceptual", "f": "Tinbergen 法則講乜？", "b": "Tinbergen 法則認為要成功達到 n 個獨立嘅政策目標，起碼需要同樣數目嘅獨立政策工具", "q": "to successfully achieve 𝑛𝑛 independent policy targets at least the same number of independent policy instruments are required", "loc": "Tinbergen (1952), in Schaeffer2020 p.2"}, {"id": 80, "n": "04", "s": 1, "t": "definition", "f": "經濟政策嘅變數分邊三類？", "b": "Tinbergen 將經濟政策嘅變數分為數據、目標變數同工具三類", "q": "Tinbergen distinguishes three types of variables: (1) Data, (2) Target Variables, and (3) Instruments.", "loc": "Tinbergen (1952), in Schaeffer2020 p.3"}, {"id": 81, "n": "04", "s": 1, "t": "conceptual", "f": "勞動生產力係目標定工具？點解？", "b": "Schaeffer 認為勞動生產力本身唔係目的，而係達到更高工資、更大產量同更強競爭力等目標嘅手段，所以應該當作工具", "q": "In general, labor productivity is not an end in itself but a means to reach targets such as higher wages, greater production, improved competitiveness in the world market, etc.", "loc": "Schaeffer2020 p.4"}, {"id": 82, "n": "04", "s": 2, "t": "definition", "f": "兩個目標「獨立」係乜意思？", "b": "Schaeffer 將兩個政策目標「獨立」定義為兩者可以同時達到", "q": "Independence of policy targets means that both can be achieved simultaneously.", "loc": "Schaeffer2020 p.5"}, {"id": 83, "n": "04", "s": 2, "t": "definition", "f": "一件「中立」嘅工具係點？", "b": "Schaeffer 將「中立」政策工具定義為除咗佢設計要幫助嘅目標之外，對其他所有政策目標都冇任何影響嘅工具", "q": "We define a policy instrument as being neutral if its application has no effect whatsoever of all policy targets other than the one it was designed to help achieve.", "loc": "Schaeffer2020 p.5"}, {"id": 84, "n": "04", "s": 2, "t": "definition", "f": "一件工具同另一個目標「衝突」係點？", "b": "Schaeffer 將一件為目標 A 而設嘅工具定義為同目標 B「衝突」，如果用咗佢會令目標 B 更遠", "q": "An instrument for target A is defined as in conflict or conflicting with target B, if its application moves us further away from this target.", "loc": "Schaeffer2020 p.6"}, {"id": 85, "n": "04", "s": 3, "t": "conceptual", "f": "除咗咩情況，政策都會影響其他目標？", "b": "Schaeffer 認為除非目標獨立而工具中立，否則政策都會影響佢設計目標以外嘅其他目標", "q": "except in the case of independent targets and neutral instruments, policies effects targets beyond those they are designed for", "loc": "Schaeffer2020 p.9"}, {"id": 86, "n": "04", "s": 3, "t": "normative", "f": "溢出越強，會點？", "b": "Schaeffer 認為溢出效應越強，設計同執行兩個目標嘅政策時就越需要協調", "q": "the stronger the spillover effects, the greater the need for coordination in designing and implementing policies for targets A and B", "loc": "Schaeffer2020 p.8"}, {"id": 87, "n": "04", "s": 3, "t": "normative", "f": "工具 X 對目標 Y 影響好大，應該點做？", "b": "Schaeffer 認為工具 X 對目標 Y 影響越大，協調 X 同 Y 政策嘅潛在好處就越大，溢出好大時甚至要合併成一個行政單位", "q": "The greater the influence of an instrument X on target Y, the greater the potential benefits from coordinating the policies for X and Y", "loc": "Schaeffer2020 p.9"}, {"id": 88, "n": "04", "s": 3, "t": "conceptual", "f": "由同一個機構管理唔同政策，協調難唔難？", "b": "Schaeffer 假設由同一個機構管理嘅唔同政策之間，協調可以相對容易做到", "q": "We assume that coordination between different policies administered by the same agency can be accomplished with relative ease.", "loc": "Schaeffer2020 p.12"}, {"id": 89, "n": "04", "s": 3, "t": "conceptual", "f": "目標同工具各自互相垂直，係咪已經夠保證中立？", "b": "Schaeffer 認為目標同工具各自互相垂直都唔足以保證工具中立，除非每件工具亦完全對準佢嘅目標", "q": "having orthogonal targets and orthogonal instruments is not sufficient if each instrument is not also perfectly aligned with its target", "loc": "Schaeffer2020 p.10"}, {"id": 90, "n": "04", "s": 3, "t": "normative", "f": "互相影響嘅政策之間應唔應該協調？幾時最必須？", "b": "Schaeffer 認為互相影響對方目標嘅政策之間永遠都應該考慮協調，喺變化快嘅政策環境更加必須", "q": "coordination among policies that mutually affect each other's policy targets should always be considered and is required in a fast-changing policy environment", "loc": "Schaeffer2020 p.11"}, {"id": 91, "n": "04", "s": 3, "t": "evaluation", "f": "協調幾時最難做？", "b": "Schaeffer 認為政策協調喺最需要嘅時候（即急速變化時）最難做", "q": "The coordinated application of policies is most difficult when it is likely most needed, namely in the case of rapid change", "loc": "Schaeffer2020 p.12"}, {"id": 92, "n": "04", "s": 4, "t": "fact", "f": "自 1952 年以嚟，政策目標嘅數目點變？", "b": "Schaeffer 指出自 Tinbergen 1952 年本書出版以嚟，政策目標變數嘅數目整體係增加咗", "q": "Since the publication of his book, the number of target variables has changed and on balance increased.", "loc": "Schaeffer2020 p.4"}, {"id": 93, "n": "04", "s": 4, "t": "normative", "f": "目標越嚟越多，按法則要點？", "b": "Schaeffer 認為公共政策範圍擴大加上 Tinbergen 法則嘅含意，表示可能需要發展新嘅政策工具", "q": "The growth of the range of public policy combined with implications of the Tinbergen Rule suggest that we may need to develop new policy instruments.", "loc": "Schaeffer2020 p.13"}, {"id": 94, "n": "04", "s": 5, "t": "fact", "f": "歐盟同美國嘅 GDP 差距主要嚟自乜？", "b": "Draghi 報告指出歐盟同美國之間嘅 GDP 差距主要由歐洲生產力增長放緩得更明顯所致", "q": "a wide gap in GDP has opened up between the EU and the US, driven mainly by a more pronounced slowdown in productivity growth in Europe", "loc": "Draghi2024 p.5"}, {"id": 95, "n": "04", "s": 5, "t": "cause", "f": "如果生產力追唔上，歐洲要面對乜取捨？", "b": "Draghi 報告認為歐洲如果唔能夠提升生產力，就唔可以同時成為新科技領袖、氣候責任典範同世界舞台上嘅獨立玩家", "q": "We will not be able to become, at once, a leader in new technologies, a beacon of climate responsibility and an independent player on the world stage.", "loc": "Draghi2024 p.5"}, {"id": 96, "n": "04", "s": 5, "t": "normative", "f": "如果要將基本價值互相取捨，歐盟會點？", "b": "Draghi 報告認為如果歐洲唔再能夠向人民提供佢嘅基本價值，或者要將佢哋互相取捨，歐盟就會失去存在嘅理由", "q": "it will have lost its reason for being", "loc": "Draghi2024 p.5"}, {"id": 97, "n": "04", "s": 5, "t": "normative", "f": "應對挑戰嘅唯一方法係乜？", "b": "Draghi 報告認為應對挑戰嘅唯一方法係增長同提高生產力，同時保住公平同社會共融嘅價值", "q": "The only way to meet this challenge is to grow and become more productive, preserving our values of equity and social inclusion.", "loc": "Draghi2024 p.5"}, {"id": 98, "n": "04", "s": 5, "t": "cause", "f": "唔協調政策，減碳同競爭力會點？", "b": "Draghi 報告認為如果歐洲唔協調政策，減碳可能會同競爭力同增長背道而馳", "q": "But if we fail to coordinate our policies, there is a risk that decarbonisation could run contrary to competitiveness and growth.", "loc": "Draghi2024 p.6"}, {"id": 99, "n": "04", "s": 5, "t": "evaluation", "f": "中國嘅競爭對歐洲邊啲行業構成威脅？", "b": "Draghi 報告認為中國國家資助嘅競爭威脅歐洲嘅清潔科技同汽車業", "q": "But China's state-sponsored competition also represents a threat to our productive clean tech and automotive industries.", "loc": "Draghi2024 p.7"}, {"id": 100, "n": "04", "s": 5, "t": "cause", "f": "監管本身對想擴張嘅創新企業有咩影響？", "b": "Draghi 報告認為想喺歐洲擴張嘅創新企業喺每一個階段都受到唔一致同限制性嘅規例阻礙", "q": "innovative companies that want to scale up in Europe are hindered at every stage by inconsistent and restrictive regulations", "loc": "Draghi2024 p.6"}, {"id": 101, "n": "04", "s": 6, "t": "normative", "f": "將互相競爭嘅任務放喺同一個機構，點解可以好過拆開？", "b": "Carrigan 認為將互相競爭嘅任務放喺同一個機構，可以好過拆開，因為支援目標嘅工作可能需要協調", "q": "assigning competing missions to one organization can be better than separating them, as the underlying tasks supporting the goals may require coordination", "loc": "Carrigan2018JTP p.6"}, {"id": 102, "n": "04", "s": 6, "t": "conceptual", "f": "機構同上司目標一致，結構選擇仲有冇影響？", "b": "Carrigan 認為即使機構同上司對政策目標意見一致，結構選擇都會影響機構行為", "q": "structural choices impact behavior even when agencies and overseers agree on policy objectives", "loc": "Carrigan2018JTP p.6"}, {"id": 103, "n": "04", "s": 6, "t": "cause", "f": "多任務機構唔知上司偏好邊個目標時，會點做？", "b": "Carrigan 嘅模型顯示，多任務機構唔確定政客偏好邊個目標時，會將資源分得較平均去對沖估錯嘅風險", "q": "In the model, when the agency is uncertain about which goal the politician prefers, it hedges by choosing a more equal distribution of resources to guard against the possibility that it is incorrect.", "loc": "Carrigan2018JTP p.26"}, {"id": 104, "n": "04", "s": 6, "t": "cause", "f": "目標含糊係拆開定合埋嘅理由？", "b": "Carrigan 認為目標含糊係將任務拆開交畀唔同機構嘅一個理由", "q": "Ambiguity is therefore an impetus to separate missions.", "loc": "Carrigan2018JTP p.8"}, {"id": 105, "n": "04", "s": 6, "t": "conceptual", "f": "「協調」喺模型入面係指乜能力？", "b": "Carrigan 將協調建模為機構喺任務之間調動資源嘅能力，而呢種能力喺任務被拆開時就冇", "q": "Coordination is modeled through the agency’s ability to move resources between missions, a possibility not available if the goals are separated.", "loc": "Carrigan2018JTP p.8"}, {"id": 106, "n": "04", "s": 6, "t": "evaluation", "f": "多任務機構幾時對政客最有價值？", "b": "Carrigan 認為當兩個目標既唔係強烈衝突、亦唔係高度一致時，多任務機構對政客最有價值", "q": "The result is that the multiple-mission agency is most valuable to the politician when the goals are neither strongly conflicted nor highly congruent.", "loc": "Carrigan2018JTP p.24"}, {"id": 107, "n": "04", "s": 6, "t": "cause", "f": "協調幾時最重要？", "b": "Carrigan 認為協調嘅重要性正正喺目標含糊變得最嚴重嗰陣加強", "q": "it is precisely when ambiguity becomes more debilitating that the importance of coordination intensifies", "loc": "Carrigan2018JTP p.6"}, {"id": 108, "n": "04", "s": 6, "t": "cause", "f": "目標相關度低嘅機構安排，長遠會點？", "b": "Carrigan 預計目標相關度較低嘅機構安排，會隨時間喺拆開同合併任務之間來回擺動", "q": "organizational arrangements where goals are less correlated might be expected to oscillate between separating and combining missions over time", "loc": "Carrigan2018JTP p.27"}, {"id": 109, "n": "04", "s": 6, "t": "evaluation", "f": "拆散或者合併機構，可能帶嚟乜？", "b": "Carrigan 認為拆散多任務機構或者合併分散嘅機構，都可能帶出同樣大但之前隱藏嘅問題", "q": "breaking up multiple-mission agencies or combining fragmented agencies may introduce equally large but previously hidden issues", "loc": "Carrigan2018JTP p.30"}, {"id": 110, "n": "04", "s": 6, "t": "cause", "f": "機構估錯政客偏好時，政客可能點做？", "b": "Carrigan 認為當機構估錯政客偏好時，政客可以刻意製造不確定，令機構冇咁落力追求錯誤嘅目標", "q": "The politician can foster uncertainty to persuade the agency to pursue its misinformed belief with less vigor.", "loc": "Carrigan2018JTP p.26"}, {"id": 111, "n": "04", "s": 7, "t": "fact", "f": "兼顧越多計劃嘅機構，表現點？", "b": "Carrigan 發現要兼顧越多計劃嘅美國聯邦機構，表現越差", "q": "agencies balancing greater numbers of programs perform worse", "loc": "Carrigan2018PAR p.669"}, {"id": 112, "n": "04", "s": 7, "t": "cause", "f": "點解兼顧多計劃嘅機構會表現差？", "b": "Carrigan 認為兼顧多個計劃嘅機構表現差，主要係因為佢哋更大機會要對計劃對象同時採取互相衝突嘅立場", "q": "such organizations struggle largely because they are more likely to be forced to simultaneously adopt conflicting stances toward program targets", "loc": "Carrigan2018PAR p.669"}, {"id": 113, "n": "04", "s": 7, "t": "fact", "f": "有「又扶又管」衝突嘅機構，分數差幾多？", "b": "Carrigan 發現對同一對象既扶持又約束嘅衝突機構，平均分數比冇衝突嘅機構低 11 分", "q": "Conflicted agencies score on average 11 points lower than nonconflicted agencies", "loc": "Carrigan2018PAR p.675"}, {"id": 114, "n": "04", "s": 7, "t": "fact", "f": "計劃數目嘅負面影響，有幾多可以用衝突解釋？", "b": "Carrigan 發現計劃數目對機構表現嘅負面影響，接近 35% 可以用機構被逼處理衝突嘅機會增加去解釋", "q": "close to 35 percent of the negative impact of the number of programs an agency balances on its performance appears to be explained by the increased probability such an agency is forced to balance conflict as a result", "loc": "Carrigan2018PAR p.676"}, {"id": 115, "n": "04", "s": 7, "t": "fact", "f": "衝突機構嘅員工有咩問題？", "b": "Carrigan 發現喺有衝突嘅機構，員工較唔清楚自己嘅工作點樣連到機構嘅目標同優先次序", "q": "in conflicted agencies, personnel are less clear about how their work connects to agency goals and priorities", "loc": "Carrigan2018PAR p.679"}, {"id": 116, "n": "04", "s": 7, "t": "conceptual", "f": "影響表現嘅關鍵係任務數目，定係乜？", "b": "Carrigan 認為影響機構表現嘅唔單止係任務累積，而係互相競爭嘅任務點樣互動", "q": "it is not simply that accumulating missions impedes agency performance but rather how those competing mandates interact that can define whether an agency will struggle to achieve its objectives", "loc": "Carrigan2018PAR p.669"}, {"id": 117, "n": "04", "s": 7, "t": "evaluation", "f": "處理目標衝突嘅補救方法有冇代價？", "b": "Carrigan 認為處理目標衝突嘅所有補救方法都有代價", "q": "All of these remedies have costs.", "loc": "Carrigan2018PAR p.678"}, {"id": 118, "n": "04", "s": 7, "t": "cause", "f": "排優先次序有咩代價？", "b": "Carrigan 認為為衝突目標排優先次序，會令低優先嘅目標被忽略，即使佢對社會福利有重要影響", "q": "Creating a pecking order for the conflicted goals means those assigned lower priority may be neglected despite having important implications for social welfare.", "loc": "Carrigan2018PAR p.678"}, {"id": 119, "n": "04", "s": 7, "t": "cause", "f": "喺機構內部分開職能有咩代價？", "b": "Carrigan 認為將職能分開去減少含糊，可能令分開咗嘅團隊之間出現張力同唔健康嘅競爭", "q": "creating separation between functions to mitigate ambiguity can introduce tension and unhealthy competition between the divided groups", "loc": "Carrigan2018PAR p.678"}, {"id": 120, "n": "05", "s": 1, "t": "fact", "f": "而家全世界有幾多競爭法管轄區？佢哋有咩特點？", "b": "Aydin 同 Büthe 指出今日超過 130 個競爭法管轄區入面，好多都係新加入者", "q": "Many of today's 130 plus competition law jurisdictions are newcomers", "loc": "AydinButhe2016 p.2"}, {"id": 121, "n": "05", "s": 1, "t": "evaluation", "f": "賦權競爭機構有咩風險？", "b": "Aydin 同 Büthe 認為賦權政府機構做影響深遠嘅市場干預，如果權力被濫用或者用得唔稱職，可能令所有人都更差", "q": "At the same time, empowering a government agency to engage in highly consequential market intervention may leave everyone worse off if those powers are abused or exercised incompetently.", "loc": "AydinButhe2016 p.3"}, {"id": 122, "n": "05", "s": 1, "t": "conceptual", "f": "障礙同有利條件嘅影響，取決於乜？", "b": "Aydin 同 Büthe 認為障礙同有利條件對競爭法成效嘅影響，視乎我哋當競爭法同政策嘅目標係乜", "q": "both impediments and conducive conditions are differentially harmful or helpful, depending on what we take to be the goals of competition law and policy", "loc": "AydinButhe2016 p.3"}, {"id": 123, "n": "05", "s": 1, "t": "conceptual", "f": "競爭法有邊六個操作性目標？", "b": "Aydin 同 Büthe 將競爭法同政策嘅操作性目標分為效率、人類發展、私營部門競爭、對國家嘅競爭、競爭文化同經濟及政治自由六個", "q": "namely: (a) efficiency, (b) human development, (c) private sector rivalry, (d) rivalry vis-à-vis the state, (e) a distinctive", "loc": "AydinButhe2016 p.5"}, {"id": 124, "n": "05", "s": 2, "t": "fact", "f": "1970 年代末至 80 年代初，美國競爭法嘅主要操作性目標係乜？", "b": "Aydin 同 Büthe 指出受芝加哥學派影響，最大化消費者福利喺 1970 年代末至 1980 年代初成為美國競爭法同政策嘅主要操作性目標", "q": "maximizing consumer welfare became in the late 1970s and early 1980s the predominant operational goal of competition law and policy in the United States", "loc": "AydinButhe2016 p.5"}, {"id": 125, "n": "05", "s": 2, "t": "fact", "f": "消費者福利後來點樣被取代？", "b": "Aydin 同 Büthe 指出消費者福利好快由口號上嘅終極目標，讓位畀效率成為實際嘅操作性目標", "q": "Consumer welfare as the ultimate, rhetorically emphasized goal, however, quickly gave way to efficiency as the actual operational goal.", "loc": "AydinButhe2016 p.5"}, {"id": 126, "n": "05", "s": 2, "t": "conceptual", "f": "用效率代替消費者福利，靠咩假設？", "b": "Aydin 同 Büthe 認為用效率代替消費者福利雖然簡化分析，但只有喺效率增益會傳返畀消費者嘅假設成立時先有理據", "q": "Efficiency as a proxy for consumer welfare simplifies the required economic analysis, but can only be justified as long as the assumption can be maintained that efficiency gains will be passed on to consumers", "loc": "AydinButhe2016 p.5"}, {"id": 127, "n": "05", "s": 2, "t": "conceptual", "f": "效率目標首先要求打擊乜？", "b": "Aydin 同 Büthe 指出效率作為操作性目標，一般被理解為首先要求打擊卡特爾，尤其係定價同分配市場嘅協議", "q": "It has been widely understood to call, above all, for antitrust enforcement against cartels, especially price-fixing and market-allocating agreements among ostensible competitors.", "loc": "AydinButhe2016 p.6"}, {"id": 128, "n": "05", "s": 2, "t": "fact", "f": "「效率係唯一正當目標」有冇爭議？", "b": "Aydin 同 Büthe 指出芝加哥學派「效率最大化係競爭法唯一正當操作性目標」嘅主張喺好多國家仍然受到爭議", "q": "The Chicago School's claim that efficiency maximization is, or should be, the only legitimate operational goal of competition law and policy remains contested in many countries", "loc": "AydinButhe2016 p.6"}, {"id": 129, "n": "05", "s": 2, "t": "normative", "f": "唔接受「唯一目標」，仲可唔可以接受效率？", "b": "Aydin 同 Büthe 認為唔使接受效率係唯一目標，都可以接受效率係競爭法同政策嘅其中一個操作性目標", "q": "It is not necessary, however, to accept these claims in order to accept efficiency maximization or efficiency gains as one operational goal of competition law and policy.", "loc": "AydinButhe2016 p.7"}, {"id": 130, "n": "05", "s": 3, "t": "normative", "f": "有學者點樣睇發展中國家用競爭法追發展需要？", "b": "有學者主張發展中國家應該可以自由用競爭法同政策去追求佢哋各自嘅經濟同非經濟發展需要", "q": "Accordingly, a number of scholars argue that developing countries should be free to use competition law and policy to pursue their varying economic and non-economic developmental needs.", "loc": "a number of scholars (e.g. Bhattacharjea), in AydinButhe2016 p.7"}, {"id": 131, "n": "05", "s": 3, "t": "evaluation", "f": "增長同發展做競爭機構嘅目標有咩問題？", "b": "Aydin 同 Büthe 認為增長同發展本身通常離具體政策決定太遠，畀唔到競爭機構操作上嘅指引", "q": "Growth and development as such, however, are usually too far removed from specific policymaking decisions to yield operational guidance for competition agencies.", "loc": "AydinButhe2016 p.7"}, {"id": 132, "n": "05", "s": 3, "t": "conceptual", "f": "識別競爭障礙同消除障礙係咪一回事？", "b": "Aydin 同 Büthe 認為識別市場競爭障礙嘅能力，概念上同實務上都應該同消除或減少障礙嘅能力分開", "q": "This ability to identify impediments to market competition should be treated as conceptually and practically distinct from the ability to remove or reduce such impediments.", "loc": "AydinButhe2016 p.9"}, {"id": 133, "n": "05", "s": 3, "t": "evaluation", "f": "「認出疣容易過做手術」呢個比喻講乜？", "b": "Nelson 認為認出問題比做一個冇副作用嘅補救容易", "q": "[i]t may be easier to identify warts than to perform surgery that does not leave scars or have other nasty side effects", "loc": "Nelson, in AydinButhe2016 p.9"}, {"id": 134, "n": "05", "s": 3, "t": "fact", "f": "競爭倡議針對乜？佢喺競爭政策入面嘅地位點？", "b": "Aydin 同 Büthe 指出針對反競爭法律同公共政策嘅競爭倡議，越嚟越被認為係競爭政策一個獨特而非常重要嘅部分", "q": "Competition advocacy targeting anti-competitive laws and public policies is increasingly recognized as a distinct but very important part of competition policy.", "loc": "AydinButhe2016 p.10"}, {"id": 135, "n": "05", "s": 3, "t": "normative", "f": "喺發展中國家，對邊啲部門做倡議特別重要？", "b": "Aydin 同 Büthe 認為喺發展中國家，對立法機關同有立規或市場監管權嘅行政部門做競爭倡議應該特別重要", "q": "In developing countries, advocacy vis-à-vis legislatures and parts of the executive branch with rulemaking or market-regulating powers should therefore be particularly important.", "loc": "AydinButhe2016 p.11"}, {"id": 136, "n": "05", "s": 3, "t": "normative", "f": "如果經濟權力就係政治權力，限制市場集中有咩意義？", "b": "秩序自由主義學者認為如果經濟權力就係政治權力，限制市場集中對政治民主同市場經濟能否共存可能有根本重要性", "q": "if economic power is political power, some restrictions on market concentration may be of fundamental importance for the compatibility of political democracy and a market economy", "loc": "ordo-liberal scholars (Böhm; Eucken), in AydinButhe2016 p.13"}, {"id": 137, "n": "05", "s": 4, "t": "fact", "f": "發展中國家競爭政策最常被提起嘅特徵係乜？", "b": "Aydin 同 Büthe 指出發展中國家競爭政策最常被提及嘅特徵係三個層面嘅資源短缺", "q": "The most commonly noted characteristic of developing countries' competition policies is a shortage of resources on three levels", "loc": "AydinButhe2016 p.15"}, {"id": 138, "n": "05", "s": 4, "t": "evaluation", "f": "競爭機構嘅能力可唔可以喺內部建立？", "b": "Aydin 同 Büthe 認為歐盟嘅經驗顯示競爭機構嘅能力可以（甚至可能必須）喺內部建立", "q": "The EU experience suggests that capacity can (and maybe must) be built internally.", "loc": "AydinButhe2016 p.17"}, {"id": 139, "n": "05", "s": 4, "t": "cause", "f": "唔友善嘅政治法律環境會削弱邊種競爭政策？", "b": "Aydin 同 Büthe 認為唔支持甚至敵對嘅政治法律環境，好可能會削弱以執法為主、追求效率最大化嘅競爭政策", "q": "Having an unsupportive or even hostile political-legal environment is very likely to undermine enforcement-focused, efficiency-maximizing competition policies.", "loc": "AydinButhe2016 p.19"}, {"id": 140, "n": "05", "s": 4, "t": "evaluation", "f": "競爭機構可唔可以解決民主化、司法獨立同貪污問題？", "b": "Aydin 同 Büthe 認為要求即使最有資源嘅競爭機構對民主化、司法獨立同終結貪污作出多過邊際嘅貢獻，都係要求過高", "q": "However, anything more than a marginal contribution to democratizing the political system, increasing judicial independence, and ending corruption is too much to ask of even the most resourceful competition agency.", "loc": "AydinButhe2016 p.19"}, {"id": 141, "n": "05", "s": 4, "t": "fact", "f": "好多發展中國家對市場競爭嘅規範承擔點？", "b": "Aydin 同 Büthe 指出好多發展中國家對市場競爭作為經濟關係基本原則嘅規範承擔都好弱", "q": "Put differently, the normative commitment to market competition as the fundamental principle of economic relations is in many developing countries weak", "loc": "AydinButhe2016 p.20"}, {"id": 142, "n": "05", "s": 4, "t": "evaluation", "f": "缺乏競爭文化，機構可唔可以幫手？", "b": "Aydin 同 Büthe 認為缺乏競爭文化係競爭機構自己可以幫手改善嘅問題", "q": "The good news is that the lack of a competition culture also is a problem that competition agencies can themselves help alleviate.", "loc": "AydinButhe2016 p.21"}, {"id": 143, "n": "05", "s": 4, "t": "cause", "f": "豁免影響嘅經濟比例越大，會點？", "b": "Aydin 同 Büthe 認為一個國家經濟受競爭法豁免影響嘅比例越大，競爭政策就越唔可能有明顯效果", "q": "The larger the share of the country's economy affected by these exemptions, the less likely competition policy is to have a notable effect.", "loc": "AydinButhe2016 p.23"}, {"id": 144, "n": "05", "s": 4, "t": "cause", "f": "市場大細有冇影響？", "b": "Aydin 同 Büthe 認為國內市場嘅大細會影響競爭政策嘅成效", "q": "In sum, size matters.", "loc": "AydinButhe2016 p.24"}, {"id": 145, "n": "05", "s": 5, "t": "cause", "f": "國內盟友有幾重要？", "b": "Aydin 同 Büthe 認為支持競爭機構嘅國內盟友，喺幾個成功例子入面似乎係重要因素", "q": "The presence of domestic allies who are supportive of the competition agency appears to have been an important factor in several successful cases.", "loc": "AydinButhe2016 p.27"}, {"id": 146, "n": "05", "s": 5, "t": "evaluation", "f": "外國支持係咪一定好？", "b": "Aydin 同 Büthe 認為國際同區域組織對競爭機構嘅外國支持係一把雙刃劍", "q": "Foreign support can be a double-edged sword, however.", "loc": "AydinButhe2016 p.29"}, {"id": 147, "n": "05", "s": 5, "t": "cause", "f": "外國支持可能帶嚟咩觀感問題？", "b": "Aydin 同 Büthe 認為外國支持可能加強「競爭法係外國入口貨」嘅觀感，削弱本地對呢啲法律嘅接受", "q": "such foreign support may reinforce the perception of competition law as a foreign import, and undermine local receptiveness to such laws", "loc": "AydinButhe2016 p.29"}, {"id": 148, "n": "05", "s": 5, "t": "normative", "f": "競爭機構對政治精英要唔要自主？", "b": "Aydin 同 Büthe 認為對政治精英有某種形式嘅自主，係競爭機構權力嘅必要元素", "q": "Some form of autonomy from the political elite surely is a necessary element of the competition agency's power.", "loc": "AydinButhe2016 p.31"}, {"id": 149, "n": "05", "s": 5, "t": "normative", "f": "冇政治支持，一個野心大嘅競爭機構做唔做到嘢？", "b": "Aydin 同 Büthe 認為一個要同時挑戰私營精英同國家反競爭做法嘅競爭機構，冇政治支持就唔能夠有效運作", "q": "However, an agency with such an ambitious agenda cannot function effectively without political support.", "loc": "AydinButhe2016 p.31"}, {"id": 150, "n": "05", "s": 5, "t": "normative", "f": "點解競爭機構需要嵌入政治體系？", "b": "Aydin 同 Büthe 認為競爭機構依賴其他政治行為者，製造咗好多反撲機會，所以佢需要嵌入政治體系", "q": "This dependence on other political actors provides ample opportunity for pushback, which creates a need for competition agencies to be embedded in the political system", "loc": "AydinButhe2016 p.31"}, {"id": 151, "n": "05", "s": 5, "t": "normative", "f": "對集中而強大嘅經濟利益，機構要點？", "b": "Aydin 同 Büthe 認為競爭機構要對集中而強大嘅經濟利益有效執法，就必須對呢啲利益保持自主", "q": "Autonomy from concentrated and powerful economic interests is necessary if the competition agency is to effectively enforce the law against such interests.", "loc": "AydinButhe2016 p.31"}, {"id": 152, "n": "05", "s": 5, "t": "normative", "f": "有學者建議發展型國家同規管型國家兩派學者點做？", "b": "Dubash 同 Morgan 建議發展型國家同規管型國家兩派學者多啲對話", "q": "We suggest, then, that more dialogue between developmental state and regulatory state scholars is a productive way forward.", "loc": "DubashMorgan2012 p.274"}, {"id": 153, "n": "05", "s": 6, "t": "evaluation", "f": "有人認為競爭法喺發展中世界整體效果係點？", "b": "Rodriguez 同 Menon 認為喺發展中世界，競爭法同政策到頭來更可能害多過利", "q": "Specifically, Rodriguez and Menon argue that competition law and policy are in the end more likely to do harm than good in the developing world.", "loc": "Rodriguez and Menon (2016), in AydinButhe2016 p.32"}, {"id": 154, "n": "05", "s": 6, "t": "evaluation", "f": "另一種睇法點樣反駁「發展中國家只能二流執行」？", "b": "Fox 反對「發展中國家只能二流咁執行第一世界法律藍本」嘅講法", "q": "But she challenges the idea that developing countries are limited to a second-rate implementation", "loc": "Fox (2016), in AydinButhe2016 p.33"}, {"id": 155, "n": "05", "s": 6, "t": "fact", "f": "中國嘅競爭執法有咩特點？", "b": "Svetiev 同 Wang 認為中國嘅競爭執法公開照顧比成熟管轄區技術官僚範本更廣嘅政策目標", "q": "Chinese competition enforcement is openly sensitive to a broader set of policy goals compared to the legal and technocratic antitrust templates of mature jurisdictions", "loc": "Svetiev and Wang (2016), in AydinButhe2016 p.35"}, {"id": 156, "n": "06", "s": 1, "t": "definition", "f": "監管經濟理論嘅核心任務係解釋乜？", "b": "Stigler 認為監管經濟理論嘅核心任務，係解釋邊個得到監管嘅好處或負擔、監管採取咩形式、同監管對資源分配嘅影響", "q": "The central tasks of the theory of economic regulation are to explain who will receive the benefits or burdens of regulation, what form regulation will take, and the effects of regulation upon the allocation of resources.", "loc": "Stigler1971 p.3"}, {"id": 157, "n": "06", "s": 1, "t": "cause", "f": "經濟理論嘅中心命題係乜？", "b": "Stigler 嘅中心命題係：一般而言，監管係由行業爭取返嚟，並主要為行業利益而設計同運作", "q": "A central thesis of this paper is that, as a rule, regulation is acquired by the industry and is designed and operated primarily for its benefit.", "loc": "Stigler1971 p.3"}, {"id": 158, "n": "06", "s": 1, "t": "conceptual", "f": "呢套理論對政治制度有咩假設？", "b": "Stigler 假設政治制度係理性地設計同使用，係滿足社會成員慾望嘅適當工具", "q": "We assume that political systems are rationally devised and rationally employed, which is to say that they are appropriate instruments for the fulfillment of desires of members of the society.", "loc": "Stigler1971 p.4"}, {"id": 159, "n": "06", "s": 2, "t": "conceptual", "f": "行業可以向國家要幾多種主要政策？", "b": "Stigler 認為一個行業或職業可以向國家爭取嘅主要政策有四種", "q": "The main policies which an industry (or occupation) may seek of the state are four.", "loc": "Stigler1971 p.4"}, {"id": 160, "n": "06", "s": 2, "t": "cause", "f": "點解現金補貼對行業唔係咁吸引？", "b": "Stigler 認為除非可以限制受惠者，否則行業爭取到嘅現金補貼會被越嚟越多嘅新對手攤薄", "q": "unless the list of beneficiaries can be limited by an acceptable device, whatever amount of subsidies the industry can obtain will be dissipated among a growing number of rivals", "loc": "Stigler1971 p.5"}, {"id": 161, "n": "06", "s": 2, "t": "cause", "f": "有足夠政治力量嘅行業，一般會想要乜？", "b": "Stigler 假設任何有足夠政治力量利用國家嘅行業或職業，都會尋求控制入行", "q": "We propose the general hypothesis: every industry or occupation that has enough political power to utilize the state will seek to control entry.", "loc": "Stigler1971 p.5"}, {"id": 162, "n": "06", "s": 2, "t": "conceptual", "f": "行業要嘅第四類政策係乜？", "b": "Stigler 認為行業向國家爭取嘅第四類公共政策係定價", "q": "The fourth class of public policies sought by an industry is directed to price-fixing.", "loc": "Stigler1971 p.6"}, {"id": 163, "n": "06", "s": 2, "t": "cause", "f": "受監管行業入面，細公司嘅影響力會點？", "b": "Stigler 認為政治決定會考慮各公司嘅政治力量，所以受監管行業入面細公司嘅影響力大過喺冇監管市場應有嘅", "q": "The political decisions take account also of the political strength of the various firms, so small firms have a larger influence than they would possess in an unregulated industry.", "loc": "Stigler1971 p.7"}, {"id": 164, "n": "06", "s": 2, "t": "cause", "f": "政治過程會自動令邊啲人加入行業議事？", "b": "Stigler 認為政治過程會自動令有力量嘅外人加入行業嘅議事", "q": "Finally, the political process automatically admits powerful outsiders to the industry's councils.", "loc": "Stigler1971 p.7"}, {"id": 165, "n": "06", "s": 3, "t": "cause", "f": "行業從國家攞到嘅得益，同社會其他人嘅損失比較點？", "b": "Stigler 認為一個行業從國家攞到權力嘅得益，會少過社會其他人因此受到嘅損害", "q": "benefit to the industry will fall short of the damage to the rest of the community", "loc": "Stigler1971 p.10"}, {"id": 166, "n": "06", "s": 3, "t": "conceptual", "f": "政治決定同市場決定有咩根本分別？", "b": "Stigler 認為民主政治過程要求所有人同時作決定，呢點令佢同市場過程根本唔同", "q": "the political process demands simultaneity of decision", "loc": "Stigler1971 p.10"}, {"id": 167, "n": "06", "s": 3, "t": "cause", "f": "政治制度會實現邊啲偏好、忽略邊啲？", "b": "Stigler 認為政治制度會實現多數同好多少數嘅強烈偏好，但忽略多數同少數較弱嘅偏好", "q": "The system is calculated to implement all strongly felt preferences of majorities and many strongly felt preferences of minorities but to disregard the lesser preferences of majorities and minorities.", "loc": "Stigler1971 p.12"}, {"id": 168, "n": "06", "s": 3, "t": "conceptual", "f": "行業要用乜去「買」監管？", "b": "Stigler 認為尋求監管嘅行業要用政黨需要嘅選票同資源去付款", "q": "The industry which seeks regulation must be prepared to pay with the two things a party needs: votes and resources.", "loc": "Stigler1971 p.12"}, {"id": 169, "n": "06", "s": 4, "t": "cause", "f": "點解牌照係有效嘅入行障礙？", "b": "Stigler 認為職業牌照係有效嘅入行障礙，因為冇牌執業係刑事罪", "q": "The license is an effective barrier to entry because occupational practice without the license is a criminal offense.", "loc": "Stigler1971 p.13"}, {"id": 170, "n": "06", "s": 4, "t": "fact", "f": "開始發牌同職業規模定城市化關係較大？", "b": "Stigler 發現職業集中喺大城市嘅程度，比職業規模更同美國各州開始發牌有關", "q": "Urbanization is more strongly associated than size of occupation with licensure.", "loc": "Stigler1971 p.15"}, {"id": 171, "n": "06", "s": 5, "t": "normative", "f": "改革者要先明白乜，先可以用國家推改革？", "b": "Stigler 認為未發展出政治生活嘅基本邏輯之前，改革者冇能力利用國家推行改革", "q": "Until the basic logic of political life is developed, reformers will be ill-equipped to use the state for their reforms", "loc": "Stigler1971 p.18"}, {"id": 172, "n": "06", "s": 5, "t": "normative", "f": "經濟學家應該盡快建立乜理論？", "b": "Stigler 認為經濟學家應該盡快建立政治行為嘅理性理論", "q": "Economists should quickly establish the license to practice on the rational theory of political behavior.", "loc": "Stigler1971 p.18"}, {"id": 173, "n": "06", "s": 6, "t": "conceptual", "f": "監管經濟理論點樣睇政客？", "b": "Peltzman 指出監管經濟理論假設政客同其他人一樣係自利嘅最大化者", "q": "Politicians, like the rest of us, are presumed to be self-interested maximizers.", "loc": "Peltzman1989 p.1"}, {"id": 174, "n": "06", "s": 6, "t": "cause", "f": "俘虜理論點樣總結監管服務生產者嘅方式？", "b": "Jordan 總結俘虜理論為：監管透過製造本來唔會存在嘅卡特爾或者唔壓制壟斷去服務生產者利益", "q": "regulation served the producer interest either by creating cartels where they would otherwise not exist or by failing to suppress monopoly", "loc": "Jordan (1972), in Peltzman1989 p.5"}, {"id": 175, "n": "06", "s": 6, "t": "cause", "f": "原始經濟理論嘅主要結論係乜？", "b": "Stigler 嘅分析結論係生產者利益會贏得監管機構嘅服務", "q": "Thus the main conclusion of Stigler's analysis is that the producer interest will win the bidding for the services of a regulatory agency.", "loc": "Stigler (1971), in Peltzman1989 p.8"}, {"id": 176, "n": "06", "s": 6, "t": "cause", "f": "點解純粹保護生產者通常唔係最佳政治策略？", "b": "Peltzman 認為只要有啲消費者可以為稍為偏離卡特爾均衡提供選票或金錢，純粹保護生產者一般就唔會係主導政治策略", "q": "Thus as long as some consumers can offer some votes or money for a small departure from the cartel equilibrium, pure producer protection will not, in general, be the dominant political strategy.", "loc": "Peltzman1989 p.9"}, {"id": 177, "n": "06", "s": 6, "t": "cause", "f": "無謂損失對低效率監管有咩作用？", "b": "Becker 認為無謂損失會制約低效率嘅監管政策", "q": "Becker's central argument is that in a setup like this deadweight losses are a constraint on inefficient regulatory policies.", "loc": "Becker (1983), in Peltzman1989 p.12"}, {"id": 178, "n": "06", "s": 6, "t": "cause", "f": "邊類群體會從監管得益較多？", "b": "Peltzman 總結監管經濟理論：緊密而有組織嘅群體會比廣泛而分散嘅群體從監管得益更多", "q": "Compact, well-organized groups will tend to benefit more from regulation than broad, diffuse groups.", "loc": "Peltzman1989 p.13"}, {"id": 179, "n": "06", "s": 6, "t": "cause", "f": "點解監管過程對無謂損失好敏感？", "b": "Peltzman 認為因為監管嘅政治回報來自分配財富，監管過程對無謂損失好敏感", "q": "Because the political payoff to regulation arises from distributing wealth, the regulatory process is sensitive to deadweight losses.", "loc": "Peltzman1989 p.13"}, {"id": 180, "n": "06", "s": 7, "t": "conceptual", "f": "放寬監管帶出咩理論問題？", "b": "Peltzman 提出放寬監管係咪決定性咁推翻咗監管經濟理論嘅問題", "q": "Doesn't deregulation then decisively falsify the theory?", "loc": "Peltzman1989 p.2"}, {"id": 181, "n": "06", "s": 7, "t": "fact", "f": "1970 年代初嘅經濟學家有冇預測到放寬監管？", "b": "Peltzman 指出 1970 年代初執業嘅經濟學家，一百個都冇一個預測到隨後嘅大規模放寬監管", "q": "Not one economist in a hundred practicing in the early 1970s predicted the sweeping changes that were soon to happen.", "loc": "Peltzman1989 p.3"}, {"id": 182, "n": "06", "s": 7, "t": "evaluation", "f": "作為「監管點解出現」嘅理論，兩套理論各自有咩偏差？", "b": "Peltzman 認為作為監管出現嘅理論，監管經濟理論高估監管嘅出現，而規範分析當實證理論就低估", "q": "In sum, if the ET overpredicts the incidence of regulation, the NPT underpredicts it.", "loc": "Peltzman1989 p.17"}, {"id": 183, "n": "06", "s": 7, "t": "evaluation", "f": "「監管係為糾正市場失靈」呢套理論，喺解釋放寬監管時間上有咩弱點？", "b": "Peltzman 認為如果理論要求嘅監管退場要等二三十年甚至未發生，規範分析當實證理論就唔算有力", "q": "When the exit required by the theory takes twenty or forty years or has yet to occur, the theory can hardly be deemed powerful.", "loc": "Peltzman1989 p.19"}, {"id": 184, "n": "06", "s": 7, "t": "cause", "f": "導致放寬監管嘅兩股力量入面，邊股喺實證上更重要？", "b": "Peltzman 認為導致放寬監管嘅兩種經濟力量之中，可供再分配財富減少喺實證上更重要", "q": "However, I argue that the second force-decreases in available wealth-is empirically more important.", "loc": "Peltzman1989 p.20"}, {"id": 185, "n": "06", "s": 7, "t": "evaluation", "f": "鐵路同貨車業放寬監管，對理論分別代表乜？", "b": "Peltzman 認為鐵路放寬監管係監管經濟理論嘅勝利，而貨車業放寬監管就係佢嘅慘敗", "q": "If rail deregulation is a victory for the ET, truck deregulation is a resounding defeat.", "loc": "Peltzman1989 p.24"}, {"id": 186, "n": "06", "s": 7, "t": "evaluation", "f": "貨車業嘅放寬點解解釋唔到？", "b": "Peltzman 認為冇辦法用任何現有版本嘅監管經濟理論解釋貨車業大筆租金被政治行動完全取消", "q": "There is simply no way I know of to square the wholesale elimination of these rents by political action with any current version of the ET.", "loc": "Peltzman1989 p.26"}, {"id": 187, "n": "06", "s": 7, "t": "conceptual", "f": "「內生放寬監管」模型入面，放寬監管係咪糾正錯誤？", "b": "Peltzman 認為喺內生放寬監管模型入面，放寬監管唔係遲咗發現嘅政策錯誤得到糾正", "q": "In such a model deregulation is not the correction of some belatedly recognized policy error.", "loc": "Peltzman1989 p.38"}, {"id": 188, "n": "06", "s": 7, "t": "cause", "f": "剩好少財富可以再分配時，理論點睇繼續監管？", "b": "Peltzman 認為如果只剩好少財富可以再分配，監管經濟理論就搵唔到繼續監管嘅理由", "q": "If there is only trivial wealth to redistribute, the ET finds no rationale for continued regulation.", "loc": "Peltzman1989 p.39"}, {"id": 189, "n": "06", "s": 7, "t": "evaluation", "f": "整體嚟講，美國放寬監管案例符唔符合理論？", "b": "Peltzman 認為美國放寬監管案例嘅結果參差，但大致符合監管經濟理論預測嘅模式", "q": "The answers to these questions were mixed, but in the main followed the pattern implied by the ET.", "loc": "Peltzman1989 p.39"}, {"id": 190, "n": "06", "s": 7, "t": "evaluation", "f": "對監管制度範圍同形式嘅分析完成咗未？", "b": "Peltzman 承認對監管制度範圍同形式嘅完整分析仍未寫出嚟", "q": "But so far a full analysis of the scope and form of these institutions remains unwritten.", "loc": "Peltzman1989 p.41"}, {"id": 191, "n": "06", "s": 8, "t": "conceptual", "f": "延伸問題：市場力量同政治力量有咩關係？", "b": "Zingales 提出嘅核心問題係企業喺市場嘅力量可以幾大程度轉化成政治力量", "q": "To what extent can the power firms have in the marketplace be transformed into political power?", "loc": "Zingales2017 p.114"}, {"id": 192, "n": "06", "s": 8, "t": "evaluation", "f": "連不完全合約理論都假設咗乜？", "b": "Zingales 認為不完全合約理論都假設遊戲規則係外生指定同執行嘅", "q": "even the incomplete contracts view is designed for an environment in which the rules of the game are exogenously specified and enforced", "loc": "Zingales2017 p.114"}, {"id": 193, "n": "07", "s": 1, "t": "normative", "f": "競爭法要理性執行，要先決定乜？", "b": "Townley 認為要先決定公共政策目標應唔應該、同埋幾時喺競爭法入面考慮，競爭法先可以理性咁執行", "q": "Competition law cannot be rationally implemented until it has been decided whether public policy objectives should be considered there, and if so when.", "loc": "Townley2009Ch1 p.13"}, {"id": 194, "n": "07", "s": 2, "t": "conceptual", "f": "邊啲福利標準有分配效果？", "b": "Townley 認為所有福利標準（包括總福利）實際上都有分配效果", "q": "Section 2.1 demonstrates that all welfare standards (including total welfare) are (in practice) distributional.", "loc": "Townley2009Ch1 p.16"}, {"id": 195, "n": "07", "s": 2, "t": "cause", "f": "總福利標準表面中立，實際上會點？", "b": "Townley 認為總福利標準形式上好似價值中立，實際上經常將財富由消費者搬去生產者同佢哋嘅擁有人", "q": "even though the total welfare standard formally appears to be value neutral (it values consumer and producer welfare equally), in practice, it often leads to redistribution from consumers to producers (and their owners)", "loc": "Townley2009Ch1 p.19"}, {"id": 196, "n": "07", "s": 2, "t": "evaluation", "f": "消費者福利標準點解喺政治上受歡迎？", "b": "Townley 認為消費者福利標準喺政治上受歡迎，可能係因為佢幫手將天平拉向較弱、較少代表嘅群體", "q": "This may help to explain why the consumer welfare standard is so popular, from a political perspective, as it helps tip the balance in favour of weaker/underrepresented groups.", "loc": "Townley2009Ch1 p.19"}, {"id": 197, "n": "07", "s": 2, "t": "normative", "f": "有人話消費者同生產者之間搬錢冇乜特別，點回應？", "b": "Townley 回應 Bork 時指出，消費者同生產者之間嘅再分配有特別意義，因為所有公民都係消費者，但唔係個個都係生產者", "q": "All citizens are consumers, they are not all producers.", "loc": "Townley2009Ch1 p.20"}, {"id": 198, "n": "07", "s": 3, "t": "evaluation", "f": "食水中毒嘅例子想說明乜？", "b": "Townley 用一個例子質疑總福利標準一定令社會好過：一份會令生產商總剩餘增加一百萬歐元、但即刻令所有食水永久中毒嘅協議，係咪應該鼓勵", "q": "would one encourage an agreement between manufacturers that would increase their total surplus by €1 million, if this were to immediately lead to the irreparable poisoning of all drinking water?", "loc": "Townley2009Ch1 p.21"}, {"id": 199, "n": "07", "s": 3, "t": "conceptual", "f": "「增加社會財富」呢個目標係咪價值中立？", "b": "Townley 認為增加社會經濟財富呢個目標本身就係一個有價值判斷嘅目標", "q": "The objective of increasing society’s economic wealth is itself a value-laden objective.", "loc": "Townley2009Ch1 p.25"}, {"id": 200, "n": "07", "s": 3, "t": "cause", "f": "事後再分配嘅風險會點影響企業？", "b": "Townley 認為事後再分配嘅風險會反過來影響企業一開始嘅投資決定", "q": "the ‘risk’ of later redistribution would feed back into the undertakings’ initial investment decisions", "loc": "Townley2009Ch1 p.28"}, {"id": 201, "n": "07", "s": 3, "t": "evaluation", "f": "再分配係咪次次都做得到？", "b": "Townley 認為再分配唔係次次都做得到或者方便，即係當時唔一定係最好嘅解決方法", "q": "redistribution is not always possible or convenient, in the sense that it does not provide the best solution at that time", "loc": "Townley2009Ch1 p.28"}, {"id": 202, "n": "07", "s": 4, "t": "definition", "f": "「第二級衝突」係乜？", "b": "Townley 將「第二級衝突」界定為兩個目標都可以做到一部分、但唔可以全部做晒嘅情況", "q": "it may be possible to achieve some of A and some of B, but not all of both", "loc": "Townley2009Ch1 p.29"}, {"id": 203, "n": "07", "s": 4, "t": "evaluation", "f": "「排除」嘅好處係乜？邊類人偏好？", "b": "Townley 認為「排除」嘅好處係清晰，亦係將競爭法當成目的本身嘅人所偏好", "q": "exclusion has the advantage of clarity and is favoured by those who see competition law as an end in itself", "loc": "Townley2009Ch1 p.29"}, {"id": 204, "n": "07", "s": 4, "t": "conceptual", "f": "經濟學嘅起點：為非經濟目標去限制競爭係點？", "b": "Townley 指出經濟學嘅起點係：為咗非經濟目標去扭曲或者限制競爭，一般係冇效率嘅方法", "q": "Distorting or restricting competition to realise specific non-economic objectives is normally an inefficient way of achieving the end in question.", "loc": "Townley2009Ch1 p.30"}, {"id": 205, "n": "07", "s": 4, "t": "normative", "f": "唔同政策一定要用獨立規則？", "b": "Townley 認為唔同政策用獨立規則唔一定最好，有時用標準喺同一條條文處理互相衝突嘅公共政策目標更好", "q": "it is not always optimal to use separate rules (with separate goals) for different policies, sometimes it is better to be guided by standards, even conflicting public policy ones, within the same legal provision", "loc": "Townley2009Ch1 p.31"}, {"id": 206, "n": "07", "s": 4, "t": "normative", "f": "可預測性係咪法律制度唯一嘅價值？", "b": "Townley 認為可預測性唔係法律制度唯一嘅價值，作出「啱」嘅決定都重要", "q": "Yet, predictability is not a legal system’s only value … the ‘right’ decision is important too.", "loc": "Townley2009Ch1 p.34"}, {"id": 207, "n": "07", "s": 4, "t": "cause", "f": "完全排除環保同社會因素，會削弱乜？", "b": "Townley 認為如果競爭政策完全唔可以考慮環保同社會因素，推動企業社會責任嘅努力就會被削弱", "q": "If one cannot take environmental and social factors into account in competition policy at all, then the drive for CSR is undermined.", "loc": "Townley2009Ch1 p.36"}, {"id": 208, "n": "07", "s": 4, "t": "evaluation", "f": "「妥協」嘅壞處係乜？", "b": "Townley 認為「妥協」可能令所有互相衝突嘅目標都做唔好", "q": "a potential downside of compromise is that it may mean that none of the conflicting objectives are satisfactorily achieved", "loc": "Townley2009Ch1 p.38"}, {"id": 209, "n": "07", "s": 4, "t": "normative", "f": "機構設計應該跟乜？", "b": "Townley 認為機構設計應該跟從決定內容嘅憲制要求，而唔係倒轉", "q": "institutional design should follow from the constitutional imperative of the decisions’ content, not the other way round", "loc": "Townley2009Ch1 p.39"}, {"id": 210, "n": "07", "s": 4, "t": "cause", "f": "競爭政策納入政治利益有咩風險？", "b": "Townley 認為競爭政策一旦納入唔同政治利益，就有被政治過程俘虜、效用下降嘅風險", "q": "Remember that if competition policy incorporates different political interests it risks becoming captive to the political process, which may reduce its effectiveness.", "loc": "Townley2009Ch1 p.41"}, {"id": 211, "n": "07", "s": 5, "t": "evaluation", "f": "追求單一福利目標，一定令個餅變大？", "b": "Townley 認為冇辦法話喺競爭法追求單一福利目標一定會令個餅變大", "q": "it does not seem possible to say that pursuing a unitary welfare goal in competition law necessarily results in a bigger cake", "loc": "Townley2009Ch1 p.41"}, {"id": 212, "n": "07", "s": 5, "t": "normative", "f": "既然所有標準都搬錢，呢個立場揀邊個標準？點解？", "b": "Townley 認為既然所有經濟福利標準都會再分配，就應該用消費者福利標準，因為佢一般令社會最重要嘅一群得益", "q": "Given that all of the economic welfare standards redistribute, I advocate a consumer welfare standard, which I believe generally benefits the most important segment of society.", "loc": "Townley2009Ch1 p.42"}, {"id": 213, "n": "07", "s": 5, "t": "normative", "f": "如果要納入公共政策目標，考慮過程要點？", "b": "Townley 認為如果競爭政策納入公共政策目標，考慮過程必須盡量理性、透明同公開", "q": "If public policy goals are incorporated into competition policy their consideration must be as rational, transparent and open as possible", "loc": "Townley2009Ch1 p.42"}, {"id": 214, "n": "07", "s": 5, "t": "normative", "f": "第一個過濾器：幾時先用競爭法追公共政策？", "b": "Townley 認為只有喺出現競爭問題嘅時候，先應該用競爭法去達成公共政策目標", "q": "only where there is a competition problem should one use it to achieve public policy goals", "loc": "Townley2009Ch1 p.42"}, {"id": 215, "n": "07", "s": 5, "t": "normative", "f": "第二個過濾器：公共政策得益要點？", "b": "Townley 認為如果公共政策得益唔大可能明顯，公共政策平衡就冇咁有用", "q": "public policy balancing is less helpful where the public policy gain is not likely to be appreciable", "loc": "Townley2009Ch1 p.42"}, {"id": 216, "n": "07", "s": 5, "t": "normative", "f": "對聲稱嘅公共政策效果，應該持咩態度？", "b": "Townley 認為對任何聲稱嘅公共政策效果都應該持懷疑態度", "q": "one should be sceptical about any claimed public policy effects", "loc": "Townley2009Ch1 p.43"}, {"id": 217, "n": "07", "s": 6, "t": "fact", "f": "競爭法最普遍嘅理據係乜？", "b": "Odudu 指出競爭法最普遍嘅理據係用嚟解決某啲配置無效率問題", "q": "The seemingly ubiquitous justification for antitrust laws is that they exist to remedy certain problems of allocative ineﬃciency.", "loc": "Odudu2006 p.605"}, {"id": 218, "n": "07", "s": 6, "t": "cause", "f": "人為減產除咗效率問題，仲有乜後果？", "b": "Odudu 認為人為減產除咗造成配置無效率，仲有分配後果", "q": "Allocative ineﬃciency is not the only consequence of the contrived scarcity of output. There is also a distributional consequence.", "loc": "Odudu2006 p.606"}, {"id": 219, "n": "07", "s": 6, "t": "conceptual", "f": "用同唔用競爭法，各有咩後果？", "b": "Odudu 認為對某個做法用競爭法有分配後果，唔用競爭法同樣都有分配後果", "q": "Applying antitrust to a particular practice has distributional consequences; by the same token, not applying antitrust to a particular practice also has distributional consequences.", "loc": "Odudu2006 p.605"}, {"id": 220, "n": "07", "s": 6, "t": "conceptual", "f": "有人話競爭法畀消費者一種乜權利？", "b": "Lande 認為競爭法賦予消費者一種以競爭價錢購買貨品嘅財產權或者權利", "q": "property right or entitlement to purchase competitively priced goods", "loc": "Lande (1989), in Odudu2006 p.606"}, {"id": 221, "n": "07", "s": 6, "t": "conceptual", "f": "「邊個有權攞 area C」嘅對話，喺邊三個階段出現？", "b": "Odudu 認為關於邊個有權攞取轉移財富嘅「對話」，喺決定競爭法範圍、界定實體違法同決定違法可唔可以被合理化三個階段出現", "q": "The dialogue occurs when determining the scope of antitrust, in defining and characterizing a substantive infringement and in the determination of whether an antitrust infringement can be justified or excused.", "loc": "Odudu2006 p.607"}, {"id": 222, "n": "07", "s": 7, "t": "conceptual", "f": "喺競爭法範圍以外嘅人，等於得到乜？", "b": "Odudu 認為處於競爭法範圍以外嘅人，等於被賦予攞取被轉移財富（area C）嘅權利", "q": "Those lying beyond the scope of antitrust are given a right to the wealth represented by area C.", "loc": "Odudu2006 p.607"}, {"id": 223, "n": "07", "s": 7, "t": "fact", "f": "歐盟法幾時唔適用競爭法？", "b": "Odudu 認為喺歐盟法，當一項活動以理想方式做到足夠嘅再分配，歐盟競爭法就唔適用", "q": "When activity is suﬃciently redistributive in a desirable manner, EC antitrust does not apply.", "loc": "Odudu2006 p.608"}, {"id": 224, "n": "07", "s": 7, "t": "conceptual", "f": "決定某啲人唔受競爭法管，有冇分配後果？", "b": "Odudu 認為決定某啲人或者活動唔受競爭法管，本身就有分配後果", "q": "A decision that certain actors or certain activities are not subject to antitrust has distributional consequences", "loc": "Odudu2006 p.608"}, {"id": 225, "n": "07", "s": 7, "t": "evaluation", "f": "分配係咪實體法嘅主要關注？", "b": "Odudu 認為分配似乎唔係競爭法實體法嘅主要關注", "q": "distribution does not seem to be the primary concern of the substantive law", "loc": "Odudu2006 p.609"}, {"id": 226, "n": "07", "s": 7, "t": "conceptual", "f": "決定違法可唔可以被合理化嗰陣，實際上揀緊乜？", "b": "Odudu 認為決定一項違反競爭法嘅行為可唔可以被合理化時，就係揀緊消費者應唔應該畀多啲錢去資助一個值得做嘅目標", "q": "A choice is then made as to whether consumers should pay more to fund a worthy goal.", "loc": "Odudu2006 p.609"}, {"id": 227, "n": "07", "s": 7, "t": "fact", "f": "Ford/VW 案用咩理由合理化限制競爭？", "b": "喺 Ford/Volkswagen 案，歐盟委員會以有關安排對共同體最窮地區之一嘅基建同就業有極之正面嘅影響為理由，合理化限制競爭", "q": "extremely positive eﬀects on the infrastructure and employment in one of the poorest regions in the Community", "loc": "European Commission, Ford/Volkswagen (1993), in Odudu2006 p.611"}, {"id": 228, "n": "07", "s": 7, "t": "evaluation", "f": "分配考慮喺邊個關口份量可能最大？", "b": "Odudu 認為分配考慮喺決定可唔可以寬免或者合理化違法嗰關，有機會佔更大份量", "q": "Distribution has the potential to weigh more in the decision to excuse or justify an infringement.", "loc": "Odudu2006 p.613"}, {"id": 229, "n": "07", "s": 8, "t": "normative", "f": "用稅制直接補償有咩好處？", "b": "Odudu 認為政治上可能值得設立直接補償制度，透過稅制再分配得益，因為呢個係一個問責而有效嘅分配方法", "q": "It may be politically desirable to institute a direct system of compensation, redistributing the gains through the tax system, which is an accountable and eﬀective way to achieve distributional aims.", "loc": "Odudu2006 p.613"}, {"id": 230, "n": "07", "s": 8, "t": "evaluation", "f": "實際上 area C 會分畀邊個？", "b": "Odudu 認為競爭法實際上唔係畀消費者權利攞被轉移嘅財富，而係將呢筆財富分畀任何一個將佢用喺被視為理想用途嘅一方", "q": "rather than a consumer entitlement to area C, the wealth represented by area C may be allocated to any party that uses the wealth for a purpose deemed desirable", "loc": "Odudu2006 p.613"}, {"id": 231, "n": "07", "s": 8, "t": "conceptual", "f": "點解分配考慮永遠剔唔走？", "b": "Odudu 認為因為競爭法嘅範圍係一個由有政治選民嘅人決定嘅政治問題，分配考慮永遠冇辦法由競爭法剔走", "q": "Since the scope of antitrust is a political question, taken by those with political constituencies and inherently concerned with who gets what from the market and the state, distributive considerations can never be removed from antitrust.", "loc": "Odudu2006 p.613"}];
+const NOTES_META={
+ '01':{t:'監管係乜',q:'「監管」呢個字究竟指乜？大家係咪講緊同一樣嘢？',read:'一個研究唔自己作定義，而係睇 101 篇最多人引用嘅文章點用呢個字，再由數據砌出兩個定義。'},
+ '02':{t:'點解會有監管',q:'監管點樣出現、點樣變、點樣衰落？',read:'四大家族嘅解釋：公共利益、利益團體（俘虜）、理念、制度。每家都有佢嘅假設同弱點。'},
+ '06':{t:'監管經濟理論（原文）',q:'如果人人都顧住自己，監管會點出現、點消失？',read:'02 嘅「俘虜」論嘅原文版：監管好似一件商品，行業買、政治賣；之後再用放寬監管嚟測試呢套理論。'},
+ '03':{t:'監管應該追乜目標',q:'經濟監管者（例如競爭機構）應該追求乜？',read:'一個立場：淨係追經濟福利（個餅大細），其他目標用其他工具。逐個檢視其他目標同佢哋點樣同福利撞。'},
+ '07':{t:'福利標準都有分配效果',q:'競爭法可唔可以淨係理效率、唔理錢搬咗去邊？',read:'反方：所有福利標準實際上都會搬錢，事後再分配靠唔住；分配喺競爭法三個關口都會出現，永遠趕唔走。'},
+ '04':{t:'一個目標定多個目標',q:'畀監管者多個目標係咪問題？淨係畀一個又係咪問題？',read:'目標同工具要對數；工具有溢出就要協調甚至合併；但合埋又會令目標含糊。最傷嘅係對同一班人又扶又管。'},
+ '05':{t:'目標要唔要因地制宜',q:'唔同國家嘅競爭機構，應唔應該有唔同目標？',read:'先講清楚「成功」係乜（六個目標），再睇發展中國家嘅五類障礙同有利條件，最後係兩種相反睇法。'}
+};
+const NOTE_ORDER=['01','02','06','03','07','04','05'];
+const NOTES=[
+/* ---------- 01 ---------- */
+{k:'01-1',t:'起點：「監管冇共識」？',lv:['swipe'],vis:[],
+ b:`<p>好多書一開頭就話：「監管」呢個概念冇人有共同理解。出處係一種三分法：①訂權威規則再監察執行；②國家駕馭經濟嘅一切努力；③最闊嘅，連<b>無意圖、非國家</b>嘅社會控制都計埋。如果三種都成立，監管就真係好難定義。</p>
+ <p>研究嘅做法唔係「我話佢係乜」，而係「睇大家點用」：喺商科、經濟、法律、政治、公共行政、社會學六個學科，搵出標題有 regulat* 而最多人引用嘅文章，逐篇編碼。</p>`},
+{k:'01-2',t:'五條爭議問題',lv:['swipe'],vis:['v-target'],
+ b:`<p>最抽象嗰層大家有共識：監管係<b>對個人或機構行為嘅干預</b>。分歧喺五條問題：①一定要有意圖？②同稅、資助係咪唔同類？③非國家可唔可以做監管者？④係咪只管經濟活動？⑤監管者同被監管者使唔使係兩個人？</p>
+ <p><b>直接 vs 間接</b>係關鍵：直接＝標準直接打落目標行為（室內禁煙，違者罰款）；間接＝標準打落產生行為嘅<b>環境</b>（煙草稅、資助、強制披露）。有人反對將社會規範都計做監管，因為咁樣監管就冇邊界，分析價值好低。</p>`},
+{k:'01-3',t:'數據講咩',lv:['swipe'],vis:[],
+ b:`<p>真係寫明定義嘅文章好少（只有 14%），所以要由「點用」反推。但有兩樣嘢 101 篇<b>全部一致</b>：監管係<b>有意圖</b>嘅過程，同埋係<b>直接</b>干預。</p>
+ <p>間接干預就冇咁一致：41% 包、55% 冇表態。監管者同被監管者使唔使分開，98% 文章完全冇講。<span class="muted">（重點唔係記數字，而係睇到：核心部分其實好有共識，分歧喺邊緣。）</span></p>`},
+{k:'01-4',t:'兩個定義：本質 vs 模式（原型）',lv:['swipe'],vis:['v-target'],
+ b:`<p><b>本質定義</b>：只留低少咗就唔再叫監管嘅元素，即係「對某目標人群活動嘅<b>有意圖干預</b>」。代價係太闊，同「政策」分唔開。</p>
+ <p><b>模式定義（原型監管）</b>：再加「通常係<b>直接</b>嘅」，即係有約束力嘅標準＋監察＋制裁，由公營機構對私營經濟活動行使。佢係一個「放射狀類別」：中心係原型，外圈有間接干預、私營監管者、公營被監管者等。稅、資助、披露通常唔喺核心。</p>
+ <p>同「工具箱」式分類（將競爭、溝通等都當監管手段）有張力，但兩者講緊唔同層次：一個講工具，一個講文獻嘅核心用法。</p>`},
+{k:'01-5',t:'分歧跟研究問題走，唔係跟學科走',lv:['swipe'],vis:[],
+ b:`<p>舊講法話分歧嚟自學科（法律人一套、經濟學者一套）。數據唔支持：研究關注點有差異，但<b>唔可以歸咎於學科</b>。只有少數學科差異，例如政治學比較少將間接干預計入監管。</p>
+ <p>結論：當代監管研究<b>唔係</b>冇共同理解。</p>`},
+/* ---------- 02 ---------- */
+{k:'02-1',t:'四大家族：外因定內因',lv:['families'],vis:['v-families'],
+ b:`<p>第一條大分界：有啲解釋強調<b>外在</b>因素（利益團體嘅力量、主流思想、經濟本質），有啲強調<b>內在</b>因素（例如機構文化）。然後分四家：<b>公共利益、利益團體、理念、制度</b>。</p>`},
+{k:'02-2',t:'公共利益理論',lv:['families'],vis:['v-families'],
+ b:`<p>推動監管嘅人係<b>為公眾利益做事嘅好心代理人</b>；監管用嚟喺市場失靈時攞到公眾想要嘅結果；監管者有專業、冇私心；執法同守法都冇難度。</p>
+ <p>四個問題：①「公眾利益」本身難有共識；②監管者未必無私、有能力；③低估咗經濟同政治權力嘅影響；④結果往往令人失望。</p>
+ <p>辯護：保留一種<b>規範性問法</b>，唔理一個監管計劃點出現，都問佢「合理應該追乜目標」。呢條問題就係 03、07、04、05 成條「為咗乜」線嘅起點。</p>`},
+{k:'02-3',t:'經濟理論同監管俘虜',lv:['lobby','families'],vis:['v-market'],
+ b:`<p>掉轉嚟睇：假設人人都<b>顧住自己、追求物質利益</b>。結論係「俘虜」：一般而言，監管係行業自己爭取返嚟、為行業利益而設計同運作。</p>
+ <p>機制：有壟斷就有利潤，監管者有權分配呢啲利潤（監管租金），所以行業有誘因影響監管者，形成「監管市場」。而<b>集中、有組織</b>嘅利益通常贏<b>分散</b>嘅群體：律師每人利益大、肯游說；用法律服務嘅市民每人損失細、冇人抗爭。</p>
+ <p>同一條邏輯亦可以反過來用：既然消費者分散，競爭機構可以幫手平衡游說力量（見 03 §四）。</p>`},
+{k:'02-4',t:'俘虜唔係必然：幾個變奏',lv:['lobby','families'],vis:['v-wilson'],
+ b:`<ul><li><b>反對者會動員：</b>行業搶到壟斷租金，就會刺激反對利益起嚟爭，最後冇租金可以長存。</li>
+ <li><b>租金會被監管本身蝕走：</b>去到某個位，返去冇監管嘅狀態對行業反而更吸引 → 放寬監管。</li>
+ <li><b>生命周期：</b>制度開始時為公眾利益，慢慢老化，最後被行業俘虜（孕育 → 青年 → 成熟 → 老年）。</li>
+ <li><b>四種政治（2×2）：</b>按好處同成本係集中定分散分四格；俘虜只係其中一格（好處集中、成本分散）。最有趣係「創業家政治」：行業集中反對，淨係靠分散利益支持，監管都通過到。</li>
+ <li><b>結盟：</b>環保標準提高，有時係行業同環保團體結盟嘅結果。</li>
+ <li><b>批評：</b>經濟理論漏咗意識形態、道德立場；環保監管者可能真係出於利他。</li></ul>`},
+{k:'02-5',t:'理念有力量',lv:['families'],vis:['v-families'],
+ b:`<ul><li><b>思想氣候：</b>整體思想氣候決定邊啲監管工具同制度被視為可取（例如列根、戴卓爾年代嘅放寬監管）。</li>
+ <li><b>文化理論：</b>四種互相競爭嘅世界觀（層級、平等、個人主義、宿命），各自對監管問題有唔同診斷同藥方；由 grid（行為受規則約束嘅程度）同 group（歸屬群體嘅程度）兩條軸分出嚟。</li>
+ <li><b>監管對話：</b>監管本質上係溝通過程，要明白（甚至改善）監管就要明白溝通。</li>
+ <li><b>近年例子：</b>有經濟學者話，新自由主義（市場原教旨主義）唔係現代經濟學嘅一貫應用，而係佢簡化嘅扭曲。經濟學幾乎每條問題嘅答案都係「睇情況」；市場「嵌入」喺制度入面；經濟學唔畀固定答案，而係指出唔同制度安排嘅後果；「包容」要睇成個結果分佈，唔止平均數；全球整合係手段唔係目的。呢個係嘗試改變「思想氣候」嘅一例。</li></ul>`},
+{k:'02-6',t:'制度理論：制度塑造監管，同「點解要授權」',lv:['families'],vis:['v-families'],
+ b:`<p>制度結構、安排同社會過程會顯著塑造監管。呢條線係對「所有監管都係俘虜」嘅回應：與其認命，不如問<b>點樣設計制度去避開俘虜</b>。</p>
+ <p>核心問題：<b>點解要將權授畀監管機構？</b>答案圍繞三個概念：<b>資訊不對稱、可信承諾、卸責</b>。另一份讀物逐個檢查：單靠認知因素解釋唔到，決策成本同卸責都有道理，但今日最主要嘅原因係<b>可信承諾</b>。</p>`},
+/* ---------- 06 ---------- */
+{k:'06-1',t:'問題同中心命題',lv:['lobby'],vis:['v-market'],
+ b:`<p>理論嘅任務：解釋<b>邊個</b>得到監管嘅好處或負擔、監管會採取<b>乜形式</b>、同對資源分配有<b>乜影響</b>。中心命題：一般而言，監管係行業爭取返嚟、為行業而設。</p>
+ <p>方法上假設政治制度係理性地設計同使用嘅。所以問題唔係「國家點解唔為公眾」，而係「一個行業幾時、點解可以用國家達到自己目的」。</p>`},
+{k:'06-2',t:'需求面：行業想由國家攞乜',lv:['lobby'],vis:['v-market'],
+ b:`<p>國家獨有嘅資源係<b>強制力</b>。行業可以要四種政策：①直接補貼 ②控制新對手入行 ③影響替代品同互補品（牛油商打壓植物牛油）④定價。</p>
+ <p>現金點解唔吸引？除非限制到受惠者，否則補貼會被越嚟越多新對手攤薄。所以一般假說係：<b>有足夠政治力量嘅行業都會想控制入行</b>（例：民航監管機構自 1938 年成立後冇批過一條新幹線）。</p>
+ <p>但政治過程會限制行業攞到嘅好處：細公司話事多咗（石油進口配額越細嘅煉油廠比例越高）；程序有成本；有力嘅外人會被拉入議事桌。</p>`},
+{k:'06-3',t:'供應面：政治點解偏幫小而強嘅利益',lv:['lobby'],vis:['v-market'],
+ b:`<p>行業攞到嘅好處一定<b>少過</b>社會其他人嘅損失，咁民主點解唔否決？因為政治決定同市場唔同：要所有人<b>同時</b>決定，又要包埋唔關事嘅人。結果選民要將酌情權交畀代表，又冇誘因去了解同自己關係唔大嘅議題。</p>
+ <p>所以政治渠道好「粗糙」：會實現多數同好多少數嘅<b>強烈</b>偏好，但忽略較弱嘅偏好。賣家係政黨，行業要用政黨最需要嘅兩樣嘢付款：<b>選票同資源</b>（捐獻、籌款、請黨工）。</p>`},
+{k:'06-4',t:'證據：職業發牌',lv:['lobby'],vis:[],
+ b:`<p>牌照係有效嘅入行障礙，因為<b>冇牌執業係刑事罪</b>。用美國各州首次發牌年份做分析，結果唔算穩健，但<b>城市化</b>（職業集中喺大城市）同發牌嘅關係比職業規模更強。</p>
+ <p>持牌職業收入較高、較少受僱於企業（企業有誘因反對發牌）；全國性市場嘅職業（例如大學教師、工程師）多數唔發牌。</p>`},
+{k:'06-5',t:'結論：要有政治行為嘅理論',lv:['lobby'],vis:[],
+ b:`<p>批評監管機構偏幫行業，就好似批評超市賣餸一樣搞錯重點。要改變佢，唔係向佢說教，而係<b>改變佢背後嘅政治支持</b>。未搞清楚政治生活嘅基本邏輯，改革者就冇能力用國家推改革；所以經濟學家要盡快建立<b>政治行為嘅理性理論</b>。</p>`},
+{k:'06-6',t:'由「生產者贏晒」到利益聯盟',lv:['lobby'],vis:['v-market'],
+ b:`<p>理論最重要嘅地方：將政治行為放入經濟分析，政客都係<b>自利嘅最大化者</b>。之前流行「監管係為糾正市場失靈」；1960 年代實證研究之後，興起俘虜理論：監管要麼製造卡特爾，要麼唔去壓制壟斷，服務生產者。</p>
+ <p>修正：只要有啲消費者肯為少少讓步畀選票或錢，<b>純粹保護生產者就唔係最佳政治策略</b>，政客會將租金分畀唔同群體（交叉補貼）。再加一層：<b>無謂損失</b>會制約低效率嘅監管。</p>
+ <p>總結：緊密有組織嘅群體得益較多；因為監管嘅政治回報來自分配財富，監管過程對無謂損失好敏感。</p>`},
+{k:'06-7',t:'放寬監管係咪推翻咗理論？',lv:['lobby'],vis:['v-market'],
+ b:`<p>1970 年代末，美國鐵路、貨車、航空、長途電訊、股票經紀佣金、銀行存款利率相繼放寬監管，一百個經濟學家都冇一個預測到。如果生產者主導政治，點解會放寬？</p>
+ <p>作為「點解會開始監管」嘅理論：利益理論<b>高估</b>監管，「糾正市場失靈」理論<b>低估</b>；後者亦解釋唔到放寬嘅時間（錯咗幾十年先退場）。</p>
+ <p>兩股導致放寬嘅力量入面，<b>可分配財富減少</b>喺實證上更重要。鐵路 ✓（需求跌、交叉補貼食晒租金）；航空、經紀、銀行大致 ✓；貨車 ✗（租金仲大、業主工會反對到底都被放寬，現有理論解釋唔到）；長途電訊亦係失敗。</p>
+ <p>「內生放寬監管」：監管製造誘因令財富被蝕走，最後回復舊狀態更吸引；放寬唔係遲咗糾正錯誤。整體答案參差但大致跟理論；完整分析仍未寫出嚟。</p>`},
+{k:'06-8',t:'延伸：企業嘅政治權力',lv:[],vis:[],
+ b:`<p>更闊嘅問題：企業喺市場嘅力量，可以幾大程度變成<b>政治力量</b>？連「不完全合約」理論都假設遊戲規則係外生、固定嘅，但大企業其實有能力影響規則。結果係惡性循環：市場力量帶嚟政治力量，政治力量再保護市場力量。</p>
+ <p>同原本嘅俘虜理論比較：原本主要講行業爭取發牌、補貼；呢度擴到版權、反壟斷執法、告監管者、旋轉門同傳媒，並且話要睇<b>政策產出</b>而唔係遊說開支。</p>`},
+/* ---------- 03 ---------- */
+{k:'03-1',t:'由目標開始',lv:['judge'],vis:['v-spectrum'],
+ b:`<p>歷史上，反壟斷同競爭法成日受社會同歷史因素影響，可以回應<b>好唔同嘅目標</b>。所以做法係：先講「經濟福利」，再逐個講其他目標，同埋佢哋同福利目標之間嘅矛盾。</p>`},
+{k:'03-2',t:'經濟福利：總剩餘、唔理分配、要睇將來',lv:['price'],vis:['v-welfare'],
+ b:`<p>一個行業嘅福利＝<b>總剩餘＝消費者剩餘＋生產者剩餘</b>。價錢越高，消費者蝕嘅通常多過廠商賺嘅，所以壟斷價時福利最低，等於邊際成本時最高。</p>
+ <p>呢個概念<b>完全唔理</b>收入點樣分配。理由：原則上可以用再分配計劃令兩邊一齊好過或者一齊差過。</p>
+ <p>要睇<b>動態</b>：如果次次逼價錢等於邊際成本，今日福利最高，但廠商收唔返固定成本就唔會投資，將來冇新產品、冇創新。</p>`},
+{k:'03-3',t:'消費者福利定總福利：兩把尺幾時分岔',lv:['price'],vis:['v-welfare'],
+ b:`<p>大多數情況（例如卡特爾）兩把尺結論一樣。但一宗<b>大幅慳固定成本嘅合併</b>，可以因利潤增加令總福利上升，同時加價令消費者福利下降。</p>
+ <p>實際上邊個標準？好難講。歐盟有條文要求消費者分得「公平份額」、效率要「對消費者有利」，可能表示消費者福利係終極目標之一；美國起碼喺合併上傾向消費者福利；加拿大、澳洲、新西蘭就傾向總福利。即係話，唔同地方實際上真係唔同。</p>`},
+{k:'03-4',t:'支持消費者福利嘅理由，同反駁',lv:['price','judge'],vis:[],
+ b:`<p><b>三個支持理由：</b>①政治經濟學：消費者分散、生產者集中肯游說，多啲權重畀消費者可以拉返平；②資訊不對稱：合併公司比機構更清楚效率，只批准令消費者福利上升嘅合併可以抵銷；③簡單：只要睇價錢。</p>
+ <p><b>反駁：</b>①今日消費者經股票、退休金擁有公司，削利潤一樣傷市民；②字面最大化消費者剩餘＝價錢壓到成本，廠商要退出或補貼；③（最重要）低價低利潤令廠商冇誘因創新、投資。所以講消費者福利都要講<b>跨時間</b>嘅，兩把尺分別就唔大。結論：偏好福利標準。</p>`},
+{k:'03-5',t:'其他目標逐個拆',lv:['judge'],vis:[],
+ b:`<ul><li><b>保護細企：</b>防大企業濫權冇問題；人為咁幫唔夠規模嘅細企生存就同福利相違。</li>
+ <li><b>市場整合：</b>歐盟主要目標之一，但係政治目標，未必同福利一致。例：禁止跨國差別定價，壟斷者可能全部收高價、索性放棄低價市場，差距反而更大。</li>
+ <li><b>經濟自由：</b>德國競爭法主要理據；但有啲限制（例如轉售價格維持）經濟上有理據，卻一定限制咗零售商自由。</li>
+ <li><b>壓通脹：</b>懷疑；拆卡特爾只係一次過降價。</li>
+ <li><b>公平：</b>限制大超市減價會損福利；但 70% 市佔超市有計劃低於成本定價逼走對手＝掠奪性定價，既唔公平又損福利。<b>事前公平</b>（起步機會一樣）同競爭政策相容；<b>事後公平</b>（結果一樣）就唔一定。</li></ul>`},
+{k:'03-6',t:'社會、政治、環保、策略考慮點樣軟化執法',lv:['judge'],vis:[],
+ b:`<ul><li><b>社會：</b>大蕭條時放寬執法容許夾價避免倒閉 → 好可能係比問題更差嘅藥方。</li>
+ <li><b>政治：</b>少數人控制大部分資源可能危及民主（戰後拆散德日工業集團）。</li>
+ <li><b>環保：</b>CECED 案批准洗衣機商停產最唔慳電型號，因為對社會有環境效益。但要問：係咪最佳方法？可以改用稅或者最低環保標準。</li>
+ <li><b>策略：</b>扶植「國家冠軍」。立場：<b>競爭政策本身就係最好嘅產業政策</b>；受保護、受補貼嘅行業好難健康成長。</li></ul>`},
+{k:'03-7',t:'定義：競爭政策淨係管福利，其他目標用其他工具',lv:['judge'],vis:['v-spectrum'],
+ b:`<p>競爭政策＝確保市場競爭唔會受到<b>降低經濟福利</b>嘅限制嘅一套政策同法律。唔係話其他目標唔重要，而係：想達到其他目標，應該用<b>對競爭扭曲最少</b>嘅工具（同「一個目標一件工具」好接近，見 04）。衝突時邊樣優先，交畀政客、法官等人決定。</p>
+ <p>相近睇法：監管政策有再分配後果，但對獨立監管者嚟講，呢啲後果應該係<b>約束，唔係目標</b>（理由：獨立機構只可以喺效率問題上有民主正當性）。有人質疑呢條效率／再分配分界喺發展中國家站唔站得住。另一種睇法就列出六個目標，效率只係其中一個（05）；反方就話分配趕唔走（07）。</p>`},
+/* ---------- 07 ---------- */
+{k:'07-1',t:'兩條問題：點解同幾時',lv:['judge'],vis:[],
+ b:`<p>未答清楚「公共政策目標（環保、細企、就業）應唔應該喺競爭法入面考慮、幾時考慮」，競爭法根本冇辦法理性執行。</p>
+ <p>針對嘅講法：用總福利做唯一目標，因為個餅最大；分得唔公平，之後用稅制「再切過」。呢個講法靠兩個前提：①總福利真係令社會好過；②分配可以之後做。只要一個唔成立，福利標準係咪「價值中立」就好重要。</p>`},
+{k:'07-2',t:'所有福利標準實際上都會搬錢',lv:['price'],vis:['v-welfare'],
+ b:`<p>消費者標準同生產者標準明顯揀咗一邊。總福利形式上一視同仁，但<b>實際上成日將財富由消費者搬去生產者</b>：生產者肯落最多資源打官司；有資訊、分配同時間上嘅優勢；交易本身係生產者為自己利益而做。</p>
+ <p>所以消費者標準政治上受歡迎，可能正正因為佢幫手拉向較弱嘅群體。有人話消費者同生產者之間搬錢冇乜特別；回應：<b>所有公民都係消費者，但唔係個個都係生產者</b>。</p>`},
+{k:'07-3',t:'「令社會好過啲」有價值判斷；事後再分配靠唔住',lv:['price','judge'],vis:[],
+ b:`<p><b>前提①唔穩：</b>一份協議令生產商總剩餘多一百萬歐元，但即刻令所有食水永久中毒，你會唔會鼓勵？所以「增加社會財富」本身已經係有價值判斷嘅目標。將公共政策帶入福利分析有兩種方法：喺福利標準入面調權重（「市場平衡」，例如將環保等外部性內部化），或者直接將公共政策影響同福利影響擺上天秤（「單純平衡」，例如細企、就業）。</p>
+ <p><b>前提②唔穩：</b>企業預計之後會被再分配，呢個風險會反過來影響佢哋一開始嘅投資；而且再分配唔係次次做得到、或者唔係當時最好嘅方法，拖得越耐越貴。</p>`},
+{k:'07-4',t:'有衝突點算：排除定妥協',lv:['judge'],vis:['v-townley'],
+ b:`<p>兩個目標衝突有兩種：只可以揀一個；或者兩個都做到一部分但唔可以全部（「第二級衝突」，主要講呢種）。</p>
+ <p><b>排除</b>（淨係理一個，另一個交畀其他法例）：清晰、法律確定，係經濟學嘅起點（為非經濟目標限制競爭通常冇效率）。但：可預測性唔係唯一價值，「啱」嘅決定都重要；重要目標會被完全忽略；仲會封死企業社會責任（企業合作做環保協議可能要罰款）。</p>
+ <p><b>妥協</b>（同一條法例入面平衡）：可能樣樣都做唔好；有人話非經濟目標好主觀，但福利標準本身都唔係客觀咁應用。法院話唔處理社會考慮，只會令判決嘅真正基礎「講唔出口、無意識」。機構設計應該跟決定內容嘅要求，唔係倒轉。最後風險：競爭政策包埋政治利益，有被政治過程<b>俘虜</b>嘅危險；經濟史亦顯示政府失靈比市場失靈更頻繁。</p>`},
+{k:'07-5',t:'結論：消費者福利，加過濾器',lv:['judge'],vis:['v-townley'],
+ b:`<p>冇辦法話單一福利目標一定令個餅變大。既然所有標準都搬錢，就揀<b>消費者福利</b>，因為消費者係社會最重要嘅一群。</p>
+ <p>如果要考慮公共政策，要盡量<b>理性、透明、公開</b>，並過濾：①要有競爭問題（消費者福利有損失）先用競爭法追公共政策；②公共政策得益唔夠明顯就唔值得平衡；③立法機關最近已經就嗰個平衡做過決定（或刻意唔做），就少啲平衡。對聲稱嘅公共政策效果要<b>懷疑</b>，最好計到數。</p>`},
+{k:'07-6',t:'一幅圖：用唔用競爭法，都係搬緊錢',lv:['price'],vis:['v-welfare','v-odudu'],
+ b:`<p>競爭法通常話自己係為解決配置無效率：廠商減產加價，有啲肯畀成本以上嘅人買唔到，呢個損失叫<b>無謂損失（area A）</b>。但仲有分配後果：仲買得起嘅人要畀多咗，呢筆錢由消費者轉去生產者（<b>area C</b>）。</p>
+ <p>核心句：<b>用</b>競爭法有分配後果；<b>唔用</b>都有。有人話競爭法畀消費者一種「以競爭價錢買嘢嘅權利」。關於邊個有權攞 area C 嘅「對話」，喺三個階段出現：範圍、實體違法、抗辯。</p>`},
+{k:'07-7',t:'三個關口：範圍、實體法、抗辯',lv:['judge'],vis:['v-odudu'],
+ b:`<ul><li><b>範圍：</b>放喺競爭法以外，就等於畀佢哋權利攞 area C。工會集體談判概念上係卡特爾，但美國同歐盟都豁免，等於容許財富由僱主轉去僱員。歐盟法：活動以理想方式做足夠再分配（例如社會保障），競爭法就唔適用。</li>
+ <li><b>實體法：</b>禁止過高定價好似表示消費者有權攞 C，但呢類案好少，所以分配似乎唔係實體法主角。</li>
+ <li><b>抗辯：</b>揀緊「消費者應唔應該畀多啲錢去資助一個值得做嘅目標」。美國嚴格立場唔接受分配理由，但名校按需要分配助學金嘅案都考慮咗社會福利；歐盟容許考慮其他得益：CECED（慳電）、Ford/VW（窮地區嘅基建同就業）。分配喺呢關<b>份量最大</b>。</li></ul>`},
+{k:'07-8',t:'分配永遠趕唔走',lv:['judge'],vis:['v-odudu'],
+ b:`<p>如果話贏家原則上可以補償輸家，咁政治上可能值得設一個直接補償制度，經稅制再分配，呢個係問責而有效嘅方法。但現實係：area C 唔係歸消費者，而係可以分畀<b>任何一個將錢用喺「理想用途」</b>嘅一方。</p>
+ <p>結論：競爭法嘅範圍係一個<b>政治問題</b>，由有選民嘅人決定，本質上關於邊個由市場同國家攞到乜，所以分配考慮<b>永遠剔唔走</b>。重要嘅係承認佢。延伸：同一前提亦用嚟質疑國際競爭網絡將「卓越標準」講成價值中立。</p>`},
+/* ---------- 04 ---------- */
+{k:'04-1',t:'Tinbergen 法則：目標同工具要分清楚',lv:['agency'],vis:['v-tinbergen'],
+ b:`<p>要達到 <b>n 個獨立目標</b>，起碼要 <b>n 件獨立工具</b>。三類變數：<b>數據</b>（影響唔到、只能接受，例如世界市場價格、外國關稅）、<b>目標</b>（想要嘅結果，例如產出、就業）、<b>工具</b>（手段）。</p>
+ <p>容易搞亂：勞動生產力睇落似目標，但佢本身唔係目的，而係達到高工資、多產出、強競爭力嘅手段。</p>`},
+{k:'04-2',t:'工具嘅性格：中立、互補、衝突',lv:['agency'],vis:['v-tinbergen'],
+ b:`<p>兩個目標<b>獨立</b>＝可以同時達到。一件工具<b>中立</b>＝除咗佢要幫嘅目標，對其他目標完全冇影響。為目標 A 設計嘅工具同時推近目標 B ＝<b>互補</b>；推遠 B ＝<b>衝突</b>。</p>
+ <p>兩件工具、三種性格，砌出六個情境：兩件都中立最簡單，各自管理就得；有衝突就要用多啲另一件工具去補，成本更高。</p>`},
+{k:'04-3',t:'溢出越大越要協調，甚至合併',lv:['agency'],vis:['v-tinbergen'],
+ b:`<p>除非目標獨立而工具中立，否則每項政策都會影響佢設計目標以外嘅目標。<b>溢出越強，越要協調</b>；工具 X 對目標 Y 影響越大，協調 X 同 Y 嘅好處越大，甚至值得<b>合併成一個行政單位</b>（假設同一機構入面協調較易）。</p>
+ <p>就算目標同工具互相垂直，只要工具冇完全對準目標都唔夠，所以協調好少可以忽略。諷刺嘅係：協調喺<b>最需要嘅時候（變化快）最難做</b>（例：高速增長時嘅水質，受交通、農業、建設幾個部委影響）。</p>`},
+{k:'04-4',t:'目標越嚟越多，可能要新工具',lv:[],vis:['v-tinbergen'],
+ b:`<p>1952 年列嘅目標只有產出、就業、國際收支、實質工資幾樣；之後整體<b>增加咗</b>，例如環保、性別平等。按法則，目標多咗，工具都要多，所以可能要<b>發展新嘅政策工具</b>。</p>`},
+{k:'04-5',t:'一個實例：生產力追唔上，就要喺目標之間揀',lv:['agency'],vis:[],
+ b:`<p>歐盟同美國嘅 GDP 差距主要嚟自歐洲生產力增長放緩得更厲害。如果提升唔到生產力，就<b>唔可以一次過</b>做新科技領袖、氣候責任燈塔同世界舞台上獨立嘅玩家。要將基本價值（繁榮、公平、自由、和平、民主）互相取捨，就會失去存在理由；唯一出路係增長、提高生產力，同時保住公平。</p>
+ <p>具體衝突：<b>減碳同競爭力</b>唔協調就會背道而馳；依賴中國可能係最平嘅減碳路，但中國國家資助嘅競爭威脅清潔科技同汽車業；<b>監管本身</b>亦阻礙創新企業擴張。用工具語言講：減碳同競爭力係互相衝突嘅工具；而呢度連目標本身都要取捨。</p>`},
+{k:'04-6',t:'理論：清晰定協作——合埋都可以係最好',lv:['agency'],vis:['v-carrigan'],
+ b:`<p>漏油同樓市爆煲之後，人人話「一身兼多職」係禍根。正式模型嘅答案：<b>唔一定</b>。就算機構同上司對目標冇分歧，結構選擇都會影響行為。</p>
+ <p>兩股力：①<b>目標含糊</b>：多任務機構唔知上司最重視邊個，就「對沖」，資源分得平均 → <b>拆開</b>嘅理由。②<b>協調</b>：只有合埋嘅機構可以睇到情況後將資源搬嚟搬去（例：做銀行監管得返嚟嘅資料幫到貨幣政策）→ <b>合埋</b>嘅理由。</p>
+ <p>結果：目標<b>既唔強烈衝突、又唔高度一致</b>時，多任務機構最有價值。弔詭：協調最重要嘅時候，正正係含糊最嚴重嘅時候；所以安排可能周而復始咁拆完又合；拆或合都可能帶出之前睇唔到嘅問題。意外結論：機構估錯政客偏好時，政客可能<b>刻意保持含糊</b>，等佢唔好咁落力追錯嘅目標。</p>`},
+{k:'04-7',t:'實證：問題唔係任務多，而係又扶又管',lv:['agency'],vis:['v-carrigan'],
+ b:`<p>傳統智慧：同時做幾樣嘢一定做唔出成績；漏油後有人話一個機構有三個衝突任務一定要拆。數據（1,062 個計劃、約 150 個美國聯邦機構）：兼顧越多計劃，表現越差。</p>
+ <p>但主要原因係：佢哋更大機會要對<b>同一班人同時採取互相衝突嘅立場</b>（又租地畀石油公司，又規管佢哋）。有呢種衝突嘅機構平均低 11 分；計劃數目嘅負面影響，接近 35% 可以用衝突解釋；機制之一係員工唔清楚份工點連到機構目標。</p>
+ <p>補救：排先後（低優先目標可能被忽略，雖然對社會福利重要），或者內部分開（兩組之間有張力、唔健康嘅競爭）。<b>所有補救都有代價。</b>研究係橫切面數據，因果要再證。</p>`},
+/* ---------- 05 ---------- */
+{k:'05-1',t:'先問咩叫成功：六個操作性目標',lv:['develop'],vis:['v-develop'],
+ b:`<p>全世界有超過 130 個競爭法管轄區，好多係新手、係發展中國家。競爭法唔一定有益：賦權一個機構做影響深遠嘅干預，如果被濫用或用得唔好，可能<b>令所有人更差</b>。</p>
+ <p>障礙同有利條件嘅影響，<b>視乎目標係乜</b>。所以先列六個操作性目標：(a) 效率、(b) 人類發展、(c) 私營部門內嘅競爭、(d) 對國家嘅競爭、(e) 競爭文化、(f) 經濟同政治自由。（同「淨係追福利」嘅立場唔同。）</p>`},
+{k:'05-2',t:'效率：由消費者福利去到效率',lv:['develop'],vis:[],
+ b:`<p>1970 年代末起，美國競爭法嘅主要操作性目標係最大化消費者福利；但好快消費者福利只係口號，實際操作目標變咗<b>效率</b>。用效率代替消費者福利令分析簡單，但前提係<b>效率增益會傳返畀消費者</b>（呢點同 07「總福利實際上搬錢去生產者」有關）。</p>
+ <p>效率目標最清楚嘅要求係打擊卡特爾（定價、分市場）。「效率係唯一正當目標」喺好多國家仍有爭議；但唔使接受「唯一」，都可以接受效率係<b>其中一個</b>目標。</p>`},
+{k:'05-3',t:'效率以外：發展、釋放競爭、對國家倡議、自由',lv:['develop'],vis:['v-develop'],
+ b:`<ul><li><b>發展：</b>一下子將低效生產者暴露喺高效對手面前等於休克療法，福利制度薄弱時尤其傷；所以有人話發展中國家應該可以用競爭法追發展需要。但增長同發展離具體決策太遠，畀唔到操作指引；較具體嘅建議係集中處理影響窮人嘅行業，或者處理阻住邊緣群體入市嘅不平等。</li>
+ <li><b>釋放私營競爭：</b>識別障礙同消除障礙係兩回事（「認出疣容易過做唔留疤嘅手術」）；單係公佈邊啲行業價格過高，已經可以吸引人入市。</li>
+ <li><b>對國家嘅競爭同倡議：</b>好多時損害競爭嘅係國家本身（管制、國企優待、政府批出嘅壟斷）；針對反競爭法律同政策嘅<b>倡議</b>越嚟越重要，喺發展中國家對立法機關同有立規權嘅部門做倡議特別重要。</li>
+ <li><b>經濟同政治自由：</b>如果經濟權力就係政治權力，限制市場集中對民主同市場經濟能否共存可能有根本重要性（同 03 嘅「政治原因」相通）。</li></ul>`},
+{k:'05-4',t:'五類障礙',lv:['develop'],vis:['v-develop'],
+ b:`<ul><li><b>資源不足</b>（機構嘅錢、內部專才、法院專業）：但歐盟競爭總司初期人手好少，頭幾年做市場分析、建立支持者，之後先執法 → 能力可以（甚至必須）<b>內部建立</b>。</li>
+ <li><b>唔友善嘅政治法律環境</b>（法治弱、司法唔獨立、貪污、獨裁）：好可能拖垮以執法為主、追效率嘅政策；而且要機構去民主化、終結貪污係要求過高。</li>
+ <li><b>缺乏競爭文化</b>：精英同大眾對市場競爭嘅承擔都弱，消費者同創業者呢班「天然支持者」唔會形成；好消息係機構可以幫手改善（將倡議擺中心）。</li>
+ <li><b>制度未發展嘅市場</b>：產權弱、政府指揮、國企或行業獲豁免；豁免影響嘅經濟比例越大，效果越唔明顯。</li>
+ <li><b>地理上細碎嘅市場</b>：市場細、基建差、被山河切開 → 「size matters」。</li></ul>`},
+{k:'05-5',t:'有利條件：盟友、國際支持、嵌入式自主',lv:['develop'],vis:['v-develop'],
+ b:`<ul><li><b>國內盟友：</b>喺成功例子入面好重要（民主化令消費者同細企有聲音；消費者保護機構提供資料、提集體訴訟）。</li>
+ <li><b>國際支持：</b>技術援助、同儕評審、貿易協議嘅競爭條款。但係<b>雙刃劍</b>：可能令人覺得競爭法係「外國入口貨」，削弱本地接受。</li>
+ <li><b>嵌入式自主，唔係形式獨立：</b>對政治精英要有某種自主；但一個要同時挑戰私營精英同國家嘅機構，<b>冇政治支持就做唔到嘢</b>（預算、修法、罰款要跟通脹調、其他部門要回應倡議）。呢種依賴製造好多反撲機會，所以要<b>嵌入</b>政治體系；同時對集中強大嘅經濟利益要保持自主先可以有效執法。發展中國家嘅基建監管研究亦用同一概念，建議發展型國家同規管型國家兩派多啲對話。</li></ul>`},
+{k:'05-6',t:'分歧：害多過利，定係後發優勢',lv:['develop'],vis:[],
+ b:`<p>一種睇法：喺發展中世界，競爭法到頭來<b>好可能害多過利</b>，因為市場制度弱，西方眼中嘅反競爭結構，可能其實係解決制度缺陷嘅辦法。</p>
+ <p>另一種睇法：同意發達國家嘅「最佳做法」唔啱發展中國家，但反對話佢哋只可以二流咁執行；新制度<b>冇歷史包袱</b>，反而可以設計啱自己目標嘅制度。中國嘅競爭執法就公開照顧比成熟管轄區更廣嘅政策目標。</p>`}
+];
+/* ===================== GENERIC SCENARIO RUNNER ===================== */
+function runScenarios(cfg){
+  // cfg: {id, label, primer (html|null), items:[{t,s,q,mine,opts:[{k,g,w}],take,src}], end (html), next:{hash,label}}
+  let i = cfg.primer ? -1 : 0, score=0, tried=false;
+  const LAB={good:'最貼近',warn:'有代價',bad:'會撞板',info:'冇標準答案'};
+  function render(){
+    if(i<0){
+      app.innerHTML=`<div class="lvhead"><span class="eyebrow">${cfg.label} · 入門</span></div>${cfg.primer}
+        <div class="row" style="margin-top:18px"><button class="btn primary" id="startA">明白，開始 →</button></div>`;
+      $('#startA').onclick=()=>{i=0;render();window.scrollTo(0,0);}; return;
+    }
+    if(i>=cfg.items.length) return end();
+    const c=cfg.items[i];
+    app.innerHTML=`
+    <div class="lvhead"><span class="eyebrow">${cfg.label} · ${i+1} / ${cfg.items.length}</span>
+      <div class="progress"><i style="width:${(i/cfg.items.length)*100}%"></i></div></div>
+    <div class="panel stack">
+      <div class="row"><h3>${c.t}</h3>${c.mine?MINE:''}</div>
+      <div class="scene">${c.s}</div>
+      <p style="font-weight:700">${c.q||'你點揀？'}</p>
+      <div class="opts" id="opts">${c.opts.map((o,j)=>`<button class="opt" data-j="${j}"><b>${o.k}</b></button>`).join('')}</div>
+      <div id="rv"></div>
+    </div>
+    ${cfg.gloss||''}`;
+    app.querySelectorAll('#opts .opt').forEach(b=>b.onclick=()=>pick(+b.dataset.j));
+  }
+  function pick(j){
+    const c=cfg.items[i], o=c.opts[j];
+    if(!tried){ if(o.g==='good'||o.g==='info') score++; tried=true; }
+    app.querySelectorAll('#opts .opt').forEach(b=>b.classList.toggle('picked',+b.dataset.j===j));
+    const goodOpt=c.opts.find(x=>x.g==='good');
+    $('#rv').innerHTML=`<div class="reveal">
+      <div class="row"><span class="stamp ${o.g==='info'?'warn':o.g}">${LAB[o.g]}</span>${o.g!=='good'&&o.g!=='info'&&goodOpt?`<span>最貼近：<b>${goodOpt.k}</b></span>`:''}</div>
+      <p>${o.w}</p>
+      ${c.take?`<p><b>重點：</b>${c.take}</p>`:''}
+      <p class="src">出處：${c.src}</p>
+      <div class="row"><span class="muted" style="font-size:14px">可以撳其他選項睇佢哋嘅講解。</span><button class="btn primary" id="nx">${i+1<cfg.items.length?'下一個':'睇總結'} →</button></div></div>`;
+    $('#nx').onclick=()=>{i++;tried=false;render();window.scrollTo(0,0);};
+  }
+  function end(){
+    store.set(cfg.id,true);
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">${cfg.label} · 完成</span><h2>第一次就揀中：${score} / ${cfg.items.length}</h2></div>
+    <div class="panel stack">${cfg.end}
+      <div class="row"><button class="btn primary" id="nxt">${cfg.next.label} →</button><button class="btn ghost" id="again">再玩一次</button></div></div>`;
+    $('#nxt').onclick=()=>{location.hash=cfg.next.hash;};
+    $('#again').onclick=()=>{i=cfg.primer?-1:0;score=0;render();};
+  }
+  render();
+}
+
+/* ===================== LEVEL 1 BONUS: DATA ROUND ===================== */
+function swipeData(){
+  runScenarios({id:'swipeData', label:'Level 1 加時 · 數據講咩',
+    items:[
+      {t:'加時一：有幾多文章寫明定義？', s:'一個研究分析咗六個學科入面 101 篇最多人引用、標題有 regulat* 嘅文章。', q:'你估有幾多篇明確寫咗「監管」嘅定義？',
+       opts:[{k:'大約 86%',g:'bad',w:'太高咗。'},{k:'大約一半',g:'bad',w:'都係太高。'},{k:'只有 14%',g:'good',w:'啱。真係寫明定義嘅文章好少，所以研究要由文章「點用」呢個字反推。'}],
+       take:'冇寫定義，唔等於冇共識；要睇佢哋點用。', src:'筆記 01 §三'},
+      {t:'加時二：一致嘅地方', s:'將 101 篇逐篇編碼之後……', q:'有幾多篇將監管理解為「有意圖」嘅過程？',
+       opts:[{k:'101 篇全部',g:'good',w:'全部都係。而且全部都當監管係直接干預。核心部分其實好一致。'},{k:'大約一半',g:'bad',w:'唔係，全部一致。'},{k:'少過一成',g:'bad',w:'唔係，全部一致。'}],
+       take:'分歧喺邊緣：間接干預只有 41% 包、55% 冇表態；監管者同被監管者使唔使分開，98% 冇講。', src:'筆記 01 §三'},
+      {t:'加時三：分歧從何而來', s:'舊講法話：法律人一套、經濟學者一套，所以監管冇共識。', q:'數據支唔支持「分歧嚟自學科」？',
+       opts:[{k:'支持，分歧主要跟學科走',g:'bad',w:'唔支持。研究關注點有差異，但唔可以歸咎於學科。'},{k:'唔支持，分歧跟研究問題走',g:'good',w:'啱。只有少數學科差異（例如政治學較少將間接干預計入監管）。整體結論：當代監管研究唔係冇共同理解。'}],
+       take:'「監管冇共識」呢個講法，數據唔支持。', src:'筆記 01 §一、§五'}
+    ],
+    end:`<h3>帶走呢兩句</h3><ul><li>核心有共識：監管＝有意圖、直接嘅干預。分歧喺邊緣（間接干預、私營監管者等）。</li><li>分歧跟研究問題走，唔係跟學科走。</li></ul><p class="src">出處：筆記 01 §一、§三、§五</p>`,
+    next:{hash:'lobby',label:'下一關：你係游說集團'}});
+}
+
+/* ===================== LEVEL 3: FOUR FAMILIES ===================== */
+const FAM_OPTS=(good,w)=>['公共利益','利益團體（俘虜）','理念','制度'].map(k=>({k,g:k===good?'good':'bad',w:k===good?w:`唔係最貼近。提示：${w.split('。')[0]}。`}));
+function families(){
+  runScenarios({id:'families', label:'Level 3 · 四大家族偵探',
+    primer:`<h2>四大家族：監管點解會出現？</h2>
+    <p class="muted" style="margin:6px 0 14px">先分一條大界線：有啲解釋強調<b>外在</b>因素（利益團體嘅力量、主流思想、經濟本質），有啲強調<b>內在</b>因素（例如機構文化）。然後有四家講法。你喺 Level 2 已經玩咗「利益團體」嗰家；呢關將四家放埋一齊比較。</p>
+    <div class="primer">
+      <div class="term"><h3>① 公共利益</h3><p>監管者好心又專業，為大眾修補市場失靈；假設執法守法冇難度。</p><p class="eg">弱點：「公眾利益」難有共識；監管者未必無私；低估權力；結果成日失望。（筆記 02 §二）</p></div>
+      <div class="term"><h3>② 利益團體（俘虜）</h3><p>人人自利；監管係商品，集中有組織嘅少數「買」返嚟。</p><p class="eg">變奏：反對者動員、租金被蝕走、生命周期、四種政治、結盟。（筆記 02 §三–四）</p></div>
+      <div class="term"><h3>③ 理念</h3><p>思想氣候決定邊啲工具被視為啱；唔同世界觀有唔同診斷；監管係一場對話。</p><p class="eg">（筆記 02 §五）</p></div>
+      <div class="term"><h3>④ 制度</h3><p>制度結構塑造監管；與其認命被俘虜，不如設計制度去避開。點解授權：資訊不對稱、可信承諾、卸責。</p><p class="eg">（筆記 02 §六）</p></div>
+    </div>`,
+    gloss:`<details class="help" style="margin-top:4px"><summary>唔記得四家？撳呢度</summary><dl>
+      <dt>公共利益</dt><dd>好心專業嘅監管者修補市場失靈。</dd><dt>利益團體</dt><dd>自利；集中利益贏分散利益；監管係商品。</dd>
+      <dt>理念</dt><dd>思想氣候、世界觀、溝通塑造監管。</dd><dt>制度</dt><dd>制度設計塑造監管；授權嘅三個理由。</dd></dl></details>`,
+    items:[
+      {t:'個案一', mine:true, s:'一個行業有嚴重嘅市場失靈。政府設立一個專業機構去修補，機構嘅人有專業、冇私心，規則一出大家就守。', q:'呢個係邊一家嘅故事？',
+       opts:FAM_OPTS('公共利益','佢講緊好心、專業、為大眾修補市場失靈，而且假設執法守法冇難度。'),
+       take:'留意佢嘅假設有幾「完美」：公眾利益有共識、監管者無私、權力唔影響、執法冇難度。現實往往唔係咁。', src:'筆記 02 §二'},
+      {t:'個案二', s:'律師會好落力游說保留某條執業規定；用法律服務嘅市民每年只係因此多畀少少錢，冇人專登抗爭，條規定就照留。', q:'邊一家解釋得最好？',
+       opts:FAM_OPTS('利益團體（俘虜）','集中有組織嘅利益贏分散嘅群體，係利益團體理論嘅核心機制。'),
+       take:'呢個例子出自筆記本身嘅「生活例子」。', src:'筆記 02 §三'},
+      {t:'個案三', s:'1980 年代，大家普遍覺得市場最識做，好多地方大舉放寬監管。', q:'邊一家解釋得最好？',
+       opts:FAM_OPTS('理念','整體「思想氣候」會大大影響邊啲監管工具同制度被視為可取。'),
+       take:'筆記用列根、戴卓爾年代嘅放寬監管做呢家嘅例子。', src:'筆記 02 §五；06 §七'},
+      {t:'個案四', mine:true, s:'政府將定利率嘅權力交畀一個獨立機構，等市場相信政府唔會為咗選舉亂嚟。', q:'邊一家解釋得最好？',
+       opts:FAM_OPTS('制度','佢講緊點解要授權：令承諾更可信。'),
+       take:'授權嘅三個理由：資訊不對稱、可信承諾、卸責；有讀物認為今日最主要係可信承諾。', src:'筆記 02 §六'},
+      {t:'個案五', mine:true, s:'一個環保監管者真心想改善環境，唔係為自己升職或者為業界著數。', q:'呢個例子挑戰緊邊一家嘅基本假設？',
+       opts:[{k:'公共利益',g:'bad',w:'公共利益理論本身就假設監管者好心，呢個例子同佢一致，唔係挑戰佢。'},
+             {k:'利益團體（俘虜）',g:'good',w:'啱。經濟理論假設人人自利；但監管者可能真係出於利他、意識形態或者道德立場。呢個係對經濟理論嘅批評。'},
+             {k:'理念',g:'bad',w:'唔係挑戰理念家族。'},{k:'制度',g:'bad',w:'唔係挑戰制度家族。'}],
+       take:'原文用一句帶感嘆號嘅話點出：環保監管者可能真係關心環境！', src:'筆記 02 §四'},
+      {t:'個案六：四種政治', mine:true, s:'一條執業規定令一小撮從業員得到好大好處，成本就分散喺所有用家身上，每人只係多畀少少。', q:'呢個屬於四種政治邊一格？',
+       opts:[{k:'客戶政治（俘虜）',g:'good',w:'好處集中、成本分散，就係客戶政治，即係俘虜嗰格。'},{k:'利益團體政治',g:'bad',w:'利益團體政治係好處同成本兩邊都集中。'},{k:'多數政治',g:'bad',w:'多數政治係兩邊都分散。'},{k:'創業家政治',g:'bad',w:'創業家政治係好處分散、成本集中。'}],
+       take:'俘虜只係四格其中一格，唔係監管嘅全部。', src:'筆記 02 §四'},
+      {t:'個案七：四種政治', mine:true, s:'一條新安全規例：好處分散畀所有市民，成本集中喺一個行業。行業集中反對，但淨係靠分散嘅大眾支持，規例都通過咗。', q:'邊一格？',
+       opts:[{k:'客戶政治（俘虜）',g:'bad',w:'客戶政治係好處集中、成本分散，啱啱相反。'},{k:'利益團體政治',g:'bad',w:'利益團體政治係兩邊都集中。'},{k:'多數政治',g:'bad',w:'多數政治係兩邊都分散。'},{k:'創業家政治',g:'good',w:'啱。行業集中反對，淨係靠分散利益支持都通過到，就係創業家政治。'}],
+       take:'呢格係俘虜理論最難解釋嘅情況。', src:'筆記 02 §四'},
+      {t:'個案八', mine:true, s:'一個監管機構成立時為公眾利益，幾十年後越嚟越似受監管行業嘅代言人。', q:'邊個講法最貼近？',
+       opts:[{k:'生命周期（制度會老化）',g:'good',w:'啱。孕育 → 青年 → 成熟 → 老年，由為公眾利益慢慢變成被行業俘虜。'},{k:'反對者會動員',g:'bad',w:'反對者動員講嘅係好處會被爭走，唔係機構慢慢老化。'},{k:'行業同環保團體結盟',g:'bad',w:'結盟講嘅係標準點解會提高。'},{k:'思想氣候改變',g:'bad',w:'冇提到思想轉變。'}],
+       src:'筆記 02 §四'},
+      {t:'個案九', mine:true, s:'一個行業搶到大筆監管好處，結果消費者同其他行業組織起嚟爭，好處慢慢冇咗。', q:'邊個講法最貼近？',
+       opts:[{k:'生命周期',g:'bad',w:'生命周期講機構老化被俘虜，方向相反。'},{k:'反對者會動員，冇租金可以長存',g:'good',w:'啱。好處一出現就刺激反對利益動員，最後冇壟斷租金可以存活。'},{k:'結盟推高標準',g:'bad',w:'唔係講結盟。'}],
+       take:'所以俘虜唔係必然；Level 2 第三幕就係呢個邏輯。', src:'筆記 02 §四；06 §六'},
+      {t:'個案十', mine:true, s:'部分企業同環保團體聯手，推高咗整個行業嘅環保標準。', q:'邊個講法最貼近？',
+       opts:[{k:'行業同綠色利益結盟',g:'good',w:'啱。環保標準提高，有時係行業同環保團體結盟嘅結果，唔係單純「行業 vs 大眾」。'},{k:'客戶政治',g:'bad',w:'客戶政治係行業得益、大眾付鈔，唔係呢個情況。'},{k:'生命周期',g:'bad',w:'唔係講機構老化。'}],
+       src:'筆記 02 §四'},
+      {t:'個案十一：點解要授權？', mine:true, s:'出咗事，政客可以話：「係獨立機構決定，唔關我事。」', q:'呢個係授權嘅邊個理由？',
+       opts:[{k:'資訊不對稱',g:'bad',w:'資訊不對稱係講機構掌握更多專業資料。'},{k:'可信承諾',g:'bad',w:'可信承諾係講令外界相信政策唔會亂改。'},{k:'卸責',g:'good',w:'啱，即係避開責難。決策成本同卸責都有道理，但有讀物認為今日最主要嘅原因係可信承諾；單靠認知因素解釋唔到授權。'}],
+       src:'筆記 02 §六'},
+      {t:'個案十二：理念嘅近例', s:'有經濟學者話：「市場萬能」唔係經濟學，而係經濟學嘅簡化扭曲。經濟學嘅答案幾乎都係「睇情況」，再解釋睇乜同點解；市場「嵌入」喺制度入面。', q:'呢番說話最想改變乜？',
+       opts:[{k:'思想氣候',g:'good',w:'啱。呢個係嘗試改變「邊啲工具同制度被視為可取」嘅思想氣候。佢仲話「包容」要睇成個結果分佈，唔止平均數；全球整合係手段唔係目的。'},{k:'監管租金點分',g:'bad',w:'冇講租金。'},{k:'機構點樣老化',g:'bad',w:'冇講機構老化。'}],
+       src:'筆記 02 §五'},
+      {t:'個案十三：監管係一場對話', mine:true, s:'監管者同企業不停溝通，解釋同爭論一條規則應該點理解，規則嘅意思喺對話入面慢慢成形。', q:'邊一家最重視呢個角度？',
+       opts:FAM_OPTS('理念','監管本質上係溝通過程；要明白（甚至改善）監管，就要明白溝通。'),
+       src:'筆記 02 §五'}
+    ],
+    end:`<h3>帶走呢四句</h3><ul>
+      <li><b>公共利益：</b>好心專業修補市場失靈；假設太完美。佢留低一條規範性問題：「監管應該追乜？」</li>
+      <li><b>利益團體：</b>集中贏分散；但俘虜唔係必然（反對動員、租金蝕走、四種政治、結盟），亦漏咗利他。</li>
+      <li><b>理念：</b>思想氣候、世界觀、對話，決定邊啲做法被視為啱。</li>
+      <li><b>制度：</b>設計制度避俘虜；授權係為資訊、可信承諾、卸責。</li></ul>
+      <p class="src">出處：筆記 02 §一–六</p>`,
+    next:{hash:'price',label:'下一關：一個價，兩筆數'}});
+}
+
+/* ===================== LEVEL 5: CASE JUDGE ===================== */
+const LENS={A:'只追福利',B:'消費者福利＋過濾器',C:'睇分配關口'};
+const JUDGE_CASES=[
+  {t:'慳成本嘅合併', s:'兩間公司合併，固定成本大減，利潤大增；但合併後加價，消費者要畀多咗。', opts:['批准','唔批准'], mine:false,
+   lens:[['A','批准','總福利（消費者剩餘＋利潤）升咗，就批。仲有反駁：消費者都經股票、退休金擁有公司；壓低利潤會打擊創新。'],
+         ['B','唔批准','所有標準都搬錢，既然要揀就揀消費者。消費者福利跌咗，就唔批。支持消費者標準嘅人仲會話：合併公司比機構更清楚效率，只批准令消費者得益嘅合併，可以抵銷呢個資訊不對稱。']],
+   take:'兩把尺喺呢度分岔：用邊把尺，直接決定批唔批。（Level 4 合併模式就係呢個例子。）', src:'筆記 03 §三–四；07 §二、§五'},
+  {t:'CECED：慳電洗衣機協議', s:'佔歐洲銷量超過 95% 嘅洗衣機生產商同進口商協議，一齊停產最唔慳電嘅型號。消費者可能要畀多啲錢。', opts:['准','唔准'],
+   lens:[['A','要問係咪最佳方法','委員會因環境效益批准咗。但用競爭政策追效率以外嘅目的，要問係咪最佳做法；可以改用稅或者全歐最低環保標準。'],
+         ['C','抗辯關口','揀緊「消費者應唔應該畀多啲錢去資助一個值得做嘅目標」。分配喺抗辯呢關份量最大。']],
+   take:'同一個案，兩種眼鏡問唔同問題：一個問「啱唔啱工具」，一個問「邊個畀錢」。', src:'筆記 03 §六；07 §七'},
+  {t:'Ford/VW：窮地區嘅工廠', s:'兩間車廠嘅合作會限制競爭，但會喺共同體最窮嘅地區之一建廠，帶嚟基建同就業。', opts:['准','唔准'],
+   lens:[['C','准（以分配理由合理化）','委員會以「對最窮地區之一嘅基建同就業有極之正面影響」為理由合理化。呢個顯示 area C 可以分畀將錢用喺「理想用途」嘅一方，唔一定歸消費者。'],
+         ['A','用其他工具','<span class="tag mine">應用係我按筆記嘅道理推嘅</span> 按「其他目標用扭曲最少嘅工具」嘅邏輯，地區發展應該用其他政策工具，唔係放寬競爭法。']],
+   take:'分配考慮喺「抗辯」呢關最有機會加份量。', src:'筆記 07 §七–八；03 §七'},
+  {t:'工會集體談判', s:'工人聯合起嚟同僱主議價。概念上，一班賣家聯合定價就係一個卡特爾。', opts:['豁免（唔受競爭法管）','照用競爭法管'],
+   lens:[['C','豁免，但要睇清佢嘅分配效果','美國同歐盟都將佢豁免。放喺競爭法範圍以外，就等於畀佢哋權利攞 area C，即係容許財富由僱主轉去僱員。']],
+   take:'「範圍」本身就係分配決定：管唔管，都決定咗錢歸邊個。', src:'筆記 07 §七'},
+  {t:'社會保障制度', s:'一個以再分配為目的嘅社會保障制度，運作方式限制咗競爭。', opts:['豁免','照管'],
+   lens:[['C','豁免','歐盟法嘅一般原則：一項活動如果以理想方式做足夠嘅再分配，歐盟競爭法就唔適用。']],
+   take:'再一次：決定某啲活動唔受競爭法管，本身就有分配後果。', src:'筆記 07 §七'},
+  {t:'名校夾埋分配助學金', s:'幾間名校協議，按學生需要分配助學金，而唔係互相用獎學金搶學生。', opts:['准','唔准'],
+   lens:[['C','法院都考慮咗社會福利理由','美國嘅嚴格立場係唔接受分配理由；但喺呢宗案，法院都考慮咗社會福利理由。']],
+   take:'就算立場嚴格，分配考慮都會喺抗辯關口滲返入嚟。', src:'筆記 07 §七'},
+  {t:'經濟大蕭條', s:'經濟好差，好多企業就嚟倒閉。有人建議容許企業夾價，等佢哋撐得住。', opts:['准','唔准'],
+   lens:[['A','唔准','大蕭條時美國真係咁做過。但容許企業勾結去解決問題，好可能係比問題本身更差嘅藥方。']],
+   take:'社會原因成日令執法變軟，但要問代價。', src:'筆記 03 §六'},
+  {t:'大超市減價', s:'大型連鎖超市用議價能力壓低進貨價，再平價賣，細舖頭頂唔順。有人話唔公平，要限制超市減價。', opts:['限制超市減價','唔限制'],
+   lens:[['A','唔限制','限制大企業收平啲，會損害福利。']],
+   take:'下一個案睇吓幾時「平」會變成問題。', src:'筆記 03 §五'},
+  {t:'掠奪性定價', s:'一間已有 70% 市佔嘅超市，有計劃咁低於成本定價，目的係逼走所有細對手。', opts:['准','唔准'],
+   lens:[['A','唔准','呢種叫掠奪性定價，既唔公平又損害福利。公平同效率唔一定矛盾。事前公平（起步機會一樣）同競爭政策相容；事後公平（結果一樣）就唔一定。']],
+   take:'同上一個案比較：分別在於有冇市場力量同逼走對手嘅計劃。', src:'筆記 03 §五'},
+  {t:'禁止跨國差別定價', s:'為咗促進市場整合，規定一間壟斷企業喺德國同葡萄牙一定要收同一個價。', opts:['支持','反對'],
+   lens:[['A','小心，可能適得其反','市場整合係政治目標，未必同福利一致。壟斷者可能乾脆全部收德國嘅高價、放棄葡萄牙市場，結果兩地差距反而更大。']],
+   take:'目標好聽，唔等於工具啱。', src:'筆記 03 §五'},
+  {t:'扶植國家冠軍', s:'政府想放寬合併審查，等本地企業做大做強，出去同外國巨企競爭。', opts:['支持','反對'],
+   lens:[['A','反對','競爭政策本身就係最好嘅產業政策；受保護、受補貼或豁免反卡特爾法嘅行業，好難健康成長。'],
+         ['note','另一種睇法','一份報告就提出聯合產業計劃同經濟「治國術」，同上面嘅睇法唔同（見 Level 6 個案四同筆記 04 §五）。']],
+   take:'呢度係一個未有定論嘅爭論。', src:'筆記 03 §六；04 §五'},
+  {t:'保護細企', s:'一間細企業規模太細，做唔到有效率嘅生產。有人建議用競爭法幫佢生存落去。', opts:['支持','反對'],
+   lens:[['A','反對（防濫權就另計）','保護細企免受大企業濫權冇問題；但人為咁幫唔夠規模嘅細企生存，就同福利目標相違背。']],
+   src:'筆記 03 §五'},
+  {t:'用競爭法壓通脹', s:'通脹好高，有人建議加強打擊卡特爾嚟壓通脹。', opts:['有效','唔太有效'],
+   lens:[['A','唔太有效','懷疑競爭法可以有效壓通脹：拆散卡特爾只係一次過降價，唔係持續減低通脹。']],
+   src:'筆記 03 §五'},
+  {t:'食水中毒協議（思想實驗）', s:'一份生產商協議會令佢哋嘅總剩餘多一百萬歐元，但即刻令所有食水永久中毒。', opts:['鼓勵','唔鼓勵'],
+   lens:[['B','當然唔鼓勵，而呢個就係重點','如果你唔鼓勵，即係承認「增加社會財富」本身係一個有價值判斷嘅目標，唔係中立。總福利唔一定令社會好過。']],
+   take:'呢個例子攻擊嘅係「總福利令社會好過」呢個前提。', src:'筆記 07 §三'}
+];
+function judge(){
+  let i=-1;
+  const PR=`<div class="lvhead"><span class="eyebrow">Level 5 · 判案小法官 · 入門</span><h2>三副眼鏡，判同一宗案</h2>
+    <p class="muted">每宗案你先判，之後睇三種立場點判。好多案冇標準答案，重點係睇每種立場<b>問緊乜問題</b>。</p></div>
+    <div class="primer">
+      <div class="term"><h3>👓 ${LENS.A}</h3><p>競爭政策淨係管經濟福利；其他目標（環保、細企、地區發展）用對競爭扭曲最少嘅其他工具；分配交畀稅制。</p><p class="eg">（筆記 03 §七）</p></div>
+      <div class="term"><h3>👓 ${LENS.B}</h3><p>所有標準都搬錢，所以揀消費者福利。要考慮公共政策就要透明，仲要過濾：有冇競爭問題？得益夠唔夠明顯？立法機關決定過未？</p><p class="eg">（筆記 07 §二–五）</p></div>
+      <div class="term"><h3>👓 ${LENS.C}</h3><p>用唔用競爭法都係搬錢。分配喺三個關口出現：範圍（管唔管）、實體法（違唔違法）、抗辯（可唔可以合理化），抗辯關口份量最大。</p><p class="eg">（筆記 07 §六–八）</p></div>
+    </div>
+    <div class="row" style="margin-top:18px"><button class="btn primary" id="startA">開始判案 →</button></div>`;
+  function render(){
+    if(i<0){ app.innerHTML=PR; $('#startA').onclick=()=>{i=0;render();window.scrollTo(0,0);}; return; }
+    if(i>=JUDGE_CASES.length) return end();
+    const c=JUDGE_CASES[i];
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">Level 5 · 判案小法官 · ${i+1} / ${JUDGE_CASES.length}</span>
+      <div class="progress"><i style="width:${(i/JUDGE_CASES.length)*100}%"></i></div></div>
+    <div class="panel stack">
+      <div class="row"><h3>${c.t}</h3>${c.mine?MINE:''}</div>
+      <div class="scene">${c.s}</div><p style="font-weight:700">你點判？</p>
+      <div class="opts" id="opts">${c.opts.map((o,j)=>`<button class="opt" data-j="${j}"><b>${o}</b></button>`).join('')}</div>
+      <div id="rv"></div></div>`;
+    app.querySelectorAll('#opts .opt').forEach(b=>b.onclick=()=>{
+      app.querySelectorAll('#opts .opt').forEach(x=>x.classList.toggle('picked',x===b));
+      $('#rv').innerHTML=`<div class="reveal"><div class="row"><span class="stamp warn">你判：${c.opts[+b.dataset.j]}</span></div>
+        <div class="lensgrid">${c.lens.map(([L,v,w])=>`<div class="lenscard"><div class="lh">${L==='note'?'📝':'👓'} ${L==='note'?v:LENS[L]}</div>${L==='note'?'':`<div class="lv2">${v}</div>`}<p>${w}</p></div>`).join('')}</div>
+        ${c.take?`<p><b>重點：</b>${c.take}</p>`:''}<p class="src">出處：${c.src}</p>
+        <div><button class="btn primary" id="nx">${i+1<JUDGE_CASES.length?'下一宗':'睇總結'} →</button></div></div>`;
+      $('#nx').onclick=()=>{i++;render();window.scrollTo(0,0);};
+    });
+  }
+  function end(){
+    store.set('judge',true);
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">Level 5 · 完成</span><h2>你判咗 ${JUDGE_CASES.length} 宗案</h2></div>
+    <div class="panel stack"><h3>帶走呢四句</h3><ul>
+      <li><b>只追福利：</b>競爭法管個餅大細；其他目標（細企、整合、自由、通脹、環保、產業）逐個都可能同福利撞，應該用其他工具。</li>
+      <li><b>消費者福利＋過濾器：</b>既然冇標準中立，就揀消費者；考慮公共政策要透明、要過濾、要懷疑。</li>
+      <li><b>分配關口：</b>範圍、實體、抗辯三關都喺度決定 area C 歸邊個；抗辯關口最明顯。</li>
+      <li><b>同一宗案，三種立場問唔同問題</b>：啱唔啱工具？消費者有冇蝕？邊個畀錢、邊個收錢？</li></ul>
+      <p class="src">出處：筆記 03 §一–七；07 §一–八</p>
+      <div class="row"><button class="btn primary" id="nxt">下一關：合定拆？ →</button><button class="btn ghost" id="again">再玩一次</button></div></div>`;
+    $('#nxt').onclick=()=>{location.hash='agency';}; $('#again').onclick=()=>{i=0;render();};
+  }
+  render();
+}
+
+/* ===================== LEVEL 7: DEVELOPING COUNTRY AGENCY ===================== */
+function develop(){
+  runScenarios({id:'develop', label:'Level 7 · 新手競爭機構',
+    primer:`<h2>你係一個發展中國家新成立嘅競爭機構</h2>
+    <p class="muted" style="margin:6px 0 14px">全世界有超過 130 個競爭法管轄區，好多係新手。競爭法唔一定有益：權力被濫用或者用得唔好，可能令所有人更差。呢關你要做一連串決定。</p>
+    <div class="primer">
+      <div class="term"><h3>六個操作性目標</h3><p>(a) 效率 (b) 人類發展 (c) 私營部門內嘅競爭 (d) 對國家嘅競爭 (e) 競爭文化 (f) 經濟同政治自由</p><p class="eg">（筆記 05 §一）</p></div>
+      <div class="term"><h3>五類障礙</h3><p>資源不足 · 唔友善嘅政治法律環境 · 缺乏競爭文化 · 制度未發展嘅市場 · 地理上細碎嘅市場</p><p class="eg">（筆記 05 §四）</p></div>
+      <div class="term"><h3>三個有利條件</h3><p>國內盟友 · 國際支持（雙刃劍）· 嵌入式自主</p><p class="eg">（筆記 05 §五）</p></div>
+    </div>`,
+    items:[
+      {t:'第一步', s:'機構啱啱成立，人人問你：「你哋會做啲乜？」', q:'第一步應該點？',
+       opts:[{k:'即刻全力打卡特爾，追效率',g:'warn',w:'打卡特爾係效率目標最清楚嘅要求，效率亦可以係其中一個目標。但未講清楚要追邊幾個目標之前，好難知道障礙會點傷你。'},
+             {k:'先講清楚要追邊幾個目標',g:'good',w:'啱。障礙同有利條件嘅傷害或者幫助，視乎你當競爭法嘅目標係乜。所以要先定義「成功」。'},
+             {k:'照抄發達國家嘅最佳做法',g:'bad',w:'連對發展中國家最樂觀嘅睇法都同意，發達國家嘅「最佳做法」唔啱發展中國家。'}],
+       src:'筆記 05 §一、§二、§六'},
+      {t:'目標：「促進發展」？', s:'有官員建議：機構嘅目標就係「促進國家發展」，咁就得。', q:'你點回應？',
+       opts:[{k:'好，就咁定',g:'bad',w:'增長同發展本身離具體決策太遠，畀唔到機構操作上嘅指引。'},
+             {k:'方向啱，但要轉做具體目標',g:'good',w:'啱。較具體嘅建議例如：集中處理影響窮人嘅行業，或者處理阻住邊緣群體入市嘅不平等。'},
+             {k:'發展唔關競爭法事',g:'bad',w:'有學者認為發展中國家應該可以用競爭法追發展需要；一下子將低效生產者暴露喺高效對手面前，可能等於休克療法。'}],
+       src:'筆記 05 §三'},
+      {t:'效率要點用？', s:'有顧問話：「效率最緊要，用效率代替消費者福利，分析簡單好多。」', q:'呢個講法有咩前提？',
+       opts:[{k:'冇前提，一定啱',g:'bad',w:'有前提。'},
+             {k:'前提係效率增益會傳返畀消費者',g:'good',w:'啱。用效率做消費者福利嘅代替品，只喺「效率增益會傳返畀消費者」嘅假設成立時先有理據。（對照 Level 5：總福利實際上成日將錢搬去生產者。）'}],
+       take:'「效率係唯一目標」有爭議；但可以接受效率係其中一個目標。', src:'筆記 05 §二；07 §二'},
+      {t:'障礙一：資源不足', s:'你嘅機構錢少、懂法律經濟嘅專才少，法院亦唔熟競爭案。', q:'你點做？',
+       opts:[{k:'一開始就大舉執法',g:'bad',w:'冇能力支撐，好易出事。'},
+             {k:'先做市場分析、建立支持者，之後先執法',g:'good',w:'歐盟競爭總司初期人手好少，頭幾年就係咁做。能力可以（甚至可能必須）喺內部建立。'},
+             {k:'等外國專家嚟做晒',g:'warn',w:'外國支持有用，但係雙刃劍，而且能力最好喺內部建立。'}],
+       src:'筆記 05 §四–五'},
+      {t:'障礙二：法治弱', s:'司法唔獨立，貪污問題嚴重。', q:'機構應該點睇呢個問題？',
+       opts:[{k:'由機構帶頭推動民主化同反貪',g:'bad',w:'要求即使最有資源嘅機構對民主化、司法獨立、終結貪污作出多過邊際嘅貢獻，都係要求過高。'},
+             {k:'承認佢會削弱以執法為主、追效率嘅做法',g:'good',w:'唔友善嘅政治法律環境，好可能拖垮以執法為主、追效率最大化嘅競爭政策。呢個係機構自己解決唔到嘅障礙。'}],
+       src:'筆記 05 §四'},
+      {t:'障礙三：冇競爭文化', s:'無論精英定大眾，對「市場競爭係經濟關係基本原則」都冇乜承擔。消費者同想入行嘅創業者亦未成為支持者。', q:'你點做？',
+       opts:[{k:'等社會慢慢改變',g:'bad',w:'唔使淨係等。'},
+             {k:'將倡議擺喺中心',g:'good',w:'好消息係，缺乏競爭文化係機構自己可以幫手改善嘅問題，方法係將倡議擺喺中心。'}],
+       src:'筆記 05 §四'},
+      {t:'障礙四：國家本身限制競爭', s:'好多市場由國企把持，政府批出壟斷，規例保護現有企業。', q:'競爭機構應該點？',
+       opts:[{k:'國家嘅事，唔關競爭機構',g:'bad',w:'好多時損害競爭嘅正正係國家本身。'},
+             {k:'對立法機關同有立規權嘅部門做倡議',g:'good',w:'針對反競爭法律同政策嘅倡議越嚟越重要；喺發展中國家，對立法機關同有立規或市場監管權嘅行政部門做倡議特別重要。'}],
+       take:'記住：識別障礙同消除障礙係兩回事，認出疣容易過做一個唔留疤嘅手術。單係公佈邊啲行業價格過高，已經可以吸引人入市。', src:'筆記 05 §三'},
+      {t:'障礙五：豁免多、市場細', s:'經濟有一大截獲豁免（國企、指定行業），國內市場又細，基建差，仲被山脈河流切成好多細市場。', q:'你估競爭政策效果會點？',
+       opts:[{k:'一樣咁明顯',g:'bad',w:'唔會。'},{k:'會打折扣',g:'good',w:'豁免影響嘅經濟比例越大，競爭政策越唔可能有明顯效果；而且「size matters」，市場大細有影響。'}],
+       src:'筆記 05 §四'},
+      {t:'搵盟友', s:'你需要支持。', q:'你最先搵邊個？',
+       opts:[{k:'國內盟友（消費者組織、細企、消費者保護機構）',g:'good',w:'喺幾個成功例子入面，國內盟友似乎係重要因素：民主化令消費者同細企有聲音；消費者保護機構幫手提供資料、提集體訴訟。'},
+             {k:'主要靠國際組織撐',g:'warn',w:'技術援助同同儕評審有用，但外國支持係雙刃劍：可能令人覺得競爭法係「外國入口貨」，削弱本地接受。'},
+             {k:'唔需要盟友',g:'bad',w:'冇支持好難做嘢（見下一題）。'}],
+       src:'筆記 05 §五'},
+      {t:'獨立性', s:'有人話你要「完全獨立」，同政治劃清界線。', q:'你點定位？',
+       opts:[{k:'同政治完全隔絕',g:'bad',w:'一個要同時挑戰私營精英同國家嘅機構，冇政治支持就做唔到嘢：預算要批、法例要修、罰款要跟通脹調、其他部門要回應倡議。'},
+             {k:'嵌入政治體系，但對大企業保持自主',g:'good',w:'即係「嵌入式自主」：對政治精英要有某種自主；同時要嵌入政治體系應付反撲；對集中強大嘅經濟利益要保持自主先可以有效執法。'},
+             {k:'同政客企業打成一片',g:'bad',w:'冇自主，就冇辦法對強大利益執法。'}],
+       take:'獨立 ≠ 孤立。', src:'筆記 05 §五'},
+      {t:'最後：你點睇？', s:'研討會入面有兩種相反睇法。', q:'競爭法喺發展中國家……',
+       opts:[{k:'到頭來害多過利',g:'info',w:'有人咁睇：市場制度弱，西方眼中嘅反競爭結構，可能其實係解決制度缺陷嘅辦法。另一邊就話新制度冇歷史包袱，可以設計啱自己目標嘅制度。'},
+             {k:'冇包袱，可以後發先至',g:'info',w:'有人咁睇：同意發達國家「最佳做法」唔啱，但反對話只能二流執行，新制度可以設計啱自己目標。另一邊就話可能害多過利。中國例子：執法公開照顧更廣嘅政策目標。'}],
+       take:'兩種睇法都喺筆記入面並列，冇定論。', src:'筆記 05 §六'}
+    ],
+    end:`<h3>帶走呢四句</h3><ul>
+      <li><b>先定目標：</b>六個操作性目標；障礙同助力對每個目標嘅影響唔同。效率可以係其中一個，唔一定係唯一一個。</li>
+      <li><b>五類障礙</b>有啲機構自己改善到（資源、競爭文化），有啲改善唔到（法治、豁免、市場大細）。</li>
+      <li><b>倡議</b>好重要，尤其對國家本身。</li>
+      <li><b>嵌入式自主：</b>獨立唔等於孤立；國內盟友比外國支持穩陣。</li></ul>
+      <p class="src">出處：筆記 05 §一–六</p>`,
+    next:{hash:'cards',label:'去快速卡溫習'}});
+}
+/* ===================== VISUALS ===================== */
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" ${o.a?`text-anchor="${o.a}"`:''} font-weight="${o.w||400}" fill="${o.f||'var(--ink)'}">${t}</text>`;
+const box=(x,y,w,h,fill='var(--surface2)',stroke='var(--line)')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const arrow=(x1,y1,x2,y2,c='var(--muted)')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" marker-end="url(#ah)"/>`;
+const DEFS=`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+const VIS=[
+ {id:'v-target',t:'監管係一個靶：核心同邊緣',n:'01 §二、§四',svg:()=>`<svg viewBox="0 0 680 360" class="vis">${DEFS}
+   <circle cx="200" cy="180" r="165" fill="var(--surface2)" stroke="var(--line)" stroke-width="2"/>
+   <circle cx="200" cy="180" r="110" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+   <circle cx="200" cy="180" r="55" fill="var(--accent)"/>
+   ${svgT(200,176,'原型監管',{a:'middle',w:700,f:'var(--bg)',s:14})}${svgT(200,194,'（模式定義）',{a:'middle',f:'var(--bg)',s:11})}
+   ${svgT(200,95,'邊緣',{a:'middle',w:700,f:'var(--accent)'})}
+   ${svgT(380,340,'本質定義＝成個靶（連外圈）；模式定義＝靶心',{w:700,f:'var(--muted)',s:12})}
+   ${svgT(380,40,'靶心：有意圖＋通常直接',{w:700})}
+   ${svgT(380,62,'有約束力嘅標準＋監察＋制裁',{s:12.5})}
+   ${svgT(380,82,'公營機構 → 私營經濟活動',{s:12.5})}
+   ${svgT(380,124,'外圈：有意圖，但唔核心',{w:700,f:'var(--accent)'})}
+   ${svgT(380,146,'間接工具：稅、資助、強制披露',{s:12.5})}
+   ${svgT(380,166,'私營監管者（例如行業協會）',{s:12.5})}
+   ${svgT(380,186,'公營被監管者',{s:12.5})}
+   ${svgT(380,228,'靶外：唔算監管',{w:700,f:'var(--bad)'})}
+   ${svgT(380,250,'冇意圖：市場自己郁、社會風氣',{s:12.5})}
+   ${svgT(380,292,'代價：本質定義太闊 → 同「政策」分唔開',{s:12,f:'var(--muted)'})}
+   ${svgT(380,312,'所以要模式定義去描述核心用法',{s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-families',t:'點解有監管：四大家族',n:'02 §一–六',svg:()=>{
+   const F=[['公共利益','好心專業，修補市場失靈','假設：無私、執法冇難度','弱點：公眾利益難定；低估權力'],
+            ['利益團體（俘虜）','監管係商品，集中利益買','假設：人人自利','限制：反對動員、租金蝕走、漏咗利他'],
+            ['理念','思想氣候、世界觀、對話','例：放寬監管嘅年代','「經濟學答案係睇情況」'],
+            ['制度','制度結構塑造監管','回應「全部係俘虜」：設計避俘虜','授權：資訊、可信承諾、卸責']];
+   return `<svg viewBox="0 0 680 330" class="vis">
+   ${box(10,10,660,46,'var(--accent-soft)','var(--accent)')}
+   ${svgT(340,30,'第一條分界：外在因素（利益團體、主流思想、經濟本質） vs 內在因素（例如機構文化）',{a:'middle',s:12.5,w:700})}
+   ${svgT(340,48,'（筆記冇將四家逐個歸類做外／內，呢條分界係睇解釋嘅重點）',{a:'middle',s:11,f:'var(--muted)'})}
+   ${F.map((f,k)=>{const x=10+k*167;return box(x,72,158,240)+svgT(x+79,100,f[0],{a:'middle',w:700,s:14})+
+      `<foreignObject x="${x+8}" y="112" width="142" height="196"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p><b>${f[1]}</b></p><p>${f[2]}</p><p class="muted">${f[3]}</p></div></foreignObject>`}).join('')}
+   </svg>`}},
+ {id:'v-wilson',t:'四種政治：俘虜只係其中一格',n:'02 §四',svg:()=>`<svg viewBox="0 0 680 330" class="vis">
+   ${svgT(400,24,'成本',{a:'middle',w:700})}${svgT(300,48,'集中',{a:'middle',f:'var(--muted)'})}${svgT(520,48,'分散',{a:'middle',f:'var(--muted)'})}
+   ${svgT(40,170,'好處',{w:700})}${svgT(100,118,'集中',{a:'middle',f:'var(--muted)'})}${svgT(100,248,'分散',{a:'middle',f:'var(--muted)'})}
+   ${box(190,60,220,120)}${svgT(300,110,'利益團體政治',{a:'middle',w:700})}${svgT(300,132,'兩班集中利益角力',{a:'middle',s:12,f:'var(--muted)'})}
+   ${box(420,60,220,120,'var(--accent-soft)','var(--accent)')}${svgT(530,110,'客戶政治＝俘虜',{a:'middle',w:700,f:'var(--accent)'})}${svgT(530,132,'少數得益，大眾付鈔',{a:'middle',s:12,f:'var(--muted)'})}
+   ${box(190,190,220,120)}${svgT(300,240,'創業家政治',{a:'middle',w:700})}${svgT(300,262,'行業集中反對，',{a:'middle',s:12,f:'var(--muted)'})}${svgT(300,280,'靠分散支持都通過',{a:'middle',s:12,f:'var(--muted)'})}
+   ${box(420,190,220,120)}${svgT(530,240,'多數政治',{a:'middle',w:700})}${svgT(530,262,'兩邊都分散',{a:'middle',s:12,f:'var(--muted)'})}
+   </svg>`},
+ {id:'v-market',t:'監管市場：點樣買、點樣蝕走、點樣放寬',n:'06 §二–三、§六–七；02 §三–四',svg:()=>`<svg viewBox="0 0 680 400" class="vis">${DEFS}
+   ${box(10,20,200,150)}${svgT(110,44,'需求：行業',{a:'middle',w:700})}
+   <foreignObject x="18" y="54" width="186" height="112"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>想要：①補貼 ②<b>控制入行</b> ③打壓替代品 ④定價</p><p class="muted">現金會被新對手攤薄 → 最想「關閘」</p></div></foreignObject>
+   ${box(470,20,200,150)}${svgT(570,44,'供應：政黨／政客',{a:'middle',w:700})}
+   <foreignObject x="478" y="54" width="186" height="112"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>要所有人「同時」決定 → 政治好粗糙</p><p class="muted">只回應強烈偏好；集中贏分散</p></div></foreignObject>
+   ${arrow(212,70,466,70)}${svgT(340,62,'付款：選票＋資源',{a:'middle',s:12.5,w:700})}
+   ${arrow(466,130,214,130)}${svgT(340,150,'交貨：監管（租金）',{a:'middle',s:12.5,w:700})}
+   ${box(120,200,440,120,'var(--accent-soft)','var(--accent)')}${svgT(340,224,'但好處會被蝕走',{a:'middle',w:700,f:'var(--accent)'})}
+   <foreignObject x="132" y="232" width="416" height="86"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>反對者動員 · 政客分租金畀其他群體（交叉補貼）· 無謂損失制約 · 需求跌 · 服務競爭同替代品食晒租金</p></div></foreignObject>
+   ${arrow(340,322,340,350)}
+   ${svgT(340,370,'可分配財富太少 → 冇理由繼續監管 → 放寬監管（唔係「糾正錯誤」）',{a:'middle',w:700,s:13})}
+   ${svgT(340,392,'反例：好處未蝕晒都被放寬（貨車業）→ 現有理論解釋唔到',{a:'middle',s:12,f:'var(--bad)'})}</svg>`},
+ {id:'v-welfare',t:'一個價，三塊面積',n:'03 §二–三；07 §二、§六',svg:()=>{
+   const W=360,H=260,L=40,B=30,T=10,R=10,x=q=>L+(q/100)*(W-L-R),y=p=>H-B-(p/100)*(H-B-T),P=30,MC=20,Q=70;
+   return `<svg viewBox="0 0 680 270" class="vis">
+   <polygon points="${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--area-cs)" fill-opacity=".55"/>
+   <polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="var(--area-c)" fill-opacity=".65"/>
+   <polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(80)},${y(MC)}" fill="var(--area-a)" fill-opacity=".75"/>
+   <line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2"/>
+   <line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/>
+   <line x1="${x(0)}" y1="${y(0)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--line)"/><line x1="${x(0)}" y1="${y(0)}" x2="${x(0)}" y2="${y(100)}" stroke="var(--line)"/>
+   ${svgT(x(14),y(55),'CS',{w:700})}${svgT(x(33),y(23),'C',{w:700})}${svgT(x(73),y(23),'A',{w:700,s:12})}
+   ${svgT(x(100),y(MC)+14,'成本',{a:'end',s:11})}${svgT(x(100),y(P)-4,'售價',{a:'end',s:11,f:'var(--accent)'})}
+   <line x1="${x(0)}" y1="${y(P)}" x2="${x(100)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="1.5"/>
+   ${box(390,10,280,72,'var(--surface2)')}${svgT(400,32,'CS：消費者賺咗幾多',{w:700})}${svgT(400,52,'肯畀 − 實付，逐個加埋',{s:12})}${svgT(400,70,'消費者福利標準只計佢',{s:12,f:'var(--muted)'})}
+   ${box(390,92,280,72,'var(--surface2)')}${svgT(400,114,'C：消費者 → 企業',{w:700})}${svgT(400,134,'分配問題：點切個餅',{s:12})}${svgT(400,152,'總福利＝CS＋C，唔理點切',{s:12,f:'var(--muted)'})}
+   ${box(390,174,280,80,'var(--surface2)')}${svgT(400,196,'A：浪費咗（無謂損失）',{w:700})}${svgT(400,216,'效率問題：個餅變細',{s:12})}${svgT(400,234,'值得做嘅交易冇做到',{s:12,f:'var(--muted)'})}
+   </svg>`}},
+ {id:'v-spectrum',t:'目標光譜：由窄到闊',n:'03 §七；07 §五、§八；05 §一',svg:()=>{
+   const P=[[60,'只追經濟福利','其他目標用其他工具；分配係約束唔係目標','03'],[250,'消費者福利＋過濾器','有限度、透明咁考慮公共政策','07'],[440,'分配一定喺入面','範圍係政治問題，趕唔走','07'],[620,'六個操作性目標','效率只係其中一個','05']];
+   return `<svg viewBox="0 0 680 210" class="vis">${DEFS}
+   <line x1="40" y1="70" x2="650" y2="70" stroke="var(--ink)" stroke-width="3" marker-end="url(#ah)"/>
+   ${svgT(40,40,'目標窄',{w:700,f:'var(--muted)'})}${svgT(650,40,'目標闊',{a:'end',w:700,f:'var(--muted)'})}
+   ${P.map(([x,a,b,n])=>`<circle cx="${x}" cy="70" r="9" fill="var(--accent)"/>${svgT(x,104,a,{a:'middle',w:700,s:12.5})}<foreignObject x="${x-78}" y="112" width="156" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>${b}</p><p class="muted">筆記 ${n}</p></div></foreignObject>`).join('')}
+   </svg>`}},
+ {id:'v-townley',t:'目標有衝突點算？',n:'07 §四–五',svg:()=>`<svg viewBox="0 0 680 330" class="vis">${DEFS}
+   ${box(240,10,200,50,'var(--accent-soft)','var(--accent)')}${svgT(340,40,'兩個目標衝突',{a:'middle',w:700})}
+   ${arrow(300,62,150,100)}${arrow(380,62,530,100)}
+   ${box(20,102,260,110)}${svgT(150,126,'排除：淨係理一個',{a:'middle',w:700})}
+   <foreignObject x="30" y="134" width="240" height="76"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>✓ 清晰、法律確定</p><p class="muted">✗ 重要目標被忽略；封死企業社會責任；可預測性唔係唯一價值</p></div></foreignObject>
+   ${box(400,102,260,110)}${svgT(530,126,'妥協：同一條法例平衡',{a:'middle',w:700})}
+   <foreignObject x="410" y="134" width="240" height="76"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>✓ 唔會完全漏咗目標</p><p class="muted">✗ 可能樣樣做唔好；有被政治俘虜嘅風險</p></div></foreignObject>
+   ${box(80,232,520,90,'var(--surface2)','var(--good)')}${svgT(340,254,'中間路線：消費者福利＋三個過濾器（要透明、要懷疑）',{a:'middle',w:700,s:13})}
+   ${svgT(340,280,'① 真係有競爭問題先用  ② 公共政策得益要明顯',{a:'middle',s:12.5})}${svgT(340,302,'③ 立法機關最近冇就呢個平衡決定過',{a:'middle',s:12.5})}
+   </svg>`},
+ {id:'v-odudu',t:'三個關口：area C 喺邊度被分配',n:'07 §六–八',svg:()=>`<svg viewBox="0 0 680 250" class="vis">${DEFS}
+   ${[['範圍','管唔管？','工會、社會保障豁免 → 等於畀佢哋攞 C'],['實體法','違唔違法？','過高定價案好少 → 分配唔係主角'],['抗辯','可唔可以合理化？','CECED、Ford/VW → 分配份量最大']].map(([a,b,c],k)=>{const x=20+k*225;return box(x,30,195,150,k===2?'var(--accent-soft)':'var(--surface2)',k===2?'var(--accent)':'var(--line)')+svgT(x+97,58,`關口 ${k+1}：${a}`,{a:'middle',w:700})+svgT(x+97,80,b,{a:'middle',s:12.5,f:'var(--muted)'})+`<foreignObject x="${x+10}" y="92" width="175" height="84"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>${c}</p></div></foreignObject>`+(k<2?arrow(x+197,105,x+223,105):'')}).join('')}
+   ${svgT(340,210,'用唔用競爭法，都係決定 area C 落邊個袋 → 範圍係政治問題 → 分配永遠趕唔走',{a:'middle',w:700,s:13})}
+   ${svgT(340,232,'實際上 C 可以分畀任何將錢用喺「理想用途」嘅一方',{a:'middle',s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-tinbergen',t:'目標、工具、溢出',n:'04 §一–四',svg:()=>`<svg viewBox="0 0 680 300" class="vis">${DEFS}
+   ${svgT(20,26,'n 個獨立目標 → 起碼 n 件獨立工具',{w:700})}
+   ${[['中立','只影響自己個目標','var(--good)'],['互補','順手推近另一個目標','var(--accent)'],['衝突','將另一個目標推遠','var(--bad)']].map(([a,b,c],k)=>{const x=20+k*220;return box(x,44,200,150)+svgT(x+100,68,a,{a:'middle',w:700,f:c})+
+     `<circle cx="${x+50}" cy="140" r="22" fill="var(--surface)" stroke="var(--ink)"/>${svgT(x+50,145,'工具',{a:'middle',s:11})}`+
+     `<rect x="${x+130}" y="96" width="50" height="30" rx="6" fill="var(--surface)" stroke="var(--ink)"/>${svgT(x+155,116,'目標 A',{a:'middle',s:11})}`+
+     `<rect x="${x+130}" y="150" width="50" height="30" rx="6" fill="var(--surface)" stroke="var(--ink)"/>${svgT(x+155,170,'目標 B',{a:'middle',s:11})}`+
+     arrow(x+72,134,x+128,112,'var(--ink)')+(k>0?`<line x1="${x+72}" y1="148" x2="${x+128}" y2="164" stroke="${c}" stroke-width="2" stroke-dasharray="${k===2?'4 3':'0'}" marker-end="url(#ah)"/>`+svgT(x+100,186,k===1?'＋':'－',{a:'middle',w:700,f:c}):'')+svgT(x+100,88,b,{a:'middle',s:11.5,f:'var(--muted)'})}).join('')}
+   ${box(20,210,640,80,'var(--accent-soft)','var(--accent)')}
+   ${svgT(340,234,'溢出越大 → 越要協調 → 甚至合併成一個機構',{a:'middle',w:700})}
+   ${svgT(340,256,'協調喺變化快時最需要，亦最難做；目標越嚟越多 → 可能要新工具',{a:'middle',s:12.5})}
+   ${svgT(340,278,'勞動生產力睇落似目標，其實係手段',{a:'middle',s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-carrigan',t:'合定拆：兩股力，同最傷嘅情況',n:'04 §六–七',svg:()=>`<svg viewBox="0 0 680 330" class="vis">${DEFS}
+   ${box(20,20,300,100,'var(--surface2)','var(--good)')}${svgT(170,46,'合埋嘅理由：協調',{a:'middle',w:700,f:'var(--good)'})}
+   <foreignObject x="30" y="56" width="280" height="62"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>睇到情況後喺任務之間搬資源、共用資料</p></div></foreignObject>
+   ${box(360,20,300,100,'var(--surface2)','var(--bad)')}${svgT(510,46,'拆開嘅理由：目標含糊',{a:'middle',w:700,f:'var(--bad)'})}
+   <foreignObject x="370" y="56" width="280" height="62"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>唔知上頭最重視邊個 → 對沖、平均分資源</p></div></foreignObject>
+   <path d="M60,240 Q340,120 620,240" fill="none" stroke="var(--accent)" stroke-width="3"/>
+   <line x1="60" y1="240" x2="620" y2="240" stroke="var(--line)"/>
+   ${svgT(60,260,'目標強烈衝突',{s:12,f:'var(--muted)'})}${svgT(620,260,'目標高度一致',{a:'end',s:12,f:'var(--muted)'})}
+   ${svgT(340,212,'多任務機構最有價值：中間',{a:'middle',w:700,f:'var(--accent)'})}
+   ${svgT(340,230,'（示意圖：筆記只講「兩頭都唔係最有價值」）',{a:'middle',s:11,f:'var(--muted)'})}
+   ${box(20,276,640,46,'var(--accent-soft)','var(--bad)')}${svgT(340,304,'實證：最傷係對同一班人又扶持又約束；所有補救（排先後、內部分開）都有代價',{a:'middle',w:700,s:12.5})}</svg>`},
+ {id:'v-develop',t:'發展中國家嘅競爭機構',n:'05 §一、§三–五',svg:()=>`<svg viewBox="0 0 680 330" class="vis">
+   ${box(10,10,660,92,'var(--accent-soft)','var(--accent)')}${svgT(340,34,'六個操作性目標（障礙同助力對每個目標影響唔同）',{a:'middle',w:700})}
+   ${['效率','人類發展','私營競爭','對國家競爭','競爭文化','經濟＋政治自由'].map((g,k)=>`<rect x="${22+k*108}" y="48" width="100" height="40" rx="8" fill="var(--surface)" stroke="var(--accent)"/>${svgT(72+k*108,73,g,{a:'middle',s:12,w:700})}`).join('')}
+   ${box(10,116,400,204)}${svgT(210,140,'五類障礙',{a:'middle',w:700,f:'var(--bad)'})}
+   <foreignObject x="20" y="148" width="380" height="170"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>① 資源不足 → 可以內部建立</p><p>② 政治法律環境差 → 機構解決唔到</p><p>③ 冇競爭文化 → 機構可以幫（倡議）</p><p>④ 制度未發展、豁免多 → 效果打折扣</p><p>⑤ 市場細又散 → size matters</p></div></foreignObject>
+   ${box(420,116,250,204)}${svgT(545,140,'有利條件',{a:'middle',w:700,f:'var(--good)'})}
+   <foreignObject x="430" y="148" width="230" height="170"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>國內盟友（最穩陣）</p><p>國際支持（雙刃劍：「外國入口貨」）</p><p><b>嵌入式自主</b>：對大企業自主，但嵌入政治體系；獨立 ≠ 孤立</p></div></foreignObject></svg>`}
+];
+function visuals(){
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">圖解 · ${VIS.length} 幅</span><h2>一幅圖睇一個概念</h2>
+   <p class="muted">每幅圖都對應筆記嘅某幾節。讀「讀懂版」或者玩完關卡之後，用嚟一眼溫返。</p></div>
+   <div class="stack">${VIS.map(v=>`<section class="panel vispanel" id="${v.id}"><div class="row" style="justify-content:space-between"><h3>${v.t}</h3><span class="tag">筆記 ${v.n}</span></div><div class="viswrap">${v.svg()}</div></section>`).join('')}</div>`;
+}
+
+/* ===================== READING NOTES ===================== */
+const LVNAME={swipe:'L1 算唔算監管',lobby:'L2 游說集團',families:'L3 四大家族',price:'L4 一個價兩筆數',judge:'L5 判案小法官',agency:'L6 合定拆',develop:'L7 因地制宜'};
+const cardsIn=(n,s)=>CARDS_DATA.filter(c=>c.n===n&&c.s===s);
+function notesPage(note){
+  note=note||NOTE_ORDER[0];
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  const m=NOTES_META[note];
+  const secs=NOTES.filter(x=>x.k.startsWith(note+'-'));
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">讀懂版 · 逐節淺白講解</span>
+    <div class="tabs">${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div></div>
+   <div class="panel stack"><h2>${note} ${m.t}</h2><p><b>呢篇問：</b>${m.q}</p><p class="muted">${m.read}</p></div>
+   <div class="stack" style="margin-top:14px">${secs.map(x=>{const n=+x.k.split('-')[1];const cs=cardsIn(note,n);const kn=cs.filter(c=>known[c.id]).length;
+     return `<section class="panel notesec" id="${x.k}">
+      <div class="row" style="justify-content:space-between"><h3>§${n} ${x.t}</h3>
+        <label class="readchk"><input type="checkbox" id="rd-${x.k}" data-k="${x.k}" ${read[x.k]?'checked':''}> 已讀</label></div>
+      <div class="nbody">${x.b}</div>
+      <div class="row links">${x.lv.map(l=>`<a class="chip" href="#${l}">▶ ${LVNAME[l]}</a>`).join('')}
+        ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">◩ 圖：${VIS.find(z=>z.id===v).t}</a>`).join('')}
+        <a class="chip" href="#cards-${note}-${n}">▣ 呢節 ${cs.length} 張卡（識咗 ${kn}）</a></div></section>`}).join('')}</div>`;
+  app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash='notes-'+b.dataset.n;});
+  app.querySelectorAll('.readchk input').forEach(c=>c.onchange=()=>{const o=store.get().read||{};o[c.dataset.k]=c.checked;store.set('read',o);});
+  bindVisLinks();
+}
+function bindVisLinks(){app.querySelectorAll('[data-vis]').forEach(a=>a.onclick=e=>{e.preventDefault();const id=a.dataset.vis;location.hash='visuals';setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({block:'start'});},60);});}
+
+/* ===================== FLASHCARDS ===================== */
+const TYPE_ZH={fact:'事實',definition:'定義',conceptual:'概念',cause:'因果',evaluation:'評價',normative:'主張'};
+function cardsPage(arg){
+  const [note,sec]=(arg||'').split('-');
+  const pool=CARDS_DATA.filter(c=>(!note||c.n===note)&&(!sec||c.s===+sec));
+  let mode='unknown', order=[], idx=0, flipped=false;
+  function build(){
+    const known=store.get().known||{};
+    order=pool.filter(c=>mode==='all'||!known[c.id]).map(c=>c.id);
+    idx=0; flipped=false;
+  }
+  function shuffle(){for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;flipped=false;render();}
+  function render(){
+    const known=store.get().known||{};
+    const kn=pool.filter(c=>known[c.id]).length;
+    const scope=note?`${note} ${NOTES_META[note].t}${sec?` · §${sec} ${NOTES.find(x=>x.k===note+'-'+sec).t}`:''}`:'全部筆記';
+    let card='';
+    if(!order.length){ card=`<div class="fcard done"><div><h3>呢副卡你已經全部識晒 🎉</h3><p class="muted">轉「全部卡」可以再溫一次。</p></div></div>`; }
+    else{
+      const c=CARDS_DATA[order[idx]];
+      card=`<div class="fcard ${flipped?'flip':''}" id="fc" tabindex="0" role="button" aria-label="撳一下反卡">
+        ${!flipped?`<div class="ff"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fq">${c.f}</div><span class="muted" style="font-size:13px">撳一下（或者按空白鍵）睇答案</span></div>`
+        :`<div class="fb"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fa">${c.b}</div><blockquote>“${c.q}”</blockquote><span class="src">原文出處：${c.loc}</span></div>`}
+      </div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn ghost" id="bad">✗ 未識，等陣再嚟</button><button class="btn primary" id="good">✓ 識咗</button></div>`;
+    }
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">快速卡 · ${scope}</span>
+      <div class="tabs"><button class="tab ${!note?'on':''}" data-n="">全部</button>${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div>
+      <div class="row" style="justify-content:space-between"><span class="muted">呢副 ${pool.length} 張 · 識咗 ${kn} · 呢輪剩 ${order.length?order.length-idx:0}</span>
+      <div class="row"><button class="btn ghost sm" id="mode">${mode==='all'?'只溫未識':'全部卡'}</button><button class="btn ghost sm" id="shuf">洗牌</button><button class="btn ghost sm" id="reset">清除「識咗」</button></div></div>
+      <div class="progress"><i style="width:${pool.length?kn/pool.length*100:0}%"></i></div></div>
+      ${card}
+      <p class="muted" style="margin-top:14px;font-size:13.5px">卡面係我寫嘅問題；卡背係筆記入面嘅原子命題（中文）同原文英文引文，一字不改。卡背會出現人名，你唔使記，專心睇論點就得。</p>`;
+    app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash=b.dataset.n?'cards-'+b.dataset.n:'cards';});
+    $('#mode').onclick=()=>{mode=mode==='all'?'unknown':'all';build();render();};
+    $('#shuf').onclick=shuffle;
+    $('#reset').onclick=()=>{const k=store.get().known||{};pool.forEach(c=>delete k[c.id]);store.set('known',k);build();render();};
+    const fc=$('#fc'); if(fc){ fc.onclick=()=>{flipped=!flipped;render();$('#fc')&&$('#fc').focus();}; fc.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();fc.click();}}; }
+    const g=$('#good'), b=$('#bad');
+    if(g) g.onclick=()=>{const k=store.get().known||{};k[order[idx]]=true;store.set('known',k);next(true);};
+    if(b) b.onclick=()=>next(false);
+  }
+  function next(ok){ if(!ok){ order.push(order[idx]); } idx++; flipped=false; if(idx>=order.length){ build(); } render(); }
+  build(); render();
+}
+
+/* ===================== PROGRESS MAP ===================== */
+function mapPage(){
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  let tot=0, done=0;
+  const rows=NOTE_ORDER.map(n=>{
+    const secs=NOTES.filter(x=>x.k.startsWith(n+'-'));
+    return `<tr class="nh"><td colspan="5"><b>${n} ${NOTES_META[n].t}</b></td></tr>`+secs.map(x=>{
+      const s=+x.k.split('-')[1], cs=cardsIn(n,s), kn=cs.filter(c=>known[c.id]).length;
+      const lvDone=x.lv.length? x.lv.every(l=>st[l]) : true;
+      const ok=read[x.k]&&kn===cs.length&&lvDone; tot++; if(ok) done++;
+      return `<tr><td><a href="#notes-${n}" data-sec="${x.k}">§${s} ${x.t}</a></td>
+        <td class="c">${read[x.k]?'✓':'—'}</td>
+        <td class="c mono">${kn}/${cs.length}</td>
+        <td>${x.lv.length?x.lv.map(l=>`<a class="chip ${st[l]?'ok':''}" href="#${l}">${LVNAME[l].split(' ')[0]}${st[l]?' ✓':''}</a>`).join(' '):'<span class="muted">（讀懂版＋卡）</span>'}
+          ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">圖</a>`).join(' ')}</td>
+        <td class="c">${ok?'<span class="okb">掌握</span>':''}</td></tr>`}).join('');
+  }).join('');
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">進度地圖 · 筆記每一節都喺度</span><h2>${done} / ${tot} 節已經全部做完</h2>
+    <p class="muted">一節要「讀懂版已讀」＋「嗰節嘅卡全部識咗」＋「對應關卡完成」，先算掌握。撳節名會跳去嗰節嘅讀懂版。</p>
+    <div class="progress"><i style="width:${done/tot*100}%"></i></div></div>
+    <div class="tablewrap"><table class="map"><thead><tr><th>節</th><th>讀懂版</th><th>卡</th><th>關卡／圖</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  app.querySelectorAll('[data-sec]').forEach(a=>a.onclick=e=>{e.preventDefault();const k=a.dataset.sec;location.hash='notes-'+k.split('-')[0];setTimeout(()=>{const el=document.getElementById(k);if(el)el.scrollIntoView({block:'start'});},60);});
+  bindVisLinks();
+}
+
+window.__RL={NOTES,CARDS_DATA,VIS};
+/* ===================== ROUTER ===================== */
+const ROUTES={swipe,swipeData,lobby,families,price,judge,agency,develop,visuals,map:mapPage};
+function route(){
+  const h=location.hash.replace('#','');
+  const base=h.split('-')[0], arg=h.slice(base.length+1);
+  if(base==='notes') notesPage(arg||null);
+  else if(base==='cards') cardsPage(arg||'');
+  else (ROUTES[h]||hub)();
+  const tab=['notes','cards','visuals','map'].includes(base)?base:'';
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.r===tab));
+  window.scrollTo(0,0);
+}
+$('#homeBtn').onclick=()=>{ if(location.hash){location.hash='';} else hub(); };
+window.addEventListener('hashchange',route);
+route();
+})();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+</body>
+</html>
