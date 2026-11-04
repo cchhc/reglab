@@ -1185,6 +1185,88 @@ window.__RL={NOTES,CARDS_DATA,LESSONS};
 route();
 })();
 </script>
+<!--TERMS-->
+<script>const TERMS_DATA=[["監管俘虜", "regulatory capture", "n"], ["知性俘虜", "intellectual capture", "n"], ["知識社群", "epistemic community", "n"], ["無謂損失", "deadweight loss", "n"], ["消費者剩餘", "consumer surplus", "n"], ["總福利", "total welfare", "n"], ["消費者福利", "consumer welfare", "m"], ["福利標準", "welfare standard", "m"], ["溢出效應", "spillover effects", "n"], ["壟斷", "monopoly", "n"], ["外部性", "externalities", "n"], ["資訊不對稱", "information asymmetry", "m"], ["公共財", "public goods", "m"], ["卡特爾", "cartel", "m"], ["併購", "merger", "m"], ["競爭法", "competition law", "m"], ["競爭政策", "competition policy", "m"], ["倡議", "advocacy", "n"], ["取捨", "trade-offs", "n"], ["因地制宜", "context-specific design", "m"], ["規管型國家", "regulatory state", "n"], ["監管機構", "regulatory agency", "m"], ["監管者", "regulator", "m"], ["干預型國家", "interventionist state", "m"], ["規則制定", "rule-making", "n"], ["再分配", "redistribution", "n"], ["市場監管", "market regulation", "n"], ["酌情權", "discretion", "n"], ["非多數決機構", "non-majoritarian institutions", "n"], ["超非多數決機構", "supra-nonmajoritarian institution", "n"], ["多數決", "majoritarian", "n"], ["獨立監管機構", "independent regulatory agencies (IRAs)", "n"], ["新公共管理", "new public management (NPM)", "n"], ["否決點", "veto points", "n"], ["政策企業家", "policy entrepreneur", "n"], ["軟法", "soft law", "n"], ["可信承諾", "credible commitment", "n"], ["卸責", "blame avoidance", "n"], ["代理成本", "agency costs", "n"], ["代理損失", "agency losses", "m"], ["委託代理理論", "principal–agent theory", "n"], ["委託人–代理人理論", "principal–agent theory", "n"], ["委託代理模型", "principal–agent models", "n"], ["委託人", "principal", "n"], ["民主赤字", "democratic deficit", "n"], ["制度同形", "institutional isomorphism", "n"], ["答責", "answerability", "n"], ["代理人走甩", "agency escape", "n"], ["受託人", "trustee", "n"], ["社會學制度主義", "sociological institutionalism", "n"], ["動態授權", "dynamic delegation", "n"], ["否定清關", "negative clearance", "n"], ["揀法院", "forum shopping", "n"], ["法律化", "juridification", "n"], ["歐洲競爭網絡", "European Competition Network (ECN)", "n"], ["國際競爭網絡", "International Competition Network (ICN)", "n"], ["競爭主管機關", "competition authority", "n"], ["正式獨立", "formal independence", "m"], ["實際獨立", "de facto independence", "n"], ["法律上獨立", "de jure independence", "n"], ["帕累托效率", "Pareto efficiency", "n"], ["帕累托有效", "Pareto-efficient", "n"], ["產出正當性", "output legitimacy", "n"], ["輸入正當性", "input legitimacy", "n"], ["分權定理", "Decentralisation Theorem", "n"], ["同質性", "homogeneity", "n"], ["多層管治", "multi-level governance", "n"], ["規模經濟", "economies of scale", "n"], ["競爭性聯邦主義", "competitive federalism", "n"], ["反身協調", "reflexive harmonisation", "n"], ["公民德性", "civic virtue", "n"], ["寬大政策", "leniency", "n"], ["公平競爭環境", "level playing field", "n"], ["資本主義類型", "varieties of capitalism", "n"], ["自由民主", "liberal democracy", "m"], ["審議民主", "deliberative democracy", "m"], ["平等對待", "equal treatment", "m"], ["司法覆核", "judicial review", "n"], ["問責", "accountability", "n"], ["正當性", "legitimacy", "n"], ["技術官僚", "technocratic", "n"], ["政策網絡", "policy networks", "n"], ["比較優勢", "comparative advantage", "m"], ["機械降神", "deus ex machina", "n"], ["潘朵拉嘅盒", "Pandora's box", "n"], ["豁免", "exemption", "m"], ["歐洲化", "Europeanisation", "m"], ["分權", "decentralisation", "m"], ["中央化", "centralisation", "m"], ["授權", "delegation", "m"], ["勾結", "collusion", "m"], ["私有化", "privatisation", "m"], ["自由化", "liberalisation", "m"], ["統一", "uniformity", "m"], ["多元", "diversity", "n"], ["規例", "regulation", "n"], ["指令", "directive", "n"]];
+(function(){
+/* English key terms: first time a term shows up on a screen / card / panel, add （English） after it. TERMS is injected at build. */
+const T=TERMS_DATA.slice().sort((a,b)=>b[0].length-a[0].length);
+const MAP=new Map(T.map(t=>[t[0],t]));
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const RE=new RegExp(T.map(t=>esc(t[0])).join('|'),'g');
+const DONE=new Map(T.map(t=>[t[0],new RegExp(esc(t[0])+'\\s*[（(]\\s*[A-Za-z]')]));
+const SKIP='h1,h2,h3,.brand,.nm,.sub,.pill,.grp,.dot,svg,script,style,textarea,input,blockquote,.src,.en,.tag,.tabs,.mono,.eyebrow,code,#gate,.termsheet';
+const BOX='#sc,.sheet .in,.fcard,.panel,section,tr,.node,.lvhead,.course,.crs';
+function box(n){const e=n.nodeType===1?n:n.parentElement;return (e&&e.closest(BOX))||document.getElementById('app')||document.body;}
+function gloss(root){
+  if(!root) return;
+  if(root.nodeType===1&&root.closest&&root.closest(SKIP)) return;
+  const tw=document.createTreeWalker(root.nodeType===3?root.parentNode:root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+    if(root.nodeType===3&&n!==root) return NodeFilter.FILTER_REJECT;
+    const p=n.parentElement; if(!p||p.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+    RE.lastIndex=0; return RE.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+  const list=[]; let n; while((n=tw.nextNode())) list.push(n);
+  list.forEach(tn=>{
+    const c=box(tn); const v=tn.nodeValue; RE.lastIndex=0; let m, cut=[];
+    const seen=new Set();
+    while((m=RE.exec(v))){const k=m[0]; if(seen.has(k)) continue; seen.add(k);
+      const after=v.slice(m.index+k.length);
+      if(/^\s*[（(]\s*[A-Za-z]/.test(after)) continue;
+      if(DONE.get(k).test(c.textContent)) continue;
+      cut.push([m.index+k.length,MAP.get(k)]);}
+    if(!cut.length) return;
+    // only one gloss per term per box: re-check in order while inserting
+    let node=tn, offset=0;
+    cut.forEach(([pos,t])=>{
+      if(DONE.get(t[0]).test(c.textContent)) return;
+      const rest=node.splitText(pos-offset); offset=pos;
+      const s=document.createElement('span'); s.className='en'; s.lang='en'; s.textContent='（'+t[1]+'）';
+      rest.parentNode.insertBefore(s,rest); node=rest;});
+  });
+}
+function legend(vp){
+  if(vp.querySelector('.vterms')) return;
+  const svg=vp.querySelector('svg'); if(!svg) return;
+  const txt=svg.textContent; RE.lastIndex=0; const found=[]; const seen=new Set(); let m;
+  while((m=RE.exec(txt))){const t=MAP.get(m[0]); if(!seen.has(t[1])){seen.add(t[1]);found.push(t);}}
+  if(!found.length) return;
+  const p=document.createElement('p'); p.className='vterms muted';
+  p.innerHTML='<b>英文術語：</b>'+found.map(t=>`${t[0]}<span class="en" lang="en">（${t[1]}）</span>`).join(' · ');
+  vp.appendChild(p);
+}
+function sheet(){
+  const d=document.createElement('div'); d.className='sheet termsheet';
+  const rows=T.slice().sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}));
+  d.innerHTML=`<div class="in" role="dialog" aria-label="英文術語表"><div class="grab"></div><h3>🔤 英文術語表</h3>
+   <p class="muted" style="font-size:14px">呢個課程用到嘅術語，按英文排。做 research 時用英文搵。<b>†</b>＝筆記冇寫英文，英文係我加嘅標準譯法。</p>
+   <input id="tq" type="search" placeholder="搵中文或者英文" aria-label="搵術語" style="width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0 10px">
+   <div id="tl">${rows.map(t=>`<div class="trow"><span lang="en"><b>${t[1]}</b>${t[2]==='m'?' †':''}</span><span>${t[0].replace(/[「」]/g,'')}</span></div>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="tcl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; d.querySelector('#tcl').onclick=()=>d.remove();
+  d.querySelector('#tq').oninput=e=>{const q=e.target.value.trim().toLowerCase();d.querySelectorAll('.trow').forEach(r=>{r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none';});};
+}
+function menuHook(el){
+  const inn=el.querySelector('.in[aria-label="選單"]'); if(!inn||inn.querySelector('#tbtn')) return;
+  const opts=inn.querySelector('.opts'); if(!opts) return;
+  const b=document.createElement('button'); b.className='opt'; b.id='tbtn'; b.type='button'; b.textContent=`🔤 英文術語表：${T.length} 個`;
+  b.onclick=()=>{el.remove(); sheet();}; opts.appendChild(b);
+}
+function scan(node){
+  if(node.nodeType===1){
+    if(node.classList&&node.classList.contains('sheet')) menuHook(node);
+    (node.matches&&node.matches('.vispanel')?[node]:[...(node.querySelectorAll?node.querySelectorAll('.vispanel'):[])]).forEach(legend);
+  }
+  gloss(node);
+}
+const st=document.createElement('style');
+st.textContent='.en{font-size:.84em;font-weight:500;color:var(--muted);font-family:var(--f);letter-spacing:0}.opt .en,.cta .en{color:inherit;opacity:.75}.vterms{font-size:13px;margin:10px 2px 0;line-height:1.7}.trow{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:15px}.trow span:last-child{text-align:right;color:var(--muted)}';
+document.head.appendChild(st);
+const mo=new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1&&n.classList&&n.classList.contains('en'))return; scan(n);}));});
+mo.observe(document.body,{childList:true,subtree:true});
+scan(document.body);
+window.__TERMS=T;
+})();
+</script>
 
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{}));}</script>
 </body>

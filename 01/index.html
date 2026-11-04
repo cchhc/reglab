@@ -1275,6 +1275,88 @@ window.__RL={NOTES,CARDS_DATA,LESSONS};
 route();
 })();
 </script>
+<!--TERMS-->
+<script>const TERMS_DATA=[["監管俘虜", "regulatory capture", "n"], ["俘虜理論", "capture theory", "n"], ["監管經濟理論", "economic theory of regulation", "n"], ["公共利益理論", "public interest theory", "m"], ["放寬監管", "deregulation", "n"], ["內生放寬監管", "endogenous deregulation", "n"], ["職業發牌", "occupational licensing", "n"], ["本質定義", "essence-based definition", "n"], ["模式定義", "pattern-based definition", "n"], ["原型監管", "prototype regulation", "n"], ["放射狀類別", "radial category", "n"], ["生命周期", "life cycle", "n"], ["多數政治", "majoritarian politics", "n"], ["創業家政治", "entrepreneurial politics", "n"], ["客戶政治", "client politics", "m"], ["文化理論", "cultural theory", "n"], ["個人主義", "individualism", "n"], ["監管對話", "regulatory conversations", "n"], ["政治經濟學", "political economy", "n"], ["集中利益", "concentrated interests", "n"], ["分散利益", "diffuse interests", "n"], ["嵌入式自主", "embedded autonomy", "n"], ["芝加哥學派", "Chicago School", "n"], ["秩序自由主義", "ordoliberalism", "n"], ["國家冠軍", "national champions", "n"], ["掠奪性定價", "predatory pricing", "n"], ["轉售價格維持", "resale price maintenance", "n"], ["無謂損失", "deadweight loss", "n"], ["消費者剩餘", "consumer surplus", "n"], ["生產者剩餘", "producer surplus", "n"], ["總剩餘", "total surplus", "n"], ["總福利", "total welfare", "n"], ["經濟福利", "economic welfare", "n"], ["消費者福利", "consumer welfare", "m"], ["福利標準", "welfare standard", "m"], ["配置無效率", "allocative inefficiency", "n"], ["目標變數", "target variables", "n"], ["勞動生產力", "labour productivity", "n"], ["目標含糊", "goal ambiguity", "n"], ["溢出效應", "spillover effects", "n"], ["企業社會責任", "corporate social responsibility (CSR)", "n"], ["市場失靈", "market failure", "n"], ["壟斷", "monopoly", "n"], ["外部性", "externalities", "n"], ["資訊不對稱", "information asymmetry", "m"], ["交叉補貼", "cross-subsidy", "m"], ["卡特爾", "cartel", "m"], ["競爭法", "competition law", "m"], ["競爭政策", "competition policy", "m"], ["反壟斷", "antitrust", "m"], ["倡議", "advocacy", "n"], ["取捨", "trade-offs", "n"], ["因地制宜", "context-specific design", "m"], ["發展中國家", "developing countries", "n"], ["規管型國家", "regulatory state", "n"], ["監管機構", "regulatory agency", "m"], ["監管者", "regulator", "m"], ["監管政策", "regulatory policy", "m"], ["「監管」", "regulation", "n"], ["『監管』", "regulation", "n"], ["發展型國家", "developmental state", "n"], ["再分配", "redistribution", "n"], ["市場監管", "market regulation", "n"], ["酌情權", "discretion", "n"], ["實證理論", "positive theory", "n"], ["可信承諾", "credible commitment", "n"], ["卸責", "blame avoidance", "n"], ["國際競爭網絡", "International Competition Network (ICN)", "n"], ["公平競爭環境", "level playing field", "n"], ["問責", "accountability", "n"], ["正當性", "legitimacy", "n"], ["包容", "inclusiveness", "n"], ["技術官僚", "technocratic", "n"], ["豁免", "exemption", "m"], ["授權", "delegation", "m"], ["勾結", "collusion", "m"], ["規例", "regulation", "n"]];
+(function(){
+/* English key terms: first time a term shows up on a screen / card / panel, add （English） after it. TERMS is injected at build. */
+const T=TERMS_DATA.slice().sort((a,b)=>b[0].length-a[0].length);
+const MAP=new Map(T.map(t=>[t[0],t]));
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const RE=new RegExp(T.map(t=>esc(t[0])).join('|'),'g');
+const DONE=new Map(T.map(t=>[t[0],new RegExp(esc(t[0])+'\\s*[（(]\\s*[A-Za-z]')]));
+const SKIP='h1,h2,h3,.brand,.nm,.sub,.pill,.grp,.dot,svg,script,style,textarea,input,blockquote,.src,.en,.tag,.tabs,.mono,.eyebrow,code,#gate,.termsheet';
+const BOX='#sc,.sheet .in,.fcard,.panel,section,tr,.node,.lvhead,.course,.crs';
+function box(n){const e=n.nodeType===1?n:n.parentElement;return (e&&e.closest(BOX))||document.getElementById('app')||document.body;}
+function gloss(root){
+  if(!root) return;
+  if(root.nodeType===1&&root.closest&&root.closest(SKIP)) return;
+  const tw=document.createTreeWalker(root.nodeType===3?root.parentNode:root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+    if(root.nodeType===3&&n!==root) return NodeFilter.FILTER_REJECT;
+    const p=n.parentElement; if(!p||p.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+    RE.lastIndex=0; return RE.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+  const list=[]; let n; while((n=tw.nextNode())) list.push(n);
+  list.forEach(tn=>{
+    const c=box(tn); const v=tn.nodeValue; RE.lastIndex=0; let m, cut=[];
+    const seen=new Set();
+    while((m=RE.exec(v))){const k=m[0]; if(seen.has(k)) continue; seen.add(k);
+      const after=v.slice(m.index+k.length);
+      if(/^\s*[（(]\s*[A-Za-z]/.test(after)) continue;
+      if(DONE.get(k).test(c.textContent)) continue;
+      cut.push([m.index+k.length,MAP.get(k)]);}
+    if(!cut.length) return;
+    // only one gloss per term per box: re-check in order while inserting
+    let node=tn, offset=0;
+    cut.forEach(([pos,t])=>{
+      if(DONE.get(t[0]).test(c.textContent)) return;
+      const rest=node.splitText(pos-offset); offset=pos;
+      const s=document.createElement('span'); s.className='en'; s.lang='en'; s.textContent='（'+t[1]+'）';
+      rest.parentNode.insertBefore(s,rest); node=rest;});
+  });
+}
+function legend(vp){
+  if(vp.querySelector('.vterms')) return;
+  const svg=vp.querySelector('svg'); if(!svg) return;
+  const txt=svg.textContent; RE.lastIndex=0; const found=[]; const seen=new Set(); let m;
+  while((m=RE.exec(txt))){const t=MAP.get(m[0]); if(!seen.has(t[1])){seen.add(t[1]);found.push(t);}}
+  if(!found.length) return;
+  const p=document.createElement('p'); p.className='vterms muted';
+  p.innerHTML='<b>英文術語：</b>'+found.map(t=>`${t[0]}<span class="en" lang="en">（${t[1]}）</span>`).join(' · ');
+  vp.appendChild(p);
+}
+function sheet(){
+  const d=document.createElement('div'); d.className='sheet termsheet';
+  const rows=T.slice().sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}));
+  d.innerHTML=`<div class="in" role="dialog" aria-label="英文術語表"><div class="grab"></div><h3>🔤 英文術語表</h3>
+   <p class="muted" style="font-size:14px">呢個課程用到嘅術語，按英文排。做 research 時用英文搵。<b>†</b>＝筆記冇寫英文，英文係我加嘅標準譯法。</p>
+   <input id="tq" type="search" placeholder="搵中文或者英文" aria-label="搵術語" style="width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0 10px">
+   <div id="tl">${rows.map(t=>`<div class="trow"><span lang="en"><b>${t[1]}</b>${t[2]==='m'?' †':''}</span><span>${t[0].replace(/[「」]/g,'')}</span></div>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="tcl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; d.querySelector('#tcl').onclick=()=>d.remove();
+  d.querySelector('#tq').oninput=e=>{const q=e.target.value.trim().toLowerCase();d.querySelectorAll('.trow').forEach(r=>{r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none';});};
+}
+function menuHook(el){
+  const inn=el.querySelector('.in[aria-label="選單"]'); if(!inn||inn.querySelector('#tbtn')) return;
+  const opts=inn.querySelector('.opts'); if(!opts) return;
+  const b=document.createElement('button'); b.className='opt'; b.id='tbtn'; b.type='button'; b.textContent=`🔤 英文術語表：${T.length} 個`;
+  b.onclick=()=>{el.remove(); sheet();}; opts.appendChild(b);
+}
+function scan(node){
+  if(node.nodeType===1){
+    if(node.classList&&node.classList.contains('sheet')) menuHook(node);
+    (node.matches&&node.matches('.vispanel')?[node]:[...(node.querySelectorAll?node.querySelectorAll('.vispanel'):[])]).forEach(legend);
+  }
+  gloss(node);
+}
+const st=document.createElement('style');
+st.textContent='.en{font-size:.84em;font-weight:500;color:var(--muted);font-family:var(--f);letter-spacing:0}.opt .en,.cta .en{color:inherit;opacity:.75}.vterms{font-size:13px;margin:10px 2px 0;line-height:1.7}.trow{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:15px}.trow span:last-child{text-align:right;color:var(--muted)}';
+document.head.appendChild(st);
+const mo=new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1&&n.classList&&n.classList.contains('en'))return; scan(n);}));});
+mo.observe(document.body,{childList:true,subtree:true});
+scan(document.body);
+window.__TERMS=T;
+})();
+</script>
 
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{}));}</script>
 </body>
