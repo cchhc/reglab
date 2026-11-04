@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="監管實驗室">
+<meta name="theme-color" content="#141A26">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;-webkit-text-size-adjust:100%}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>規管型國家 Part 3</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: mobile-first full-screen lesson player — one idea per screen, Continue pinned to the bottom; a course path is home. */
+:root{
+  --bg:#F2F4F8; --card:#FFFFFF; --ink:#141A26; --muted:#5D6779; --line:#D9DEE8; --soft:#E9ECF3;
+  --accent:#4B4FD9; --accent-ink:#FFFFFF; --accent-soft:#E6E7FB;
+  --good:#1F9D62; --good-soft:#DFF4EA; --bad:#D2423A; --bad-soft:#FBE6E4; --warn:#B7790A;
+  --cs:#4B4FD9; --cc:#E5A800; --aa:#D2423A;
+  --f:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{overflow:hidden;height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+.muted{color:var(--muted)} .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mine{display:inline-block;font-size:12px;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 6px;margin-left:4px;vertical-align:middle}
+
+/* ---------- home / path ---------- */
+.home{flex:1;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.stats{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{font-weight:900;font-size:22px;letter-spacing:.02em}
+.pills{display:flex;gap:8px}
+.pill{display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px}
+.course{background:var(--card);border-radius:22px;padding:18px;border:1px solid var(--line);margin-bottom:22px}
+.course h1{font-size:24px;line-height:1.3;margin:4px 0 6px;font-weight:900;text-wrap:balance}
+.course p{margin:0}
+.eyebrow{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0 20px}
+.path svg.line{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:220px}
+.node:nth-child(odd){transform:translateX(-60px)} .node:nth-child(even){transform:translateX(60px)}
+.dot{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:900;background:var(--soft);color:var(--muted);border:3px solid var(--line);box-shadow:0 6px 0 var(--line)}
+.node.open .dot{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 6px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.node.done .dot{background:var(--good);color:#fff;border-color:var(--good);box-shadow:0 6px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.node.open .dot{animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.node .nm{font-weight:700;text-align:center;font-size:15.5px;line-height:1.35}
+.node .sub{font-size:13px;color:var(--muted);text-align:center}
+.node.locked{opacity:.55}
+.review-btn{width:100%;margin-top:6px;background:var(--card);border:1.5px dashed var(--accent);color:var(--accent);border-radius:16px;padding:14px;font-weight:700}
+
+/* ---------- lesson player ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+.x{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:var(--muted)}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:999px;transition:width .35s}
+.xp{font-weight:900;font-size:15px;color:var(--warn);min-width:52px;text-align:right}
+.screen{flex:1;overflow-y:auto;padding:10px max(18px,env(safe-area-inset-right,0px)) 24px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.screen h2{font-size:23px;line-height:1.35;margin:4px 0 0;font-weight:900;text-wrap:balance}
+.screen p{margin:0}
+.lead{font-size:17.5px}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:8px}
+.big{font-size:44px;line-height:1}
+.opts{display:grid;gap:10px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;font-weight:700;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt.sel{border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft);box-shadow:0 4px 0 var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 4px 0 var(--bad);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opt[disabled]{cursor:default}
+.fb{border-radius:16px;padding:14px 16px;display:grid;gap:6px;animation:in .2s ease}
+.fb.ok{background:var(--good-soft)} .fb.no{background:var(--bad-soft)} .fb.hint{background:var(--accent-soft)}
+.fb b.t{font-size:17px}
+.src{font-size:12.5px;color:var(--muted)}
+.foot{padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;border-top:1px solid var(--line);background:var(--bg)}
+.cta{flex:1;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:15px;font-weight:900;font-size:17px;box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.cta:disabled{background:var(--soft);color:var(--muted);box-shadow:0 5px 0 var(--line);cursor:default}
+.cta.go{background:var(--good);color:#fff;box-shadow:0 5px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.deep{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:0 14px;font-weight:700;font-size:14px;color:var(--muted);box-shadow:0 5px 0 var(--line)}
+/* drawer */
+.sheet{position:fixed;inset:0;background:rgba(10,14,22,.45);display:flex;align-items:flex-end;z-index:20;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet .in{background:var(--card);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:78%;overflow-y:auto;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px)}}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h3{margin:0 0 8px;font-size:19px}
+.sheet .nb{display:grid;gap:8px;font-size:15.5px}.sheet ul{margin:0;padding-left:20px;display:grid;gap:6px}
+/* widgets */
+.wid{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
+input[type=range]{width:100%;accent-color:var(--accent);height:30px}
+.lbl{display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.barrow{display:grid;grid-template-columns:76px 1fr 54px;gap:8px;align-items:center;font-size:14.5px}
+.barrow .track{height:22px;background:var(--soft);border-radius:8px;overflow:hidden}
+.barrow .track i{display:block;height:100%;border-radius:8px;transition:width .2s}
+.chart{width:100%;height:auto;display:block}
+.task{font-weight:700;color:var(--accent);font-size:15px;display:flex;gap:8px;align-items:center}
+.task.ok{color:var(--good)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{background:var(--soft);border-radius:12px;padding:8px;text-align:center;font-size:12.5px;color:var(--muted);font-weight:700}
+.nums b{display:block;font-family:var(--mono);font-size:19px;color:var(--ink)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.tog{display:flex;background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.tog button{flex:1;padding:10px;border-radius:11px;font-weight:700;font-size:15px;color:var(--muted)}
+.tog button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.flips{display:grid;gap:10px}
+.flip{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;box-shadow:0 4px 0 var(--line);display:grid;gap:4px}
+.flip .h{font-weight:900}.flip .b{color:var(--muted);font-size:15px}
+.flip.open{border-color:var(--accent)}
+.flip.open .b{color:var(--ink)}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:grid;gap:10px;align-content:start}
+.mt{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;font-weight:700;font-size:15px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.mt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.mt.done{border-color:var(--good);background:var(--good-soft);opacity:.8}
+.mt.err{animation:shake .3s;border-color:var(--bad)}
+.rcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;min-height:210px;display:grid;align-content:center;gap:10px;box-shadow:0 5px 0 var(--line);text-align:left}
+.rcard .q{font-size:21px;font-weight:900;line-height:1.4}
+.rcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+/* complete */
+.done-screen{flex:1;display:grid;place-items:center;text-align:center;padding:24px;gap:10px}
+.done-screen .trophy{font-size:72px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.stat3{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat3 div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 16px;font-weight:700}
+.stat3 b{display:block;font-size:24px}
+.take{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;display:grid;gap:6px;max-width:520px}
+.take ul{margin:0;padding-left:20px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+/* sort screen */
+.sortl{display:grid;gap:12px}
+.si{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:8px}
+.si.done{border-color:var(--good)}
+.si .st{font-weight:700}
+.si .sc{display:flex;flex-wrap:wrap;gap:8px}
+.sb{border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:700;font-size:14.5px;background:var(--bg);min-height:44px}
+.sb.right{border-color:var(--good);background:var(--good-soft)}
+.sb.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s}
+.si.done .sb:not(.right){opacity:.4}
+.okline{color:var(--good);font-weight:700;font-size:14.5px}
+.hintline{color:var(--accent);font-weight:700;font-size:14.5px}
+.grp{z-index:1;font-weight:900;font-size:14px;color:var(--muted);letter-spacing:.06em;background:var(--bg);padding:2px 10px;border-radius:8px}
+button.pill{cursor:pointer}
+/* sub pages (reading notes, cards, visuals, map) */
+.pg{--surface:var(--card);--surface2:var(--soft);--area-cs:var(--cs);--area-c:var(--cc);--area-a:var(--aa);--f-display:var(--f);--r:16px}
+.pg h2{font-size:22px;line-height:1.35;margin:4px 0;font-weight:900;text-wrap:balance}
+.pg h3{font-size:18px;margin:0;line-height:1.35}
+.pg p{margin:0}
+.pg .lvhead{display:grid;gap:8px;margin-bottom:14px}
+.pg .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.pg .stack{display:flex;flex-direction:column;gap:12px}
+.pg .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pg .tabs{display:flex;flex-wrap:wrap;gap:6px}
+.pg .tab{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 11px;font-size:13.5px;font-weight:700;min-height:36px}
+.pg .tab.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.pg .chip{display:inline-block;font-size:13px;font-weight:700;text-decoration:none;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:3px 10px;background:var(--card)}
+.pg .chip.ok{color:var(--good);border-color:var(--good)}
+.pg .links{gap:8px;margin-top:6px}
+.pg .nbody{display:grid;gap:8px;font-size:16px}
+.pg .nbody ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.pg .readchk{font-size:14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.pg .readchk input{width:22px;height:22px}
+.pg .tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);background:var(--soft)}
+.pg .btn{border:1.5px solid var(--ink);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:700;min-height:40px}
+.pg .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pg .btn.ghost{border-color:var(--line)}
+.pg .btn.sm{padding:5px 12px;font-size:13.5px;min-height:36px}
+.pg .progress{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.pg .progress i{display:block;height:100%;background:var(--good)}
+.pg .fcard{min-height:240px;border:2px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);padding:22px 18px;display:grid;align-items:center;cursor:pointer;margin-top:10px}
+.pg .fcard.flip{border-color:var(--accent)}
+.pg .fcard.done{cursor:default;text-align:center}
+.pg .ff,.pg .fcard .fb{display:grid;gap:12px;background:none;padding:0;animation:none;border-radius:0}
+.pg .fq{font-size:21px;font-weight:900;line-height:1.4}
+.pg .fa{font-size:16.5px;font-weight:600}
+.pg .fcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+.pg .vis{width:100%;height:auto;display:block;font-family:var(--f)}
+.pg .viswrap{overflow-x:auto;margin-top:8px}
+.pg .viswrap .vis{min-width:560px}
+.pg .fo{font-size:12.5px;line-height:1.45;color:var(--ink);display:grid;gap:4px}
+.pg .fo p{margin:0}.pg .fo.c{text-align:center}
+.pg .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.pg table.map{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+.pg table.map th{text-align:left;font-size:12px;color:var(--muted);padding:10px 12px;border-bottom:1.5px solid var(--line)}
+.pg table.map td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.pg table.map td.c{text-align:center}
+.pg table.map tr.nh td{background:var(--soft)}
+.pg table.map a{color:var(--ink)}
+.pg .okb{font-size:12px;font-weight:700;color:var(--good);border:1.5px solid var(--good);border-radius:5px;padding:0 6px}
+.pg .mono{font-family:var(--mono)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px">
+ <form id="gf" style="display:grid;gap:12px;max-width:320px;width:100%;text-align:center">
+  <div style="font-size:30px;font-weight:900">規管型國家 · 3</div>
+  <label for="gp" class="muted">輸入密碼</label>
+  <input id="gp" type="password" inputmode="numeric" autocomplete="current-password" style="font-size:22px;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)">
+  <button class="cta go" type="submit">入去</button>
+  <p id="ge" style="color:var(--bad);min-height:1.4em"></p>
+ </form></div>
+<script>(function(){const H='d83036ffb5b49a153bc391fd12b4a10df06bbb200f39fed97c331b03b6833ce7',K='reglab-ok',g=document.getElementById('gate');
+ try{if(localStorage.getItem(K)===H){g.remove();return;}}catch(e){}
+ document.getElementById('gf').addEventListener('submit',async e=>{e.preventDefault();
+  const v=document.getElementById('gp').value.trim();
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const x=[...new Uint8Array(b)].map(n=>n.toString(16).padStart(2,'0')).join('');
+  if(x===H){try{localStorage.setItem(K,H)}catch(e){} g.remove();} else document.getElementById('ge').textContent='密碼唔啱，再試一次';});
+})();</script>
+<div id="app"></div>
+
+<script>
+const CARDS_DATA=[{"id": 27, "n": "02", "s": 1, "t": "definition", "f": "Yeung 點樣界定最廣義嘅規管型國家？", "b": "Yeung 將最廣義嘅規管型國家界定為更依賴同政府保持距離、唔受日常政治壓力、以技術專業作決定嘅機構", "q": "The concept of the regulatory state at its broadest (Yeung 2010) connotes greater reliance on institutions operating at arm’s length from government, insulated from daily political pressures and embedding their decisions in technical expertise.", "loc": "Yeung (2010), in DubashMorgan2012 p.262"}, {"id": 28, "n": "02", "s": 1, "t": "cause", "f": "南方規管型國家嘅第一個共同處境係乜？", "b": "Dubash 同 Morgan 認為南方規管型國家嘅第一個共同處境，係國際金融機構等外來力量施壓要求喺基建行業採用監管機構", "q": "The first contextual element is the presence of powerful external pressures, especially from international financial institutions, to adopt the institutional innovation of regulatory agencies in infrastructure sectors.", "loc": "DubashMorgan2012 p.261"}, {"id": 29, "n": "02", "s": 1, "t": "cause", "f": "南方規管型國家嘅第二個共同處境係乜？", "b": "Dubash 同 Morgan 認為南方規管型國家嘅第二個共同處境，係基建服務極差或冇嘅地方再分配政治更激烈", "q": "A second is the greater intensity of redistributive politics in settings where infrastructure services are of extremely poor quality and often non-existent.", "loc": "DubashMorgan2012 p.261"}, {"id": 30, "n": "02", "s": 1, "t": "conceptual", "f": "南方規管型國家嘅第三個共同處境係乜？", "b": "Dubash 同 Morgan 認為南方規管型國家嘅第三個共同處境係國家能力有限，而且分「薄」同「厚」兩層", "q": "The third theme is that of limited state capacity, which we suggest has both “thin” and “thick” dimensions.", "loc": "DubashMorgan2012 p.261"}, {"id": 31, "n": "02", "s": 2, "t": "cause", "f": "喺南方，將監管機構放入本國政治過程篩選嘅步驟點樣？", "b": "Dubash 同 Morgan 認為喺南方，將監管機構嘅目的、設計同運作放入本國政治過程篩選嘅步驟被削弱甚至完全省略", "q": "the process of filtering institutional purpose, design, and practice through national political processes is attenuated or even dispensed with entirely", "loc": "DubashMorgan2012 p.267"}, {"id": 32, "n": "02", "s": 2, "t": "conceptual", "f": "南方嘅監管機構一開始通常係乜樣？", "b": "Dubash 同 Morgan 認為南方嘅監管機構較可能一開始只係空洞嘅制度外殼，之後先被期望、規範、運作規則同文化慢慢填滿", "q": "Metaphorically, regulatory agencies in the South are more likely to begin as relatively hollow institutional shells, which are populated by expectations, norms of institutional practice, and operational rules and cultures over time.", "loc": "DubashMorgan2012 p.267"}, {"id": 33, "n": "02", "s": 2, "t": "normative", "f": "監管機構嘅自主文化可唔可以由外面當速效方案強加？", "b": "Dubash 同 Morgan 認為監管機構嘅制度自主文化唔可以由外面當速效方案強加", "q": "the culture of institutional autonomy of regulatory agencies cannot be imposed as a “quick fix” from external sources", "loc": "DubashMorgan2012 p.268"}, {"id": 34, "n": "02", "s": 3, "t": "conceptual", "f": "Majone 嘅方案建基於乜嘢分界？", "b": "Dubash 同 Morgan 指出 Majone 嘅方案建基於可以清楚劃分靠專業得到正當性嘅效率目標，同需要政治問責嘅再分配", "q": "this solution rests on being able to draw a clear line between efficiency objectives, for which legitimacy can be obtained through expertise, and redistribution, for which political accountability is necessary", "loc": "on Majone, DubashMorgan2012 p.265"}, {"id": 35, "n": "02", "s": 3, "t": "evaluation", "f": "南方嘅經驗對效率同再分配嘅分界有乜啟示？", "b": "Dubash 同 Morgan 認為南方嘅經驗顯示，效率同再分配之間嘅分界更加唔可信", "q": "Experience from the South suggests that this division between efficiency and redistribution is even less plausible for at least three reasons.", "loc": "DubashMorgan2012 p.269"}, {"id": 36, "n": "02", "s": 3, "t": "cause", "f": "再分配政治同催生南方監管機構嘅處境有乜關係？", "b": "Dubash 同 Morgan 認為再分配政治就嵌喺催生南方監管機構嘅處境入面", "q": "Redistributive politics are embedded in the very contexts that give rise to regulatory agencies.", "loc": "DubashMorgan2012 p.269"}, {"id": 37, "n": "02", "s": 3, "t": "normative", "f": "點解喺南方，監管唔可以淨係交畀監管者？", "b": "Dubash 同 Morgan 認為喺南方，監管太重要，唔可以淨係交畀監管者處理", "q": "regulation is too important to be left to the regulators", "loc": "DubashMorgan2012 p.261"}, {"id": 38, "n": "02", "s": 3, "t": "cause", "f": "透明條款同聽證會等程序，可以令監管機構變成乜？", "b": "Dubash 同 Morgan 認為設立監管機構時引入嘅透明條款同聽證會等程序，可以令監管機構成為新嘅民主空間", "q": "procedural changes ushered in through the creation of regulatory agencies, such as transparency provisions and hearings, can create opportunity structures within regulatory agencies that foster their status as new democratic spaces", "loc": "DubashMorgan2012 p.270"}, {"id": 39, "n": "02", "s": 3, "t": "conceptual", "f": "Dubash 同 Morgan 認為研究焦點應該由乜轉去乜？", "b": "Dubash 同 Morgan 借 Braithwaite 同 Levi-Faur 認為研究焦點應由規管型國家轉向規管型社會", "q": "presaging a shift from a “regulatory state” focus to a “regulatory society” focus", "loc": "Braithwaite (2006); Levi-Faur (2011b), in DubashMorgan2012 p.272"}, {"id": 40, "n": "02", "s": 4, "t": "fact", "f": "國家能力通常點樣以「薄」嘅方式界定？", "b": "Dubash 同 Morgan 指出國家能力通常以自主、財政獨立同人手等「薄」嘅制度設計標準界定", "q": "State capacity has tended to be defined in thin terms – institutional design criteria such as autonomy, financial independence, staffing, and so on", "loc": "DubashMorgan2012 p.273"}, {"id": 41, "n": "02", "s": 4, "t": "normative", "f": "同規管型社會打交道，國家需要乜嘢能力？", "b": "Dubash 同 Morgan 認為要同規管型社會打交道，國家需要同時接觸國家同非國家持份者嘅「厚」國家能力", "q": "The ability to engage regulatory society, however, demands a thicker form of state capacity, capable of simultaneously engaging interested state and non-state actors (or stakeholders)", "loc": "DubashMorgan2012 p.273"}, {"id": 42, "n": "02", "s": 4, "t": "normative", "f": "Dubash 同 Morgan 建議邊兩派學者多啲對話？", "b": "Dubash 同 Morgan 建議發展型國家同規管型國家兩派學者多啲對話", "q": "We suggest, then, that more dialogue between developmental state and regulatory state scholars is a productive way forward.", "loc": "DubashMorgan2012 p.274"}, {"id": 43, "n": "02", "s": 4, "t": "evaluation", "f": "Dubash 同 Morgan 點睇規管型國家研究「轉向政治」？", "b": "Dubash 同 Morgan 認為規管型國家研究轉向政治係值得歡迎", "q": "the “turn to politics” is nonetheless welcome", "loc": "DubashMorgan2012 p.275"}, {"id": 44, "n": "02", "s": 5, "t": "fact", "f": "到 2017 年，有全面競爭法嘅新興同發展中經濟體，有幾多未正式設立獨立主管機關？", "b": "Koop 同 Kessler 指出到 2017 年，118 個有全面競爭法嘅新興同發展中經濟體之中有 25% 未正式設立獨立競爭主管機關，靠部門執法", "q": "In competition policy, 25% of the 118 emerging and developing economies that had a comprehensive law by 2017 had not (yet) formally adopted an independent authority, relying instead on ministerial enforcement.", "loc": "KoopKessler2021 p.547"}, {"id": 45, "n": "02", "s": 5, "t": "fact", "f": "正式設立咗獨立競爭主管機關嘅經濟體，有幾多未開始運作？", "b": "Koop 同 Kessler 指出到 2017 年，89 個正式設立獨立競爭主管機關嘅經濟體之中有 15% 未開始運作", "q": "Furthermore, 15% of the 89 economies that had formally adopted an independent authority by 2017 had not (yet) made it operational.", "loc": "KoopKessler2021 p.547"}, {"id": 46, "n": "02", "s": 5, "t": "conceptual", "f": "支持監管獨立嘅可信承諾論，本來係為邊類國家而設？", "b": "Koop 同 Kessler 指出支持監管獨立嘅可信承諾論本來係為民主國家而設", "q": "The main argument behind regulatory independence—the credible commitment thesis—was developed to apply to democracies.", "loc": "KoopKessler2021 p.548"}, {"id": 47, "n": "02", "s": 5, "t": "cause", "f": "冇選舉嘅威權制度，時間不一致問題點樣？", "b": "Koop 同 Kessler 認為冇選舉嘅威權制度入面，時間不一致問題冇咁深", "q": "First, absent elections, time inconsistency is less embedded.", "loc": "KoopKessler2021 p.549"}, {"id": 48, "n": "02", "s": 5, "t": "cause", "f": "威權政府可能寧願投資者靠乜保護投資？", "b": "Koop 同 Kessler 認為威權政府可能寧願投資者靠官員保護投資，而唔係靠中立可預測嘅決定", "q": "Rather than promoting the neutrality and predictability of policy decisions—for instance, by delegating to independent authorities—they may prefer a system in which investors depend on government officials to protect their investments.", "loc": "KoopKessler2021 p.549"}, {"id": 49, "n": "02", "s": 5, "t": "conceptual", "f": "監管獨立同邊種政治經濟制度較夾？", "b": "Koop 同 Kessler 認為監管獨立同自由放任嘅政治經濟制度較夾，同國家控制經濟較唔夾", "q": "independence is more compatible with liberal or “hands off” political-economic institutions than with institutionalized state control over the economy", "loc": "KoopKessler2021 p.550"}, {"id": 50, "n": "02", "s": 5, "t": "conceptual", "f": "石油依賴國家行乜模式？", "b": "Koop 同 Kessler 認為石油依賴國家行擁有權模式而唔係監管模式", "q": "Under these conditions, regulatory policies are less likely to be adopted; the model is one of ownership rather than regulation.", "loc": "KoopKessler2021 p.551"}, {"id": 51, "n": "02", "s": 5, "t": "conceptual", "f": "Koop 同 Kessler 嘅研究問題係乜？", "b": "Koop 同 Kessler 嘅研究問題係點解有啲新興同發展中經濟體正式或實際上避開監管獨立", "q": "Our study asks why governments in some emerging and developing economies have formally or effectively eschewed regulatory independence.", "loc": "KoopKessler2021 p.546"}, {"id": 52, "n": "02", "s": 5, "t": "cause", "f": "威權政府嘅制度承諾，同民主政府比可信唔可信？", "b": "Koop 同 Kessler 認為威權政府嘅制度承諾冇民主政府咁可信", "q": "Thus, their institutional commitments are not as credible.", "loc": "KoopKessler2021 p.549"}, {"id": 53, "n": "02", "s": 5, "t": "definition", "f": "Koop 同 Kessler 點樣界定共產制度控制經濟嘅方式？", "b": "Koop 同 Kessler 將共產制度界定為靠擁有權同價格控制、而唔係靠監管去控制經濟嘅國家控制制度", "q": "Communist systems are, by definition, systems of state control of the economy: they exercise control by means of ownership and price control rather than regulation.", "loc": "KoopKessler2021 p.551"}, {"id": 54, "n": "02", "s": 6, "t": "fact", "f": "威權程度同設立獨立競爭主管機關有乜關係？", "b": "Koop 同 Kessler 發現越威權嘅制度越少設立獨立競爭主管機關，而結果喺唔同模型都穩健", "q": "The models show strong support for the hypothesis on authoritarianism: governments in more authoritarian systems are less likely to adopt independent authorities to enforce their competition rules, and the effect is robust across model specifications", "loc": "KoopKessler2021 p.556"}, {"id": 55, "n": "02", "s": 6, "t": "fact", "f": "石油依賴對威權嘅負面作用有乜影響？", "b": "Koop 同 Kessler 發現石油依賴加強威權對設立獨立主管機關嘅負面作用", "q": "suggesting that oil reliance enhances the negative effect of authoritarianism", "loc": "KoopKessler2021 p.556"}, {"id": 56, "n": "02", "s": 6, "t": "fact", "f": "共產遺產對設立獨立主管機關有乜作用？", "b": "Koop 同 Kessler 發現共產遺產冇加強威權作用，佢對設立嘅主效果係負，但只喺部分模型 10% 水平顯著", "q": "Having a stronger communist legacy does not enhance the effect of authoritarianism, but the main effect is negative and significant at the 10% level in some models.", "loc": "KoopKessler2021 p.556"}, {"id": 57, "n": "02", "s": 6, "t": "fact", "f": "威權程度影唔影響獨立主管機關開始運作？", "b": "Koop 同 Kessler 發現威權程度唔影響獨立主管機關開始運作，所以喺運作階段否定威權假設", "q": "Hence, our authoritarianism-hypothesis needs to be rejected for the start of the operations.", "loc": "KoopKessler2021 p.557"}, {"id": 58, "n": "02", "s": 6, "t": "fact", "f": "石油依賴對已設立機關開始運作有乜影響？", "b": "Koop 同 Kessler 發現石油依賴嘅經濟體無論政體，都較少令已正式設立嘅獨立競爭主管機關運作", "q": "Table 2 suggests that oil-relying economies are less likely to make their formally adopted independent competition authorities operational, regardless of the nature of the regime.", "loc": "KoopKessler2021 p.557"}, {"id": 59, "n": "02", "s": 6, "t": "cause", "f": "獨立主管機關開始運作主要靠乜？", "b": "Koop 同 Kessler 認為獨立主管機關開始運作，主要靠功能需要同能力，而唔係制度相容", "q": "These results suggest that the start of the operations of independent authorities is driven more by functional need and (lack of) capacity than by institutional compatibility.", "loc": "KoopKessler2021 p.559"}, {"id": 60, "n": "02", "s": 6, "t": "evaluation", "f": "正式設立獨立監管機構係咪只係象徵式做法？", "b": "Koop 同 Kessler 認為正式設立獨立監管機構唔只係象徵式做法", "q": "Our findings imply that the formal adoption of independent regulators is not just a symbolic exercise.", "loc": "KoopKessler2021 p.560"}, {"id": 61, "n": "02", "s": 6, "t": "evaluation", "f": "Koop 同 Kessler 嘅結果對國際規範同監管移植嘅擴散有乜含意？", "b": "Koop 同 Kessler 認為佢哋嘅結果顯示國際規範同監管移植嘅擴散有制度上嘅限制", "q": "Though our study does not address the desirability of regulatory independence, it does suggest that there are institutional limits to the spread of international norms and to regulatory transplants.", "loc": "KoopKessler2021 p.560"}, {"id": 62, "n": "02", "s": 6, "t": "cause", "f": "政府喺邊一步特別計算監管獨立嘅政治代價？", "b": "Koop 同 Kessler 認為政府喺正式設立嗰一步特別計算監管獨立嘅政治代價", "q": "the political costs of independence seem to be given particular attention at the stage of adoption", "loc": "KoopKessler2021 p.560"}, {"id": 63, "n": "03", "s": 1, "t": "conceptual", "f": "1980、90 年代英國等地嘅規管型國家有乜特徵？", "b": "Koop 同 Lodge 認為 1980、90 年代喺英國等地發展出嚟嘅規管型國家，特徵係獨立機構、以效率為本嘅目標同經濟技術官僚式分析", "q": "The regulatory state that developed in Britain and elsewhere in the 1980s and 1990s was characterised by independent agencies, eﬃciency-based objectives, ‘econocratic’ analysis", "loc": "KoopLodge2020 p.1612"}, {"id": 64, "n": "03", "s": 1, "t": "fact", "f": "英國原本嘅規管型國家點樣處理監管嘅分配含意？", "b": "Koop 同 Lodge 指出喺英國原本嘅規管型國家，監管嘅分配含意被視為社會開支嘅範疇", "q": "To the extent that regulation had distributive implications, these were seen as the domain of social spending.", "loc": "KoopLodge2020 p.1613"}, {"id": 65, "n": "03", "s": 1, "t": "fact", "f": "英國 1980 年代政治工程嘅一個核心係乜？", "b": "Koop 同 Lodge 指出英國 1980 年代政治工程嘅一個核心，係刻意將規管型國家去政治化", "q": "One central aspect of this British political project was to deliberately depoliticise the regulatory state.", "loc": "KoopLodge2020 p.1614"}, {"id": 66, "n": "03", "s": 1, "t": "cause", "f": "將監管同政治隔開，結合咗邊兩個邏輯？", "b": "Koop 同 Lodge 認為將監管同政治隔開嘅意願，結合咗可信承諾嘅功能邏輯同避責嘅政治邏輯", "q": "The desire for political insulation combined the (functional) logic of credible commitment and the (political) logic of blame avoidance.", "loc": "KoopLodge2020 p.1614"}, {"id": 67, "n": "03", "s": 1, "t": "conceptual", "f": "點解獨立監管者係政客理想嘅「擋箭牌」？", "b": "Koop 同 Lodge 認為獨立監管者係政客理想嘅避責對象", "q": "Independent regulators would represent ideal blame magnets", "loc": "KoopLodge2020 p.1614"}, {"id": 68, "n": "03", "s": 1, "t": "definition", "f": "Koop 同 Lodge 點解將英國原本嘅模式叫做「負責任」？", "b": "Koop 同 Lodge 將英國原本嘅監管管治模式稱為「負責任」，意思係審慎同一致", "q": "This mode of regulatory governance can be characterised as ‘responsible’ in its meaning of ‘prudent’ and ‘consistent’", "loc": "KoopLodge2020 p.1615"}, {"id": 69, "n": "03", "s": 2, "t": "definition", "f": "Koop 同 Lodge 點樣界定監管嘅政治化？", "b": "Koop 同 Lodge 將監管嘅政治化定義為對監管嘅關注、動員同兩極化增加", "q": "deﬁned as the increased awareness of, mobilisation around, and polarisation of regulation", "loc": "KoopLodge2020 p.1612"}, {"id": 70, "n": "03", "s": 2, "t": "cause", "f": "乜嘢令英國監管者意外地被政治化？", "b": "Koop 同 Lodge 認為金融危機改變咗條件，令英國監管者意外地被政治化", "q": "The ﬁnancial crisis changed these conditions, generating unintended politicisation of regulators.", "loc": "KoopLodge2020 p.1615"}, {"id": 71, "n": "03", "s": 2, "t": "cause", "f": "對「搵笨」同「忠誠罰款」嘅關注，帶嚟乜改變？", "b": "Koop 同 Lodge 指出對消費者被搵笨同忠誠罰款嘅關注，令人更關心弱勢消費者，亦令監管者更注意再分配結果", "q": "led to more interest in ‘vulnerable consumers’, thereby increasing regulatory attention to redistributive outcomes", "loc": "KoopLodge2020 p.1616"}, {"id": 72, "n": "03", "s": 2, "t": "conceptual", "f": "以競爭同開拓市場為目標嘅決定，同柏累托效率有乜關係？", "b": "Koop 同 Lodge 認為以競爭同開拓市場為目標嘅決定實際上可能有分配後果，但起碼理論上可以追求柏累托效率", "q": "Though decision-making with a view to competition and market creation may in practice have distributional consequences, it can, at least in theory, aim for Pareto eﬃciency.", "loc": "KoopLodge2020 p.1619"}, {"id": 73, "n": "03", "s": 2, "t": "cause", "f": "以保護消費者為目標嘅監管，點解好難說得通揀邊個方法？", "b": "Koop 同 Lodge 認為以消費者為目標嘅監管，因為監管目標含糊，揀邊個解決方法好難說得通", "q": "the choice of solution cannot easily be justiﬁed given ambiguity in regulatory objectives", "loc": "KoopLodge2020 p.1619"}, {"id": 74, "n": "03", "s": 3, "t": "fact", "f": "受訪英國監管者點樣形容近年公眾同傳媒嘅關注？", "b": "Koop 同 Lodge 訪問嘅英國監管者一致認為，近年公眾同傳媒對監管機構嘅關注增加，而且語氣更批判", "q": "Interviewees agreed that regulatory agencies had witnessed an increase in public and media attention in recent years that had also become more critical in tone.", "loc": "KoopLodge2020 p.1623"}, {"id": 75, "n": "03", "s": 3, "t": "fact", "f": "2008 年 Mandelson 做咗乜？", "b": "Koop 同 Lodge 指出 2008 年英國商務大臣 Mandelson 以公眾利益為由，推翻公平貿易辦公室阻止 Lloyds TSB 收購 HBOS 嘅建議", "q": "Peter Mandelson overruled the OFT recommendation to block Lloyds TSB’s takeover of HBOS on ‘public interest’ grounds, despite competition concerns", "loc": "KoopLodge2020 p.1624"}, {"id": 76, "n": "03", "s": 3, "t": "fact", "f": "監管決策嘅重心點樣轉移？", "b": "Koop 同 Lodge 訪問嘅監管者指出，監管決策嘅重心已由投資者同公司轉向消費者", "q": "the balance of regulatory decisionmaking had shifted from investors and companies to consumers", "loc": "KoopLodge2020 p.1624"}, {"id": 77, "n": "03", "s": 3, "t": "fact", "f": "英國監管者開始質疑乜嘢福利標準？", "b": "Koop 同 Lodge 指出英國監管者開始質疑總和消費者福利標準係咪足夠", "q": "Regulators started questioning whether the (aggregate) consumer welfare standard was suﬃcient", "loc": "KoopLodge2020 p.1624"}, {"id": 78, "n": "03", "s": 3, "t": "cause", "f": "乜嘢「單向壓力」令監管不足？", "b": "Koop 同 Lodge 訪問嘅監管者認為監管不足部分源於單向壓力：上訴嘅通常係受影響嘅公司，而唔係消費者團體", "q": "decisions were appealed by aﬀected companies; not usually by consumer groups", "loc": "KoopLodge2020 p.1625"}, {"id": 79, "n": "03", "s": 3, "t": "fact", "f": "直到 2010 年代中，大家對監管者同分配後果有乜共識？", "b": "Koop 同 Lodge 指出直到 2010 年代中，大家普遍同意監管者要對分配後果視而不見，公平問題留畀政客", "q": "Until the mid-2010s, broad agreement existed that regulators had to be blind to such consequences; questions of fairness were reserved for politicians", "loc": "KoopLodge2020 p.1625"}, {"id": 80, "n": "03", "s": 3, "t": "normative", "f": "受訪監管者認為邊個先應該判斷邊啲消費者值得更多保護？", "b": "Koop 同 Lodge 訪問嘅監管者有一個共同睇法：只有政客先應該判斷邊啲消費者值得更多保護", "q": "There was a shared view that only politicians should make judgments regarding which consumers deserved more protection", "loc": "KoopLodge2020 p.1625"}, {"id": 81, "n": "03", "s": 4, "t": "evaluation", "f": "英國經濟監管者嘅改變屬於邊種類型？", "b": "Koop 同 Lodge 認為英國經濟監管者嘅改變大多屬轉化型，邁向一個回應型規管型國家", "q": "The observed changes point to a mostly transformative type of change, towards a responsive regulatory state.", "loc": "KoopLodge2020 p.1627"}, {"id": 82, "n": "03", "s": 4, "t": "conceptual", "f": "「疊層」式轉變係乜意思？", "b": "Koop 同 Lodge 認為英國監管嘅改變係轉化型，新元素疊喺現有元素上面", "q": "They are transformative, with new elements ‘layered’ on existing ones.", "loc": "KoopLodge2020 p.1628"}, {"id": 83, "n": "03", "s": 4, "t": "evaluation", "f": "疊層有乜後果？", "b": "Koop 同 Lodge 認為疊層表示返唔到柏累托效率嘅世界，而且有啲疊上去嘅元素互相唔兼容", "q": "Observing layering means that going back to a world of Pareto eﬃciency seems impossible; more importantly, certain ‘layered’ elements are incompatible.", "loc": "KoopLodge2020 p.1628"}, {"id": 84, "n": "03", "s": 4, "t": "normative", "f": "Koop 同 Lodge 認為真正嘅問題係乜？", "b": "Koop 同 Lodge 認為更廣嘅問題唔係監管者可唔可以政治，而係可以政治到咩程度而唔捲入黨派衝突", "q": "the broader question was not whether regulators could be political, but how political they could be without being caught in the cross-ﬁre of partisan conﬂicts", "loc": "KoopLodge2020 p.1628"}, {"id": 85, "n": "03", "s": 4, "t": "evaluation", "f": "呢啲改變有冇挑戰到英國規管型國家嘅存在？", "b": "Koop 同 Lodge 認為呢啲改變轉化咗、但冇挑戰到英國規管型國家嘅存在", "q": "the changes had transformed but not challenged the existence of the regulatory state", "loc": "KoopLodge2020 p.1628"}, {"id": 86, "n": "03", "s": 4, "t": "evaluation", "f": "Koop 同 Lodge 預計政治化會唔會消失？", "b": "Koop 同 Lodge 預計監管嘅政治化唔會消失，要求更回應嘅聲音亦唔會走", "q": "Yet, the politicisation of regulation is unlikely to fade away; hence, demands for more responsiveness are not likely to go away either.", "loc": "KoopLodge2020 p.1629"}, {"id": 87, "n": "03", "s": 4, "t": "definition", "f": "Koop 同 Lodge 講嘅「回應」同執法文獻嘅「回應式監管」有乜分別？", "b": "Koop 同 Lodge 用嘅「回應」有別於執法文獻：執法文獻嘅回應式監管係指監管回應業界行為同結構", "q": "Our use of responsiveness is diﬀerent from its use in the literature on regulatory enforcement, where it refers to regulation being responsive to industry conduct and structure.", "loc": "KoopLodge2020 p.1629"}, {"id": 88, "n": "03", "s": 5, "t": "evaluation", "f": "Deller 報告點樣睇經濟學同公平嘅關係？", "b": "Deller 同 Waddams Price 編嘅報告認為經濟學傳統上著重效率，從來冇聲稱市場能有效帶嚟公平結果，而對公平嘅關注正挑戰純經濟監管嘅框架", "q": "The traditional focus of economics on efficiency has never claimed that markets are effective tools for delivering equitable outcomes, and the traditional framework of ‘pure’ economic regulation is challenged by the present focus on fairness.", "loc": "DellerWaddamsPrice2018 p.14"}, {"id": 89, "n": "03", "s": 5, "t": "fact", "f": "自 1986 年《煤氣法》以嚟，英國能源規管機構嘅一般職責點變？", "b": "Deller 同 Waddams Price 編嘅報告指出自 1986 年《煤氣法》以嚟，英國能源規管機構嘅一般職責由八項增加到二十一項", "q": "Since the 1986 Gas Act, the number of duties has risen from eight to twenty-one.", "loc": "DellerWaddamsPrice2018 p.35"}, {"id": 90, "n": "03", "s": 5, "t": "cause", "f": "法定職責越多、排序越複雜，有乜風險？", "b": "Deller 同 Waddams Price 編嘅報告認為法定職責種類越多、排序越複雜，職責之間衝突同取捨嘅風險就越高", "q": "increases the risk of conflicts and trade-offs between them", "loc": "DellerWaddamsPrice2018 p.35"}, {"id": 91, "n": "03", "s": 5, "t": "cause", "f": "司法覆核嘅威脅點樣影響監管者處理分配問題？", "b": "Deller 同 Waddams Price 編嘅報告認為受影響一方提出司法覆核嘅威脅，令監管者處理分配問題時傾向小心甚至過分小心", "q": "The threat of judicial review from affected parties provides incentives for regulators to adopt a cautious - perhaps overcautious - approach to distributional issues.", "loc": "DellerWaddamsPrice2018 p.35"}, {"id": 92, "n": "03", "s": 5, "t": "evaluation", "f": "英國能源監管嘅獨立性近年點變？", "b": "Deller 同 Waddams Price 編嘅報告認為隨住政府能源政策演變同介入監管增加，英國能源監管嘅獨立性近年減弱", "q": "Regulatory independence has diminished in recent years as government energy policy has evolved and its involvement in regulation has increased.", "loc": "DellerWaddamsPrice2018 p.37"}, {"id": 93, "n": "03", "s": 5, "t": "fact", "f": "Ofgem 點樣頂住政府要佢設全面價格上限嘅壓力？", "b": "Deller 同 Waddams Price 編嘅報告指出 Ofgem 成功頂住政府要佢設全面價格上限嘅壓力，理由係佢嘅法定權力只容許保護弱勢消費者，有重大分配含意嘅政策要由政府立法", "q": "Ofgem successfully resisted, arguing its statutory powers only allowed it to protect vulnerable consumers and that government legislation was required for a policy with potentially significant distributional implications", "loc": "DellerWaddamsPrice2018 p.34"}, {"id": 94, "n": "03", "s": 5, "t": "normative", "f": "監管者同政府應該點樣相處？", "b": "Deller 同 Waddams Price 編嘅報告認為監管者應該聽政府，但互相尊重表示監管者可以講「唔」並且得到尊重", "q": "While the regulator should ‘listen’ to government, mutual respect suggests the regulator should be able to say ‘no’ and have this respected.", "loc": "DellerWaddamsPrice2018 p.37"}, {"id": 95, "n": "03", "s": 6, "t": "normative", "f": "一位監管界人士點樣形容消費者之間嘅公平問題？", "b": "Deller 同 Waddams Price 報告訪問嘅一位監管界人士認為，消費者之間嘅公平問題係道德雷區，唯一解決嘅過程係政治過程同投票箱", "q": "it’s just a moral minefield… and the only process we have to resolve those sorts of things is the political process and the ballot box", "loc": "an interviewee from the regulatory community, in DellerWaddamsPrice2018 p.40"}, {"id": 96, "n": "03", "s": 6, "t": "cause", "f": "政府點解可能避免清楚排列優先次序？", "b": "Deller 同 Waddams Price 編嘅報告認為政府可能因為政治原因避免清楚排列優先次序，以免被列為低優先嘅利益反彈", "q": "This may be an issue if, for political reasons, a government prefers to avoid explicit prioritisation due to the potential pushback from those interests which are given ‘low’ priority.", "loc": "DellerWaddamsPrice2018 p.40"}, {"id": 97, "n": "03", "s": 6, "t": "cause", "f": "點解公平問題喺能源市場特別強烈？", "b": "Deller 同 Waddams Price 編嘅報告認為因為能源係必需品、低收入家庭能源開支比例高，公平問題喺能源市場可能比其他行業更強烈", "q": "Questions of fairness probably emerge with greater intensity in the energy market than some other sectors due to the pattern of ENEXShr by income, which reflects energy’s status as a necessity.", "loc": "DellerWaddamsPrice2018 p.30"}, {"id": 98, "n": "03", "s": 6, "t": "evaluation", "f": "能源負擔能力有冇脫離過政治干預？", "b": "Deller 同 Waddams Price 編嘅報告認為即使零售能源市場似乎運作良好，能源負擔能力都從來冇脫離政治干預", "q": "These policies suggest energy affordability never escaped political intervention even when the retail market appeared to be performing well.", "loc": "DellerWaddamsPrice2018 p.20"}, {"id": 99, "n": "03", "s": 6, "t": "conceptual", "f": "私有化初期嘅分工係點？", "b": "Deller 同 Waddams Price 編嘅報告指出私有化初期嘅分工反映教科書經濟學：市場最大化效率，分配目標交畀稅收同入息福利", "q": "the market maximises efficiency, while distributional objectives are left to taxes and income benefits", "loc": "DellerWaddamsPrice2018 p.43"}, {"id": 178, "n": "06", "s": 1, "t": "evaluation", "f": "獨立機構通常點樣證明自己？Eriksen 點睇？", "b": "Eriksen 認為獨立機構雖然通常以技術效率證明自己，但無可避免要作政治判斷", "q": "Despite that independent agencies are typically justified in terms of technical efficiency, they inevitably have to make political judgments.", "loc": "Eriksen2021 p.785"}, {"id": 179, "n": "06", "s": 1, "t": "evaluation", "f": "歐盟委員會（2002）點樣形容歐盟機構嘅評估？", "b": "歐盟委員會（2002）宣稱歐盟機構提供嘅係純技術、高質素、唔受政治或偶然考慮影響嘅評估", "q": "purely technical evaluations of very high quality and are not influenced by political or contingent considerations", "loc": "European Commission, in Eriksen2021 p.785"}, {"id": 180, "n": "06", "s": 1, "t": "conceptual", "f": "點解獨立機構嘅權力係政治性嘅？", "b": "Eriksen 認為獨立機構嘅權力係政治性嘅，因為佢哋嘅決定會對政治價值嘅意思表態", "q": "The authority is also political in the sense that their decisions take a stand on the meaning of political values.", "loc": "Eriksen2021 p.785"}, {"id": 181, "n": "06", "s": 1, "t": "conceptual", "f": "Eriksen 用邊三個準則評估機構處理政治價值嘅模式？", "b": "Eriksen 用特殊性、證成力同制度契合三個準則，評估機構點樣處理政治價值嘅模式", "q": "This section presents three criteria against which we can make assessments: particularity, justificatory force, and institutional fit.", "loc": "Eriksen2021 p.786"}, {"id": 182, "n": "06", "s": 2, "t": "normative", "f": "Vibert 點解要機構迴避實質價值？", "b": "Vibert 認為機構越去解釋社會嘅實質價值，就越可能侵入立法機關同政治過程嘅地盤", "q": "move into the territory of interpreting the substantive values of society, the more they are likely to encroach on the territory of the legislature and the political process", "loc": "Vibert, in Eriksen2021 p.786"}, {"id": 183, "n": "06", "s": 2, "t": "evaluation", "f": "迴避模式有乜兩個問題？", "b": "Eriksen 認為迴避模式保證唔到中立，而且令機構有誘因掩飾實際作出嘅政治判斷", "q": "The first is that avoidance does not secure neutrality. The second is that the model gives agencies an incentive to disguise their actual political judgments.", "loc": "Eriksen2021 p.786"}, {"id": 184, "n": "06", "s": 2, "t": "definition", "f": "Eriksen 點樣描述「社會公義」呢類概念？", "b": "Eriksen 將社會公義描述為有好多互相競爭嘅理解、只喺典型例子上有共識嘅評價概念", "q": "social justice is an evaluative concept of which there are many competing conceptions that agree only on paradigm cases", "loc": "Eriksen2021 p.787"}, {"id": 185, "n": "06", "s": 2, "t": "cause", "f": "要機構做政治任務但唔准詮釋價值，結果會點？", "b": "Eriksen 認為要機構做政治任務但唔詮釋價值，會產生政治性但唔被承認係政治性嘅決定", "q": "To the contrary, it will produce decisions that are political yet not acknowledged as such.", "loc": "Eriksen2021 p.787"}, {"id": 186, "n": "06", "s": 2, "t": "cause", "f": "如果價值判斷注定被視為唔正當，專家會點？", "b": "Eriksen 認為如果價值判斷注定被視為唔正當，專家就冇理由公開佢哋嘅價值判斷", "q": "But if value judgments inevitably have this taint of illegitimacy, why would experts want to reveal them?", "loc": "Eriksen2021 p.787"}, {"id": 187, "n": "06", "s": 3, "t": "normative", "f": "Richardson 認為行政規則制定應該限於乜？", "b": "Richardson 認為行政規則制定應該只限於將法例具體化", "q": "that it limit itself to specifying legislation", "loc": "Richardson, in Eriksen2021 p.788"}, {"id": 188, "n": "06", "s": 3, "t": "evaluation", "f": "具體化模式有乜兩個毛病？", "b": "Eriksen 認為具體化模式忽略咗機構可以正當參與立法過程，亦冇涵蓋喺法例以上層次嘅政治推理", "q": "First, the model ignores how agencies may play a legitimate role in the legislative process (as opposed to mere interpreters of finished legislation). Second, the model fails to cover the political reasoning that takes place at a level above statutes.", "loc": "Eriksen2021 p.788"}, {"id": 189, "n": "06", "s": 3, "t": "fact", "f": "Acs 指出監管者喺唔同法例之間有乜酌情？", "b": "Acs 指出就算國會將一條法例內嘅選項收窄，監管者仍然有酌情權喺唔同法例之間揀政策", "q": "even if Congress can constrain regulation to a narrow set of options within a given statute, regulators still have the discretion to choose from policies across statutes", "loc": "Acs, in Eriksen2021 p.789"}, {"id": 190, "n": "06", "s": 3, "t": "normative", "f": "要負責任咁將舊法例用落新問題，Eriksen 話點做？", "b": "Eriksen 認為要負責任咁將舊法例用落新問題，唯一方法係解釋新目的點樣由機構更廣嘅授權推出嚟", "q": "However, the only way to responsibly repurpose an old statute to address new issues is by explaining how the new purpose flows from the broader mandate of the agency.", "loc": "Eriksen2021 p.790"}, {"id": 191, "n": "06", "s": 4, "t": "normative", "f": "Eriksen 嘅公共理性模式要求機構點樣建立價值判斷？", "b": "Eriksen 嘅公共理性模式要求機構將價值判斷建基於一個公眾可以理解嘅推理框架，即係佢哋嘅整體授權", "q": "The “public reason model” requires agencies to ground their value judgments in a publicly accessible framework of reasoning, which is here interpreted as their overarching mandate.", "loc": "Eriksen2021 p.785"}, {"id": 192, "n": "06", "s": 4, "t": "conceptual", "f": "對獨立機構嚟講，政治價值係乜？", "b": "Eriksen 認為對獨立機構嚟講，政治價值係被託付、必須落實嘅嘢", "q": "For agencies, political values are something they are entrusted with and must put into practice.", "loc": "Eriksen2021 p.791"}, {"id": 193, "n": "06", "s": 4, "t": "conceptual", "f": "獨立機構獨特嘅推理方式，最好用乜概括？", "b": "Eriksen 認為獨立機構獨特嘅推理方式，最好用「忠於授權」概括", "q": "Their distinct form of reasoning is best encapsulated in the idea of fidelity to mandate.", "loc": "Eriksen2021 p.791"}, {"id": 194, "n": "06", "s": 4, "t": "conceptual", "f": "機構授權嘅理由空間有邊四大類理由？", "b": "Eriksen 認為機構授權嘅理由空間有四大類理由：效率、道德同民主上嘅可證成性、正當程序同專業", "q": "The broad categories of reasons in this space are efficiency, moral and democratic justifiability, due process, and expertise", "loc": "Eriksen2021 p.792"}, {"id": 195, "n": "06", "s": 4, "t": "definition", "f": "Eriksen 將四類理由叫做乜？", "b": "Eriksen 將機構授權入面四類主要理由稱為政治機構推理嘅「貨幣組合」", "q": "we may call this the “currency set” of political agency reasoning", "loc": "Eriksen2021 p.792"}, {"id": 196, "n": "06", "s": 4, "t": "conceptual", "f": "公共理性模式令我哋分得開乜？", "b": "Eriksen 認為公共理性模式令我哋分得開策略性迎合同忠於授權", "q": "In reality, the public reason model respects differentiated forms of discourse, while enabling us to distinguish between tactical pandering and fidelity to mandate.", "loc": "Eriksen2021 p.793"}, {"id": 197, "n": "06", "s": 5, "t": "conceptual", "f": "機構公共理性嘅三種德性係乜？", "b": "Eriksen 提出機構公共理性嘅三種德性：誠信、獨立同包容", "q": "the three virtues of agency public reason: integrity, independence, and inclusiveness", "loc": "Eriksen2021 p.793"}, {"id": 198, "n": "06", "s": 5, "t": "conceptual", "f": "機構誠信包括乜？", "b": "Eriksen 認為機構誠信唔止係一致同可預測，仲包括尊重同真誠嘅道德考慮", "q": "Hence, agency integrity is not simply about being consistent and predictable, it includes morally substantive considerations of respect and sincerity.", "loc": "Eriksen2021 p.794"}, {"id": 199, "n": "06", "s": 5, "t": "normative", "f": "機構嘅組織獨立要配合乜？", "b": "Eriksen 認為機構嘅組織獨立必須配合規範推理上嘅獨立", "q": "However, the model of public reason highlights how organizational independence must be complemented by independence in normative reasoning.", "loc": "Eriksen2021 p.794"}, {"id": 200, "n": "06", "s": 5, "t": "normative", "f": "機構用黨派或私人前提詮釋政治價值，會點？", "b": "Eriksen 認為機構用黨派或私人前提詮釋政治價值時，就冇做到公共推理", "q": "The notion of independence highlights that agencies fail to reason publicly when they rely on partisan or private premises concerning the interpretation of political values.", "loc": "Eriksen2021 p.794"}, {"id": 201, "n": "06", "s": 5, "t": "normative", "f": "公共理性要求機構包括邊類評價方式？", "b": "Eriksen 認為公共理性要求機構包括市場理性以外嘅評價方式", "q": "Public reason requires that agencies include modes of valuing beyond market rationality.", "loc": "Eriksen2021 p.795"}, {"id": 202, "n": "06", "s": 5, "t": "evaluation", "f": "機構將目標縮窄到傳統方法做得到嘅範圍，係乜？", "b": "Eriksen 認為機構將被託付嘅目標縮窄到傳統方法做得到嘅範圍，就係背棄授權", "q": "Agencies betray their mandate when they reduce the entrusted goals (e.g. market integrity or food safety) to whatever fits traditional methods.", "loc": "Eriksen2021 p.795"}, {"id": 203, "n": "06", "s": 6, "t": "cause", "f": "機構有幾大責任實踐公共理性德性，取決於乜？", "b": "Eriksen 認為機構有幾大制度責任去實踐公共理性德性，取決於佢哋係咪要為此負責", "q": "The extent to which agencies are institutionally obligated to pursue the virtues will depend on whether they are answerable for them.", "loc": "Eriksen2021 p.796"}, {"id": 204, "n": "06", "s": 6, "t": "normative", "f": "合適嘅機構問責制度第一個特徵係乜？", "b": "Eriksen 認為合適嘅機構問責制度第一個特徵係對詮釋性授權敏感", "q": "The first feature is sensitivity to the interpretive mandate.", "loc": "Eriksen2021 p.796"}, {"id": 205, "n": "06", "s": 6, "t": "normative", "f": "問責機構對機構嘅「適當尊重」即係乜？", "b": "Eriksen 認為問責機構對機構嘅尊重唔係盲目信任，而係避免不信任變成自我實現嘅預言", "q": "Deference does not mean blind trust; it is rather about avoiding that distrust becomes a self-fulfilling prophecy.", "loc": "Eriksen2021 p.796"}, {"id": 206, "n": "06", "s": 6, "t": "normative", "f": "合適嘅機構問責制度第三個特徵係乜？", "b": "Eriksen 認為合適嘅機構問責制度第三個特徵，係有能力將監管術語翻譯成公眾聽得明嘅考慮", "q": "The third feature is the ability to translate regulatory discourse into publicly accessible considerations.", "loc": "Eriksen2021 p.797"}, {"id": 207, "n": "06", "s": 6, "t": "normative", "f": "Eriksen 嘅模式係咪要畀非民選專業人士更多權決定政治目標？", "b": "Eriksen 聲明佢嘅公共理性模式唔係要畀非民選專業人士更多權決定政治目標", "q": "This is not a plea to give unelected professionals more authority to decide on political ends.", "loc": "Eriksen2021 p.797"}, {"id": 274, "n": "09", "s": 1, "t": "fact", "f": "過去幾十年授權畀獨立監管機構大增，理由係乜？", "b": "Koop 同 Hanretty 指出過去幾十年授權畀獨立監管機構大增，理由係佢哋表現優於政府部門", "q": "Recent decades have seen a considerable increase in delegation to independent regulatory agencies, which has been justified by reference to the superior performance of these bodies relative to government departments.", "loc": "KoopHanretty2018 p.38"}, {"id": 275, "n": "09", "s": 1, "t": "fact", "f": "「越獨立嘅監管者做得越好」有冇人驗過？", "b": "Koop 同 Hanretty 指出「越獨立嘅監管者做得越好」呢個假設差唔多冇人驗過", "q": "Yet, the hypothesis that more independent regulators do better work has hardly been tested.", "loc": "KoopHanretty2018 p.38"}, {"id": 276, "n": "09", "s": 1, "t": "cause", "f": "授權畀獨立監管機構對民主有乜影響？", "b": "Koop 同 Hanretty 認為授權畀獨立監管機構削弱國家權力同選民嘅連繫，增加非民選技術官僚嘅權力", "q": "Delegation to IRAs weakens the link between the exercise of state power and voters, and leads to an increase in the power of unelected technocrats.", "loc": "KoopHanretty2018 p.39"}, {"id": 277, "n": "09", "s": 1, "t": "normative", "f": "民主正當性減少，點解就需要證據？", "b": "Koop 同 Hanretty 認為民主正當性減少，就需要證據證明獨立監管機構真係用得更好", "q": "the reduction of democratic legitimacy requires some evidence that IRAs do in fact exercise authority in such a superior fashion", "loc": "KoopHanretty2018 p.39"}, {"id": 278, "n": "09", "s": 2, "t": "conceptual", "f": "Koop 同 Hanretty 點樣睇獨立？", "b": "Koop 同 Hanretty 將獨立視為程度問題，而唔係有或冇嘅特質", "q": "we view independence as a matter of degree rather than as a quality which is either present or absent", "loc": "KoopHanretty2018 p.40"}, {"id": 279, "n": "09", "s": 2, "t": "definition", "f": "Koop 同 Hanretty 點樣界定法律上獨立？", "b": "Koop 同 Hanretty 將法律上獨立界定為法例條文喺決定之前減少政客影響機構可能嘅程度", "q": "we conceptualize as the degree to which there are statutory provisions that decrease the possibilities for politicians to influence agency decisions before they are made", "loc": "KoopHanretty2018 p.42"}, {"id": 280, "n": "09", "s": 2, "t": "cause", "f": "專業論點樣解釋獨立令質素更好？", "b": "專業論認為比起政客同政府部門，獨立機構更易攞到或更識處理資訊，所以做得更好", "q": "The argument from expertise maintains that, compared with politicians and government departments, independent agencies have better access to (or can better process) information, and that better information leads to better work.", "loc": "KoopHanretty2018 p.42"}, {"id": 281, "n": "09", "s": 2, "t": "cause", "f": "可信承諾論點樣解釋獨立令質素更好？", "b": "Koop 同 Hanretty 認為交畀時間視野同誘因唔同嘅官員，政客可以綁住雙手、可信咁承諾長遠監管目標", "q": "By delegating to IRAs headed by officials with different time horizons and incentives, politicians can tie their hands and commit credibly to long-term regulatory objectives and better decisions.", "loc": "KoopHanretty2018 p.43"}, {"id": 282, "n": "09", "s": 2, "t": "definition", "f": "Koop 同 Hanretty 點樣界定對政客嘅正式問責？", "b": "Koop 同 Hanretty 將對政客嘅正式問責界定為政客可以憑法例要求機構提供資料同解釋其行為嘅程度", "q": "We say that an IRA is formally accountable to politicians to the extent that politicians can require the agency to provide information on, and explanation of, its conduct on the basis of statutory provisions rather than nonlegal forms of compulsion.", "loc": "KoopHanretty2018 p.44"}, {"id": 283, "n": "09", "s": 2, "t": "conceptual", "f": "按答責定義，獨立同問責相唔相容？", "b": "Koop 同 Hanretty 認為按答責定義，獨立監管機構嘅獨立同某程度嘅問責相容", "q": "Defined in this way, the independence of IRAs is compatible with some degree of accountability.", "loc": "KoopHanretty2018 p.44"}, {"id": 284, "n": "09", "s": 2, "t": "cause", "f": "憲政主義問責文獻認為問責有乜用？", "b": "憲政主義問責文獻認為提供資料同理由嘅要求有助防止同揭發任意行使同濫用公權力", "q": "requirements to provide information and justification are considered to help prevent and detect arbitrary exercise and abuse of public authority", "loc": "constitutionalist accountability literature, e.g. Bovens, in KoopHanretty2018 p.45"}, {"id": 285, "n": "09", "s": 2, "t": "cause", "f": "問責有乜代價？", "b": "Koop 同 Hanretty 指出問責亦同過多成本同繁文縟節有關", "q": "Accountability is also associated with excessive costs and red tape.", "loc": "KoopHanretty2018 p.46"}, {"id": 286, "n": "09", "s": 2, "t": "cause", "f": "畀機構更高政治獨立，有乜風險？", "b": "Koop 同 Hanretty 認為畀機構更高政治獨立，亦增加懈怠同官僚漂移嘅可能", "q": "By granting higher degrees of political independence, one also enhances the possibility of slack and bureaucratic drift", "loc": "KoopHanretty2018 p.46"}, {"id": 287, "n": "09", "s": 2, "t": "conceptual", "f": "Koop 同 Hanretty 嘅第一個假設係乜？", "b": "Koop 同 Hanretty 嘅第一個假設係法律上政治獨立越高，監管決策質素越高", "q": "Hypothesis 1: The higher the degree of formal political independence, the higher the quality of regulatory decision-making.", "loc": "KoopHanretty2018 p.44"}, {"id": 288, "n": "09", "s": 2, "t": "conceptual", "f": "Koop 同 Hanretty 嘅第三個假設係乜？", "b": "Koop 同 Hanretty 嘅第三個假設係正式政治問責越高，法律上獨立對監管質素嘅作用越強", "q": "Hypothesis 3: The higher the level of formal political accountability, the stronger the effect of formal political independence on the regulatory quality of agencies.", "loc": "KoopHanretty2018 p.47"}, {"id": 289, "n": "09", "s": 3, "t": "fact", "f": "Koop 同 Hanretty 嘅數據涵蓋幾多國家同監管者時段？", "b": "Koop 同 Hanretty 嘅數據涵蓋 30 個國家、46 個監管者時段", "q": "Thus, although we have data for 30 countries, we have information for 46 regulators, or regulator-spells.", "loc": "KoopHanretty2018 p.48"}, {"id": 290, "n": "09", "s": 3, "t": "conceptual", "f": "Koop 同 Hanretty 量度監管質素時睇乜？", "b": "Koop 同 Hanretty 量度監管質素時集中睇過程質素，而唔係活動多寡或者結果", "q": "We concentrate on high-quality processes, as opposed to high levels of activity or high-quality outcomes", "loc": "KoopHanretty2018 p.57"}, {"id": 291, "n": "09", "s": 3, "t": "fact", "f": "GCR 評級點樣合成？", "b": "Koop 同 Hanretty 指出 GCR 評級由專家問卷結合 GCR 編輯嘅量化數據同質性判斷而成", "q": "The ratings published by the GCR are produced by combining the results of an expert survey with quantitative data and qualitative judgments made by the GCR editorial team.", "loc": "KoopHanretty2018 p.57"}, {"id": 292, "n": "09", "s": 3, "t": "fact", "f": "GCR 專家問卷嘅受訪者主要係邊啲人？", "b": "GCR 指出佢嘅專家問卷受訪者大部分係律師同經濟學家", "q": "though it notes that the majority of respondents tend to be lawyers and economists", "loc": "GCR, in KoopHanretty2018 p.57"}, {"id": 293, "n": "09", "s": 4, "t": "fact", "f": "法律上獨立對競爭主管機關質素有乜作用？", "b": "Koop 同 Hanretty 發現法律上獨立對競爭主管機關嘅質素有正面而顯著嘅作用", "q": "We find that formal independence has a positive and significant effect on quality.", "loc": "KoopHanretty2018 p.38"}, {"id": 294, "n": "09", "s": 4, "t": "fact", "f": "正式政治問責對監管質素有乜作用？", "b": "Koop 同 Hanretty 發現正式政治問責冇提升監管質素，亦冇證據顯示佢加強獨立嘅作用", "q": "Contrary to expectations, though, formal political accountability does not boost regulatory quality, and there is no evidence that it increases the effect of independence by reducing the risk of slacking.", "loc": "KoopHanretty2018 p.38"}, {"id": 295, "n": "09", "s": 4, "t": "fact", "f": "更多問責條文同質素有乜關係？", "b": "Koop 同 Hanretty 發現更多問責條文同較低工作質素相關，雖然唔係每個模型都顯著", "q": "contrary to expectations, a more extensive set of accountability provisions is associated with lower rather than higher quality of work, though the effect is not always significant", "loc": "KoopHanretty2018 p.64"}, {"id": 296, "n": "09", "s": 4, "t": "fact", "f": "將獨立升到最高五分一，攞四星評級嘅機會點變？", "b": "Koop 同 Hanretty 嘅模型顯示將獨立由平均升到最高五分一，攞四星評級嘅機會翻倍到四成多", "q": "When we move independence from the mean to the top quintile, the probability of a four-star ranking doubles, to just over 40%.", "loc": "KoopHanretty2018 p.66"}, {"id": 297, "n": "09", "s": 4, "t": "fact", "f": "將問責升到最高五分一，攞四星評級嘅機會點變？", "b": "Koop 同 Hanretty 嘅模型顯示將問責升到最高五分一，攞四星評級嘅機會跌到 11.6%", "q": "When we make a comparable change to accountability, by moving it to the top quintile, the probability of a four-star ranking decreases, to 11.6%.", "loc": "KoopHanretty2018 p.66"}, {"id": 298, "n": "09", "s": 4, "t": "fact", "f": "除咗獨立，仲有乜因素提升競爭主管機關質素？", "b": "Koop 同 Hanretty 發現人手、監管權力同官僚體系整體能力亦提升競爭主管機關嘅工作質素", "q": "The quality of work is also enhanced by increased staffing, more extensive regulatory powers, and spillover effects of a more capable bureaucratic system.", "loc": "KoopHanretty2018 p.38"}, {"id": 299, "n": "09", "s": 4, "t": "evaluation", "f": "Koop 同 Hanretty 嘅發現對合理化政治獨立有乜意思？", "b": "Koop 同 Hanretty 認為佢哋嘅發現提供好理由，用工作做得更好去合理化政治獨立", "q": "Importantly, our findings suggest that there are good reasons to justify political independence by reference to better work.", "loc": "KoopHanretty2018 p.64"}, {"id": 300, "n": "09", "s": 4, "t": "fact", "f": "法律上獨立嘅發現可唔可以套落實際獨立？", "b": "Koop 同 Hanretty 指出佢哋關於法律上獨立嘅發現唔可以自動套用落實際獨立", "q": "Nonetheless, our findings do not automatically translate to de facto independence.", "loc": "KoopHanretty2018 p.42"}, {"id": 301, "n": "09", "s": 4, "t": "fact", "f": "所有變數取平均時，攞四星或以上評級嘅機會係幾多？", "b": "Koop 同 Hanretty 嘅模型顯示所有變數取平均時，競爭主管機關攞四星或以上評級嘅機會只係兩成", "q": "When all variables are set to their mean, the probability of receiving a four-star ranking or better is relatively low, at 20%.", "loc": "KoopHanretty2018 p.66"}, {"id": 302, "n": "09", "s": 4, "t": "fact", "f": "歐盟成員國身份對質素嘅作用有幾大？", "b": "Koop 同 Hanretty 發現歐盟成員國身份對質素嘅作用，同提高獨立程度差唔多大", "q": "The effect of EU membership is comparable in magnitude with the effect of an increase in independence.", "loc": "KoopHanretty2018 p.66"}, {"id": 303, "n": "09", "s": 5, "t": "fact", "f": "競爭主管機關法例入面嘅問責條文係邊類？", "b": "Koop 同 Hanretty 發現競爭主管機關法例入面嘅問責條文，正正係文獻話有負面效果嘅一般性要求", "q": "These are exactly the kind of provisions that we found in the design of competition authorities.", "loc": "KoopHanretty2018 p.64"}, {"id": 304, "n": "09", "s": 5, "t": "cause", "f": "問責點樣可能令政治「由後門返入嚟」？", "b": "Koop 同 Hanretty 認為機構可能預先迎合政治問責對象嘅喜好，令政治由後門返入嚟", "q": "agencies may anticipate the preferences of their political account-holders, leading to the reintroduction of politics via the back door", "loc": "KoopHanretty2018 p.65"}, {"id": 305, "n": "09", "s": 5, "t": "evaluation", "f": "一般性嘅政治問責要求帶嚟理想效果嗎？", "b": "Koop 同 Hanretty 認為一套一般性嘅政治問責要求冇帶嚟理想效果", "q": "we have learned that introducing a set of generic requirements for political accountability does not have desirable effects", "loc": "KoopHanretty2018 p.68"}, {"id": 306, "n": "09", "s": 5, "t": "normative", "f": "從民主正當性角度，政治問責重唔重要？", "b": "Koop 同 Hanretty 認為從民主正當性角度，政治問責好關鍵", "q": "In particular, political accountability is crucial from a perspective of democratic legitimacy.", "loc": "KoopHanretty2018 p.68"}, {"id": 307, "n": "09", "s": 5, "t": "normative", "f": "就算問責有代價，使唔使設問責條文？", "b": "Koop 同 Hanretty 認為就算有代價，可能都要設立問責條文", "q": "we may want to introduce accountability provisions even if they come at a cost", "loc": "KoopHanretty2018 p.68"}, {"id": 308, "n": "09", "s": 5, "t": "conceptual", "f": "表現更好係咪足以將競爭政策抽離民主政治？", "b": "Koop 同 Hanretty 認為表現更好係咪足以將競爭政策抽離正常民主政治，係規範性問題", "q": "The question of whether this improved performance sufficiently justifies removing competition policy from the scope of normal democratic politics is, of course, a normative question.", "loc": "KoopHanretty2018 p.67"}, {"id": 309, "n": "09", "s": 5, "t": "cause", "f": "研究行業監管者時要額外考慮乜？", "b": "Koop 同 Hanretty 認為行業監管者被俘虜嘅機會大得多，研究佢哋時要考慮獨立於行業", "q": "As such capture is much more likely in sectoral regulation, independence from the sector may need to be taken into account in studies of the quality of decision-making by sectoral regulators.", "loc": "KoopHanretty2018 p.69"}, {"id": 310, "n": "10", "s": 1, "t": "conceptual", "f": "Smith 同 Hague 話問責辯論要面對乜兩難？", "b": "Smith 同 Hague 認為問責辯論要面對點樣畀受權者足夠自主、同時確保足夠控制嘅兩難", "q": "Debates over accountability have to grapple with the uncomfortable dilemma of how to give sufficient autonomy to these actors for them to be able to achieve their tasks, while at the same time ensuring an adequate degree of control.", "loc": "Smith & Hague, in Scott2000 p.39"}, {"id": 311, "n": "10", "s": 1, "t": "normative", "f": "信任問責機制同正當授權有乜關係？", "b": "Scott 認為信任問責機制係正當授權嘅中心前提", "q": "Trust in mechanisms of accountability is thus a central precondition for the legitimate delegation of authority.", "loc": "Scott2000 p.39"}, {"id": 312, "n": "10", "s": 1, "t": "evaluation", "f": "傳統問責所依賴嘅「中央負責」概念，喺複雜行政國家係點？", "b": "Scott 認為傳統問責機制所依賴嘅中央負責概念好多時係虛構", "q": "the conception of centralized responsibility upon which traditional accountability mechanisms are based is often fictional", "loc": "Scott2000 p.38"}, {"id": 313, "n": "10", "s": 1, "t": "fact", "f": "公法學者點睇傳統問責機制？", "b": "Scott 指出公法學者幾乎一致認為傳統問責機制唔夠", "q": "public lawyers almost universally regard them as inadequate", "loc": "Scott2000 p.42"}, {"id": 314, "n": "10", "s": 2, "t": "definition", "f": "Scott 點樣界定問責？", "b": "Scott 將問責界定為為自己嘅行為向另一個人或機構交代嘅責任", "q": "Accountability is the duty to give account for one’s actions to some other person or body.", "loc": "Scott2000 p.40"}, {"id": 315, "n": "10", "s": 2, "t": "conceptual", "f": "Scott 建議將問責分成邊三條問題？", "b": "Scott 建議將問責分成三條問題：邊個負責、向邊個、為乜", "q": "It is helpful to keep distinct the three sets of accountability questions: ‘who is accountable?’; ‘to whom?’; and ‘for what?’.", "loc": "Scott2000 p.41"}, {"id": 316, "n": "10", "s": 2, "t": "conceptual", "f": "問責對象分邊三個方向？", "b": "Scott 將問責對象分為向上、橫向同向下三個方向", "q": "Thus accountability may be rendered to a higher authority (‘upwards accountability’), to a broadly parallel institution (‘horizontal accountability’) or to lower level institutions and groups (such as consumers) (‘downwards accountability’).", "loc": "Scott2000 p.42"}, {"id": 317, "n": "10", "s": 2, "t": "conceptual", "f": "Hood 將問責針對嘅價值分邊三類？", "b": "Hood 將問責所針對嘅價值分為經濟價值、社會同程序價值，同延續／安全價值三類", "q": "economic values (including financial probity and value for money (VFM)); social and procedural values (such as fairness, equality, and legality); continuity/security values (such as social cohesion, universal service, and safety)", "loc": "Hood, in Scott2000 p.42"}, {"id": 318, "n": "10", "s": 3, "t": "definition", "f": "Scott 點樣理解規管型國家？", "b": "Scott 將規管型國家理解為管治方式由直接提供公共服務轉為監察其他人提供", "q": "This refers to a shift in the style of governance away from the direct provision of public services, associated with the welfare state, and towards oversight of provision of public services by others.", "loc": "Scott2000 p.44"}, {"id": 319, "n": "10", "s": 3, "t": "conceptual", "f": "規管型國家管治最根本嘅特徵係乜？", "b": "Scott 認為規管型國家管治最根本嘅特徵係提供同監察公共服務嘅責任被打散", "q": "The most obvious and fundamental feature of regulatory state governance is fragmentation of responsibility for provision and oversight of public services such as prisons and telecommunications.", "loc": "Scott2000 p.44"}, {"id": 320, "n": "10", "s": 3, "t": "cause", "f": "責任碎片化對傳統問責有乜影響？", "b": "Scott 認為責任碎片化令傳統問責機制縮水、唔再清楚邊個負責、亦難追蹤問責連繫", "q": "The role of traditional accountability mechanisms appears to be diminished, it is no longer clear who is accountable, and there are problems with tracing the accountability linkages to the organizations who do the holding to account.", "loc": "Scott2000 p.46"}, {"id": 321, "n": "10", "s": 4, "t": "conceptual", "f": "乜嘢係「延伸問責」？", "b": "Scott 提出延伸問責概念，傳統問責只係實際令公共機構被追究嘅一組機制之中嘅一部分", "q": "then it is possible to conceive of a concept of ‘extended accountability’ within which traditional accountability is only part of a cluster of mechanisms through which public bodies are in fact held to account", "loc": "Scott2000 p.48"}, {"id": 322, "n": "10", "s": 4, "t": "conceptual", "f": "延伸問責係咪傳統公法模式或者新自由主義模式？", "b": "Scott 認為延伸問責結構既唔係傳統公法模式，亦唔單純係新自由主義模式嘅產物", "q": "while they do not correspond to a traditional public law model, equally are not simply the product of an alternative neo-liberal model", "loc": "Scott2000 p.48"}, {"id": 323, "n": "10", "s": 4, "t": "fact", "f": "延伸問責結構實際上係點？", "b": "Scott 發現任何政策領域入面嘅延伸問責結構都好複雜，最好形容為混合式", "q": "The investigation of any particular policy domain reveals complex structures of extended accountability, best characterized as hybrid in character.", "loc": "Scott2000 p.49"}, {"id": 324, "n": "10", "s": 5, "t": "conceptual", "f": "互相依存模式嘅起點係乜？", "b": "Scott 認為權威、資訊、專業同賦予正當性嘅能力分散，令互相依存嘅持份者喺行動上互相依賴", "q": "Interdependent actors are dependent on each other in their actions because of the dispersal of key resources of authority (formal and informal), information, expertise, and capacity to bestow legitimacy", "loc": "Scott2000 p.50"}, {"id": 325, "n": "10", "s": 5, "t": "conceptual", "f": "喺互相依存模式下，每個持份者要做乜？", "b": "Scott 認為喺互相依存模式下，每個主要持份者都要不斷向其他人交代部分行動，作為行動嘅前提", "q": "such that each of the principal actors has constantly to account for at least some of its actions to others within the space, as a precondition to action", "loc": "Scott2000 p.50"}, {"id": 326, "n": "10", "s": 5, "t": "conceptual", "f": "建基於互相依存嘅問責點樣運作？", "b": "Scott 認為建基於互相依存嘅問責唔係直線，而係好似伺服機制，靠對立張力將制度維持喺可接受位置", "q": "This form of accountability, premised upon interdependence, is not linear, but more like a servo-mechanism holding the regime in a broadly acceptable place through the opposing tensions and forces generated.", "loc": "Scott2000 p.52"}, {"id": 327, "n": "10", "s": 6, "t": "definition", "f": "乜嘢係冗餘模式？", "b": "Scott 將冗餘模式界定為幾個重疊、表面上多餘嘅問責機制，令任何一個都唔再係中心", "q": "A second extended accountability model is that of redundancy, in which overlapping (and ostensibly superfluous) accountability mechanisms reduce the centrality of any one of them.", "loc": "Scott2000 p.52"}, {"id": 328, "n": "10", "s": 6, "t": "conceptual", "f": "冗餘有乜好處？", "b": "Scott 認為冗餘嘅好處係一個機制失效時另一個仍然防到災難", "q": "Where one fails the other will still prevent disaster.", "loc": "Scott2000 p.53"}, {"id": 329, "n": "10", "s": 6, "t": "conceptual", "f": "冗餘模式有邊兩種？", "b": "Scott 認為冗餘模式至少有傳統同多層管治兩種", "q": "There are at least two forms to the redundancy model: traditional and multi-level governance.", "loc": "Scott2000 p.53"}, {"id": 330, "n": "10", "s": 6, "t": "cause", "f": "喺冗餘模式下，駐場控制員被俘虜會點？", "b": "Scott 認為喺冗餘模式下，就算駐場控制員被監獄長俘虜，其他追究監獄長嘅機制好可能會發現", "q": "with the redundancy model of accountability were such capture to occur it would likely be identified by one or more of the others holding the director to account", "loc": "Scott2000 p.54"}, {"id": 331, "n": "10", "s": 7, "t": "cause", "f": "BT 對 OFTEL 嘅司法覆核有乜意外效果？", "b": "Scott 認為整體嚟睇，BT 對 OFTEL 嘅司法覆核可能削弱其他人追究 OFTEL 嘅能力", "q": "But, considered in the round, judicial review actions may reduce the power of others to hold OFTEL to account.", "loc": "Scott2000 p.55"}, {"id": 332, "n": "10", "s": 7, "t": "definition", "f": "乜嘢係 collibration？", "b": "Dunsire 將 collibration 界定為透過調整平衡去改變控制系統（例如問責機制）運作嘅策略", "q": "Dunsire sees collibration as a stratagem common to a wide variety of processes by which balances are shifted to change the nature of the way that control systems (such as accountability mechanisms) work.", "loc": "Dunsire, in Scott2000 p.57"}, {"id": 333, "n": "10", "s": 7, "t": "normative", "f": "問責網絡嘅目標係乜？", "b": "Scott 認為問責網絡嘅目標唔係撫平衝突，而係利用衝突令制度保持適當張力", "q": "the objective should not be to iron out conflict, but to exploit it to hold regimes in appropriate tension", "loc": "Scott2000 p.57"}, {"id": 334, "n": "10", "s": 7, "t": "evaluation", "f": "兩個模式可唔可以直接寫入公法規範？", "b": "Scott 認為互相依存同冗餘兩個模式都唔可以直接寫入公平、合法、理性等公法規範", "q": "Neither model is directly ‘programmable’ with the public law norms (fairness, legality, rationality, and so on).", "loc": "Scott2000 p.59"}, {"id": 335, "n": "10", "s": 7, "t": "evaluation", "f": "互相依存模式有乜風險？", "b": "Scott 認為互相依存模式有被個別企業或企業群等特殊利益俘虜嘅風險", "q": "The interdependence model carries with it the risk that special interests, such as those of a particular firm or group of firms, may capture the regime through their overall weighting of power within it.", "loc": "Scott2000 p.60"}, {"id": 336, "n": "10", "s": 7, "t": "evaluation", "f": "冗餘模式有乜難處？", "b": "Scott 認為冗餘模式難以計算幾多冗餘先夠、幾時多一層問責係冇效率", "q": "it is difficult to calculate how much redundancy is sufficient and how to know when an additional layer of accountability is inefficient and to be removed", "loc": "Scott2000 p.60"}];
+const NOTES_META={
+ '10':{t:'規管型國家入面嘅問責',q:'責任打散咗之後，問責係咪冇咗？定係變咗另一種形態？',read:'自主同控制嘅兩難；問責三條問題；責任打散；延伸問責；互相依存（電訊）；冗餘（外判監獄、歐盟基金）；collibration 同兩個模式嘅問題。'},
+ '09':{t:'獨立同問責會唔會令監管做得好啲',q:'「獨立機構做得好啲」有冇證據？問責又有冇幫助？',read:'問題同理由；兩條理由同三個假設；量度方法；結果：獨立有幫助、問責冇；點樣解讀。'},
+ '06':{t:'獨立機構點樣處理政治價值',q:'獨立機構避唔開政治價值，佢哋應該點樣處理先算正當？',read:'技術外衣遮唔住政治判斷；迴避模式；具體化模式；公共理性：忠於授權；三種德性；問責點樣配合。'},
+ '02':{t:'南方嘅規管型國家',q:'發展中國家嘅規管型國家同北方一唔一樣？點解有啲國家唔設、或設咗唔運作獨立機構？',read:'三個共同處境；移植同空殼機構；效率同再分配分唔開；薄同厚嘅國家能力；威權、石油、共產遺產；設立同運作兩個階段。'},
+ '03':{t:'由「負責任」到「回應型」',q:'英國呢個「典型」規管型國家，2008 年後點樣被政治化、點樣變？',read:'負責任嘅規管型國家；金融危機後被政治化；監管者實際點變；疊層式轉變；Ofgem 職責膨脹、獨立變薄；分配決定由邊個做。'}
+};
+const NOTE_ORDER=['10','09','06','02','03'];
+const NOTES=[
+{k:'10-1',t:'自主同控制嘅兩難；傳統問責係虛構',lv:[],vis:['v-acc'],b:`<p>Smith 同 Hague：問責辯論要面對一個<b>兩難</b>：點樣畀受權者足夠自主去完成任務，同時確保有足夠控制。所以信任問責機制，係<b>正當授權嘅中心前提</b>。</p>
+ <p>問題係，喺一個廣泛下放酌情權嘅複雜行政國家，傳統問責所依賴嘅<b>「中央負責」好多時係虛構</b>；公法學者幾乎一致認為傳統機制唔夠。（Thatcher 都話授權之前議會問責已近乎虛構，見 Part 2。）</p>`},
+{k:'10-2',t:'問責係乜：邊個、向邊個、為乜',lv:[],vis:['v-acc'],b:`<p>定義：<b>為自己嘅行為向另一個人或機構交代嘅責任</b>。分開三條問題：邊個負責、向邊個、為乜。</p>
+ <ul><li><b>向邊個：</b>向上（較高權力）、橫向（大致平行嘅機構）、向下（較低層機構同群體，例如消費者）。</li>
+ <li><b>為乜（Hood）：</b>經濟價值、社會同程序價值、延續／安全價值。</li></ul>
+ <p>兩條軸交叉就有九格。</p>
+ <p class="muted">筆記嘅例子：私營巴士公司向上對運輸署交代牌照條件；橫向對核數師交代數簿；向下對乘客交代班次同車費。價值可以係錢、程序（公平對待乘客）或安全（車有冇保養）。</p>`},
+{k:'10-3',t:'規管型國家將責任打散',lv:[],vis:[],b:`<p>規管型國家：管治方式由<b>直接提供公共服務</b>，轉為<b>監察其他人提供</b>。最根本嘅特徵係提供同監察嘅<b>責任被打散</b>。</p>
+ <p>例子：英國電訊（BT）私有化後，脫離國會、法律、行政同財政嘅傳統問責，改為向 OFTEL 交代牌照條件；監獄分咗政策（部長）同運作（監獄署），仲有外判監獄。結果傳統問責好似<b>縮咗水</b>，唔再清楚邊個負責，亦難追蹤由邊個去追究。</p>`},
+{k:'10-4',t:'延伸問責',lv:[],vis:['v-acc'],b:`<p>碎片化亦帶嚟新嘢。如果傳統問責係向上對部長、國會、法院（加少少審計同申訴），就可以構想<b>「延伸問責」</b>：傳統問責<b>只係</b>一組實際令公共機構被追究嘅機制之中嘅<b>一部分</b>。</p>
+ <p>延伸問責唔係傳統公法模式，亦唔單純係新自由主義嘅市場模式。市場式問責（內部市場、排名榜、資本市場）往往疊喺層級結構上面，所以任何政策領域嘅延伸問責都係<b>混合式</b>。</p>`},
+{k:'10-5',t:'互相依存模式：電訊業',lv:[],vis:['v-acc'],b:`<p>權威、資訊、專業同賦予正當性嘅能力<b>分散</b>喺唔同持份者手，所以佢哋行動上<b>互相依賴</b>，每個主要持份者都要不斷向其他人交代部分行動，作為行動嘅前提。</p>
+ <p>英國電訊業：BT 對國會同法院嘅向上問責減少，但多咗向 OFTEL（向上）、公司管治（橫向）、股東同市場（向下）交代。OFTEL 自己又被 BT、其他持牌者、部長、法院同審計署緊盯，所以為咗正當性發展新嘅諮詢程序。</p>
+ <p>呢種問責唔係直線，而係好似一個<b>伺服機制</b>，靠各方嘅<b>對立張力</b>將制度維持喺大致可接受嘅位置。</p>`},
+{k:'10-6',t:'冗餘模式：外判監獄、歐盟基金',lv:[],vis:['v-acc'],b:`<p>幾個<b>重疊（表面上多餘）</b>嘅問責機制，令任何一個都唔再係中心；好似<b>「又綁皮帶又揹吊帶」</b>：一個失效，另一個仍然防到災難。</p>
+ <ul><li><b>傳統：</b>外判監獄，除咗法院、審計署、監獄督察、申訴專員，仲多咗駐場「控制員」。就算控制員被監獄長俘虜，其他機制好可能會發現。</li>
+ <li><b>多層管治：</b>歐盟結構基金要求成員國同歐盟共同出資，本國同歐盟審計機構都會關心同一個項目。</li></ul>`},
+{k:'10-7',t:'點樣用：調整平衡，同兩個模式嘅問題',lv:[],vis:[],b:`<p>法律可以改變平衡，有時出人意表：BT 用司法覆核挑戰 OFTEL，整體嚟睇反而可能<b>削弱其他人追究 OFTEL</b> 嘅能力。（對照：Wils 話司法覆核加強 NCA 獨立，見 Part 2。）</p>
+ <p>Dunsire 嘅 <b>collibration</b>：透過調整各方平衡，改變控制系統（例如問責機制）嘅運作。目標<b>唔係撫平衝突，而係利用衝突</b>，令制度保持適當張力。</p>
+ <p>兩個模式都有問題：都唔可以直接「寫入」公平、合法、理性等公法規範；互相依存有被<b>特殊利益俘虜</b>嘅風險；冗餘<b>難計幾多先夠</b>，而且可能因同一原因同時失效（例如資料同時瞞過幾個機制）。</p>`},
+{k:'09-1',t:'用「做得好啲」合理化獨立，但冇人驗過',lv:[],vis:['v-kh'],b:`<p>過去幾十年大量授權，理由係獨立機構<b>表現優於政府部門</b>；但「越獨立做得越好」差唔多<b>冇人驗過</b>。</p>
+ <p>點解要驗？授權削弱咗國家權力同選民之間嘅連繫、增加咗非民選技術官僚嘅權力；民主正當性減少咗，就需要<b>證據</b>證明機構真係用得更好。</p>`},
+{k:'09-2',t:'兩條理由同三個假設',lv:[],vis:['v-kh'],b:`<p>獨立係<b>程度問題</b>，唔係有或冇。量度嘅係<b>法律上獨立</b>：法例條文喺決定之前減少政客影響機構嘅可能。</p>
+ <p>兩條理由：<b>專業</b>（更易攞到、更識處理資訊）同<b>可信承諾</b>（交畀時間視野同誘因唔同嘅官員，政客綁住雙手）。假設一：越獨立，質素越高。</p>
+ <p>問責用<b>「答責」</b>定義：政客可以憑法例（唔係非法律壓力）要求機構提供資料同解釋；咁樣獨立同某程度問責<b>相容</b>。憲政主義文獻話問責可以防止同揭發濫權；但問責亦同<b>過多成本同繁文縟節</b>有關。</p>
+ <p>更高政治獨立亦增加<b>懈怠同官僚漂移</b>嘅可能，問責可以做防線。假設三：問責越高，獨立嘅正面作用越強（即 Majone「互補」嘅講法）。</p>`},
+{k:'09-3',t:'點樣量度',lv:[],vis:[],b:`<p>30 個國家，因為機構改組，實際有 <b>46 個監管者時段</b>。獨立用 18 項法例指標（首長點委任、任期、可唔可以撤職、預算來源等），問責用 11 項（年報、預算、計劃要唔要交政府或國會，國會可唔可以傳召首長等），用項目反應理論（IRT）合成分數。</p>
+ <p>質素揀以<b>「過程」</b>為主嘅量度，唔睇活動多寡或市場結果：用 <i>Global Competition Review</i>（GCR）每年嘅執法評級，由專家問卷加 GCR 編輯嘅量化數據同判斷合成；受訪者大部分係<b>律師同經濟學家</b>。</p>`},
+{k:'09-4',t:'結果：獨立有幫助，問責冇',lv:[],vis:['v-kh'],b:`<p><b>法律上獨立</b>對質素有正面而顯著嘅作用。但同預期相反，<b>正式政治問責冇提升質素</b>，亦冇證據顯示佢加強獨立嘅作用；更多問責條文反而同較低質素相關（唔係每個模型都顯著）。</p>
+ <p>數字（Model 3）：所有變數取平均，攞四星或以上嘅機會只係<b>兩成</b>；獨立升到最高五分一，機會<b>翻倍到四成多</b>；問責升到最高五分一，機會<b>跌到 11.6%</b>。人手、權力同政府整體效能亦有幫助；歐盟成員國身份嘅作用同提高獨立差唔多大。</p>
+ <p>結論：有好理由用「做得更好」合理化政治獨立；但數據只係法律上獨立，<b>唔可以自動套落實際獨立</b>。</p>`},
+{k:'09-5',t:'點樣解讀',lv:[],vis:[],b:`<p>點解問責冇幫助？兩個可能：文獻話負面效果多數嚟自<b>一般性、例行</b>嘅要求（年度計劃、報告），而競爭主管機關法例入面正正係呢類；佢哋只量度對政客嘅問責，機構可能<b>預先迎合</b>問責對象嘅喜好，令政治<b>由後門返入嚟</b>。最少可以講：一套一般性政治問責要求冇帶嚟理想效果。</p>
+ <p>但作者冇話唔要問責：從<b>民主正當性</b>角度，政治問責好關鍵；就算有代價，可能都要設。表現更好係咪足以將競爭政策抽離正常民主政治，係<b>規範性問題</b>。最後：行業監管者被俘虜嘅機會大得多，研究佢哋要考慮<b>獨立於行業</b>。</p>`},
+{k:'06-1',t:'技術外衣遮唔住政治判斷',lv:[],vis:['v-eriksen'],b:`<p>獨立機構通常以<b>技術效率</b>證明自己，但<b>無可避免要作政治判斷</b>。官方講法相反：歐盟委員會話歐盟機構提供純技術、高質素、唔受政治考慮影響嘅評估。</p>
+ <p>Eriksen：權力係政治性嘅，唔止因為有再分配效果，仲因為決定會<b>對政治價值嘅意思表態</b>：風險評估同成本效益分析會塑造公眾對「安全」「穩定」「公平」嘅理解。</p>
+ <p>三個評估準則：<b>特殊性</b>（講得出機構推理同其他公共機構有咩唔同）、<b>證成力</b>、<b>制度契合</b>。</p>`},
+{k:'06-2',t:'迴避模式',lv:[],vis:['v-eriksen'],b:`<p>Vibert：機構越去解釋社會嘅實質價值，就越侵入立法機關同政治過程嘅地盤；所以應該「受事實約束」，並對價值判斷保持透明。</p>
+ <p>兩個問題：迴避<b>保證唔到中立</b>；而且令機構有誘因<b>掩飾</b>實際作出嘅政治判斷。例：ESMA 要研究點樣推動「社會企業」，一定要對「社會公義」表態，而社會公義有好多互相競爭嘅理解、只喺典型例子上有共識。叫機構做政治任務但唔准詮釋價值，只會做出<b>政治性但冇人承認係政治性</b>嘅決定。如果價值判斷注定被視為唔正當，專家點會想公開？</p>`},
+{k:'06-3',t:'具體化模式',lv:[],vis:['v-eriksen'],b:`<p>Richardson：機構可以就目標推理，但<b>只限於將立法指令具體化</b>。好似乘客（立法者）話「去個好地方野餐」，司機（機構）揀實際去邊。</p>
+ <p>兩個毛病：忽略咗機構可以<b>正當參與立法過程</b>，而唔止詮釋已完成嘅法例；冇涵蓋喺<b>法例以上層次</b>嘅政治推理（例如 ESMA 做歐盟機構嘅獨立顧問）。Acs：就算國會收窄一條法例內嘅選項，監管者仍然可以<b>喺唔同法例之間揀政策</b>（例如美國環保局用幾十年前嘅《清潔空氣法》處理氣候問題）。要負責任咁將舊法例用落新問題，唯一方法係解釋新目的點樣由機構<b>更廣嘅授權</b>推出嚟。</p>`},
+{k:'06-4',t:'公共理性模式：忠於授權',lv:[],vis:['v-eriksen'],b:`<p>借 Rawls 嘅<b>公共理性</b>：公共機構處理政治價值，要用公開、可以被所有講道理嘅人接受嘅推理框架。Eriksen 要求機構將價值判斷建基於公眾可以理解嘅框架，即<b>機構嘅整體授權</b>。</p>
+ <p>機構同政黨、法院唔同：政黨為選票提出鮮明立場；法院劃合理界線；對機構嚟講，政治價值係<b>被託付、要落實</b>嘅嘢。所以佢哋獨特嘅推理方式係<b>「忠於授權」</b>。</p>
+ <p>授權唔止係使命宣言，而係一個共享嘅理由空間，四類理由：<b>效率、道德同民主上嘅可證成性、正當程序、專業</b>，叫做推理嘅<b>「貨幣組合」</b>。面對對立壓力（例如預防對比例原則），呢個模式分得開<b>策略性迎合</b>同<b>忠於授權</b>。</p>
+ <p class="muted">筆記嘅例子：學校考試委員會決定「公平」點計，唔可以話淨係計分唔理公平（迴避），亦唔可以淨係逐字照校規（具體化），要問「學校嘅教育使命要求我點做」，再公開講理由。</p>`},
+{k:'06-5',t:'三種德性：誠信、獨立、包容',lv:[],vis:['v-eriksen'],b:`<ul><li><b>誠信：</b>堅守原則、公開講理由、言行一致；唔止一致同可預測，仲包括<b>尊重同真誠</b>呢啲道德考慮。</li>
+ <li><b>獨立：</b>組織上獨立唔夠，仲要<b>推理上獨立</b>；用黨派或私人前提詮釋政治價值，就冇做到公共推理。</li>
+ <li><b>包容：</b>借 Dryzek 對「行政理性主義」嘅批評，避免三個陷阱：排除唔量化得嘅價值、迴避多因素問題、排除激進選項。要包括<b>市場理性以外</b>嘅評價方式；將目標縮窄到傳統方法做得到嘅範圍，就係<b>背棄授權</b>。</li></ul>`},
+{k:'06-6',t:'問責點樣配合',lv:[],vis:[],b:`<p>德性要唔係口號，就要有人追究：機構有幾大責任實踐呢啲德性，要睇佢哋<b>係咪要為此負責</b>。合適問責制度三個特徵：</p>
+ <ol><li><b>對詮釋性授權敏感：</b>唔淨係執死條規則或程序，而要問機構有冇忠於更廣嘅使命。</li>
+ <li><b>適當尊重：</b>唔係盲目信任，而係避免<b>不信任變成自我實現嘅預言</b>（過多監控會令機構玩數字遊戲、推卸責任）。</li>
+ <li><b>翻譯：</b>將監管術語翻譯成公眾聽得明嘅考慮。</li></ol>
+ <p>Eriksen 強調：呢個<b>唔係</b>要畀非民選專業人士更多權決定政治目標，而係講清楚佢哋點樣先算以合適方式處理目標。</p>`},
+{k:'02-1',t:'規管型國家同「南方」：三個共同處境',lv:[],vis:['v-south'],b:`<p>Yeung：最闊嚟講，規管型國家更依賴<b>同政府保持距離、唔受日常政治壓力、用技術專業</b>做決定嘅機構。「南方」唔係地理標籤，而係殖民歷史、貧窮、以「發展」為主要政策關注嘅共同背景。</p>
+ <ol><li><b>外來壓力：</b>尤其國際金融機構，要求喺基建行業採用監管機構。</li>
+ <li><b>再分配政治更激烈：</b>基建服務極差甚至冇。</li>
+ <li><b>國家能力有限</b>，分「薄」同「厚」兩層。</li></ol>`},
+{k:'02-2',t:'移植：空殼機構',lv:[],vis:['v-south'],b:`<p>1990 年代世界銀行將「透明獨立嘅監管」寫入貸款條件。北方嘅機構經過本國政治過程篩選先成形；南方將機構目的、設計同運作放入本國政治過程篩選嘅步驟<b>被削弱甚至完全省略</b>。</p>
+ <p>結果南方嘅監管機構好多時一開始只係<b>空洞嘅制度外殼</b>，之後先慢慢被期望、規範、運作規則同文化填滿。好似法治文化要幾十年先扎根，機構嘅自主文化<b>唔可以由外面當「速效方案」硬塞</b>。</p>`},
+{k:'02-3',t:'效率同再分配分唔開',lv:[],vis:['v-south'],b:`<p>直接對住 Majone：佢嘅方案建基於可以清楚劃線，<b>效率目標靠專業得到正當性，再分配要政治問責</b>。南方經驗顯示呢條分界<b>更加唔可信</b>，三個原因：</p>
+ <ul><li>服務覆蓋率低，「收回成本」可以等於將窮人排除喺基本服務以外；</li>
+ <li>行業本身運作失靈，機構一開始就要分配轉型成本；</li>
+ <li>行政同立法機關本身正當性弱。</li></ul>
+ <p>即係再分配政治<b>嵌喺</b>催生監管機構嘅處境入面。所以監管太重要，<b>唔可以淨係交畀監管者</b>：法院同公民社會會介入；透明條款同聽證會喺某啲條件下可以令機構變成<b>新嘅民主空間</b>。焦點應由「規管型國家」轉去<b>「規管型社會」</b>（Braithwaite、Levi-Faur）。</p>
+ <p class="muted">筆記連到：英國本身直到 2010 年代中都要監管者對分配後果「盲」，之後越嚟越覺得唔可行（第 5 課）。</p>`},
+{k:'02-4',t:'國家能力：薄同厚',lv:[],vis:[],b:`<p>國家能力通常用<b>「薄」</b>嘅方式界定：自主、財政獨立、人手等制度設計標準。但要同規管型社會打交道，要<b>「厚」</b>嘅國家能力：同時接觸國家同非國家持份者，又保住程序正確、獨立同說理。</p>
+ <p>同時做到「嵌入」同「自主」，正係<b>發展型國家</b>文獻（Evans）嘅核心；作者建議兩派學者多啲對話。北方學者開始講規管型國家嘅「危機」，呢種<b>「轉向政治」值得歡迎</b>。</p>`},
+{k:'02-5',t:'點解有啲南方國家唔設獨立機構',lv:[],vis:['v-south'],b:`<p>Koop 同 Kessler（2021）問：點解有啲新興同發展中經濟體，<b>正式或實際上避開</b>監管獨立？睇競爭政策：到 2017 年，118 個有全面競爭法嘅經濟體之中 <b>25%</b> 未正式設立獨立主管機關（靠部門執法）；89 個設立咗嘅，又有 <b>15%</b> 未開始運作。</p>
+ <p>理論起點：<b>可信承諾論本來係為民主國家而設</b>。冇選舉，時間不一致問題冇咁深；威權政府可能寧願投資者<b>靠官員保護</b>，而唔係靠中立可預測嘅規則；而且佢哋嘅制度承諾本身冇咁可信。</p>
+ <p>政治經濟制度：獨立同<b>自由放任</b>較夾，同國家控制經濟唔夾。<b>石油國家</b>行擁有權模式，唔係監管模式；<b>共產制度</b>亦靠擁有權同價格控制。（Thatcher 喺西歐都見到國家傳統影響授權。）</p>`},
+{k:'02-6',t:'設立同運作：兩個階段，兩套原因',lv:[],vis:['v-south'],b:`<p>數據（148 國，1990–2017）：</p>
+ <ul><li><b>設立：</b>越威權越少設立，喺唔同模型都穩健；<b>石油依賴加強</b>威權嘅負面作用；共產遺產冇加強威權作用，主效果係負，但只喺部分模型 10% 水平顯著。</li>
+ <li><b>運作：</b>威權假設<b>被否定</b>；石油依賴嘅經濟體無論政體都較少令機構運作；開始運作主要靠<b>功能需要同能力</b>（經濟越大越富有、原本已有部門競爭單位，越快運作），而唔係制度相容。</li></ul>
+ <p>推論：正式設立<b>唔只係象徵式</b>；政府喺<b>設立嗰步</b>特別計算獨立嘅政治代價。佢哋冇評價應唔應該獨立，但結果顯示國際規範同監管移植嘅擴散有<b>制度上嘅限制</b>，同 Dubash 同 Morgan 講嘅「移植」一致。</p>`},
+{k:'03-1',t:'「負責任」嘅規管型國家',lv:[],vis:['v-uk'],b:`<p>1980、90 年代英國等地嘅規管型國家：<b>獨立機構、以效率為本嘅目標、「經濟技術官僚式」分析</b>，靠產出同結果攞正當性；監管有分配含意，就當係<b>社會開支</b>嘅事。</p>
+ <p>戴卓爾政府刻意將規管型國家<b>去政治化</b>。兩個邏輯：功能上嘅<b>可信承諾</b>，同政治上嘅<b>避責</b>：獨立監管者係理想嘅「擋箭牌」，得罪人嘅選擇交畀佢，政客唔使孭鑊。</p>
+ <p>借 Birch（1964）嘅字叫做<b>「負責任」</b>：審慎同一致，相對於強調回應公眾要求同意見嘅管治。</p>`},
+{k:'03-2',t:'金融危機之後：被政治化',lv:[],vis:['v-uk'],b:`<p>政治化：對監管嘅<b>關注、動員同兩極化增加</b>。金融危機令監管者<b>意外地</b>被政治化，三個機制：經濟轉差、監管結果被質疑；市場信任下跌、要求干預；生活水平跌而公用事業加價，決定對低收入家庭更切身。大眾關注被「搵笨」同<b>「忠誠罰款」</b>（唔轉供應商嘅舊客畀貴價），於是更關注<b>弱勢消費者</b>，監管者亦更注意再分配結果。</p>
+ <p>點解變「回應型」？為競爭同開拓市場嘅決定都可能有分配後果，但<b>起碼理論上可以追求柏累托效率</b>；以保護消費者為目標嘅「市場矯正」有好多唔同方法，而目標含糊，<b>揀邊個方法好難說得通</b>。</p>`},
+{k:'03-3',t:'訪問結果：監管者實際點變',lv:[],vis:['v-uk'],b:`<p>十二個半結構式訪問（競爭、能源、水務、通訊、鐵路、金融嘅現任同前任資深監管者）。一致話公眾同傳媒關注增加、語氣更批判。</p>
+ <ul><li><b>政府行近咗：</b>指引更正式；2008 年 Mandelson 以「公眾利益」推翻 OFT 阻止 Lloyds TSB 收購 HBOS 嘅建議；2017 年保守黨政府宣布能源價格上限。</li>
+ <li><b>由投資者轉向消費者：</b>尤其弱勢消費者；開始質疑（總和）消費者福利標準；承認「輕手」唔夠，部分因為<b>單向壓力</b>：上訴嘅通常係公司，唔係消費者團體。</li>
+ <li><b>分配問題：</b>直到 2010 年代中都同意監管者要對分配後果「盲」；而家越嚟越覺得唔可接受亦唔可行，但仍避開完全再分配（例如交叉補貼），認為<b>只有政客</b>先應該判斷邊啲消費者值得更多保護。仲多咗用溝通、客戶參與同地區關注建立信任。</li></ul>`},
+{k:'03-4',t:'疊層式轉變：邁向回應型',lv:[],vis:['v-uk'],b:`<p>三個情境：第一級改變（換工具唔換核心）、轉化型第二級改變（逐步、<b>疊層</b>）、取代型第二級改變（突然換晒）。結論：大多屬<b>轉化型</b>，邁向<b>回應型規管型國家</b>：新元素疊喺舊元素上面，同政治保持距離、證據為本、重視競爭仍然喺度。</p>
+ <p>後果：返唔到一個淨係講柏累托效率嘅世界，而且有啲元素<b>互相唔兼容</b>。真正問題唔係監管者可唔可以政治，而係<b>可以政治到咩程度而唔被黨派衝突波及</b>。政客暫時冇收回授權，所以改變轉化咗、但冇挑戰到規管型國家嘅存在；政治化唔會消失。</p>
+ <p>用詞：呢度嘅「回應」係回應公眾同政治關注，<b>唔係</b>執法文獻講嘅「回應式監管」（回應業界行為同結構）。</p>`},
+{k:'03-5',t:'英國能源：職責膨脹、獨立變薄',lv:[],vis:['v-uk'],b:`<p>Deller 同 Waddams Price（編，2018）：經濟學傳統著重效率，從來冇聲稱市場能有效帶嚟公平結果；對公平嘅關注正挑戰「純」經濟監管嘅框架。</p>
+ <ul><li><b>職責膨脹：</b>自 1986 年《煤氣法》，一般職責由<b>八項增加到二十一項</b>（尤其 2000 年《公用事業法》之後，加入社會同環保目標）。職責越多、排序越複雜，<b>衝突同取捨</b>越易出現；加上司法覆核嘅威脅，處理分配問題時傾向<b>小心甚至過分小心</b>。</li>
+ <li><b>獨立變薄：</b>政府介入增加，獨立性減弱。之前 Ofgem 喺政府壓力下推出「地區非歧視條款」同「簡化收費」（都被 CMA 批評）；但 2017–18 年政府要佢設全面價格上限，Ofgem <b>成功頂住</b>：法定權力只容許保護弱勢消費者，有重大分配含意嘅政策要<b>由政府立法</b>，結果有 2018 年《價格上限法》。</li></ul>
+ <p>立場：監管者應該「聽」政府，但互相尊重表示<b>監管者可以講「唔」而受尊重</b>。</p>
+ <p class="muted">筆記亦記低第 7 週嘅 Blakelock 同 Turnpenny（2022）：長期持續參與 Ofgem 諮詢嘅只有前壟斷供應商同法定消費者倡議機構。</p>`},
+{k:'03-6',t:'分配決定應該由邊個做',lv:[],vis:['v-uk'],b:`<p>受訪監管界人士都認為有重大分配後果嘅決定<b>應該由政府負責</b>。一位話轉同唔轉供應商嘅消費者之間嘅公平係<b>「道德雷區」</b>，唯一解決過程係<b>政治過程同投票箱</b>；獨立監管者自己判斷就冇問責。</p>
+ <p>難處：政府可能因政治原因<b>唔想清楚排列優先次序</b>，怕被列為「低優先」嘅利益反彈（同 Koop 同 Lodge 講政客避開棘手再分配係同一現象）。</p>
+ <p>能源特別容易牽涉公平：係必需品，低收入家庭能源開支比例高好多；就算市場運作良好，負擔能力<b>從來冇脫離政治干預</b>（燃料貧窮策略、冬季燃料補貼都喺能源最便宜時推出）。私有化初期嘅分工係教科書講法：<b>市場最大化效率，分配交畀稅收同入息福利</b>；之後監管者目標越嚟越多，政府亦多咗機會施壓。</p>
+ <p class="muted">筆記連到：Townley「純」競爭評估加政治機構最後決定；Majone 話重大溢出嘅價值衝突由向選民負責嘅人解決（Part 2）。</p>`}
+];
+const CARDS={};CARDS_DATA.forEach(c=>{CARDS[c.id]=c;});
+function makePages(app){
+const {store,$,LNAME}=window.__S;
+/* ===================== VISUALS ===================== */
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" ${o.a?`text-anchor="${o.a}"`:''} font-weight="${o.w||400}" fill="${o.f||'var(--ink)'}">${t}</text>`;
+const box=(x,y,w,h,fill='var(--surface2)',stroke='var(--line)')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const arrow=(x1,y1,x2,y2,c='var(--muted)')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" marker-end="url(#ah)"/>`;
+const DEFS=`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+const VIS=[
+ {id:'v-acc',t:'延伸問責：向邊個、為乜、兩個模式',n:'10 §二–六',svg:()=>`<svg viewBox="0 0 680 330" class="vis">${DEFS}
+  ${box(250,10,180,40,'var(--accent-soft)','var(--accent)')}${svgT(340,35,'受監管者／機構',{a:'middle',w:700})}
+  ${box(10,10,220,40,'var(--surface2)')}${svgT(120,35,'⬆ 向上：部長、國會、監管者',{a:'middle',s:12})}
+  ${box(450,10,220,40,'var(--surface2)')}${svgT(560,35,'⬇ 向下：消費者、股東、市場',{a:'middle',s:12})}
+  ${box(170,58,340,32,'var(--surface2)')}${svgT(340,79,'⬌ 橫向：核數師、公司管治等平行機構',{a:'middle',s:12})}
+  ${svgT(340,112,'為乜（Hood）：經濟 · 社會同程序 · 延續／安全',{a:'middle',w:700,s:13})}
+  ${box(10,126,325,150)}${svgT(172,150,'互相依存（電訊業）',{a:'middle',w:700})}
+  <foreignObject x="22" y="158" width="300" height="114"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>權威、資訊、專業、正當性分散</p><p>人人要向人交代先行得郁</p><p>好似伺服機制：靠對立張力</p><p>⚠ 特殊利益俘虜</p></div></foreignObject>
+  ${box(345,126,325,150)}${svgT(507,150,'冗餘（外判監獄、歐盟基金）',{a:'middle',w:700})}
+  <foreignObject x="357" y="158" width="300" height="114"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>幾個重疊機制，冇一個係中心</p><p>又綁皮帶又揹吊帶</p><p>一個失效，另一個仍然防到</p><p>⚠ 幾多先夠？可能同時失效</p></div></foreignObject>
+  ${box(10,286,660,38,'var(--surface2)')}${svgT(340,310,'collibration：調整平衡，利用衝突，唔係撫平衝突',{a:'middle',w:700,s:13})}</svg>`},
+ {id:'v-kh',t:'Koop 同 Hanretty：攞四星或以上嘅機會',n:'09 §四',svg:()=>{
+  const R=[['所有變數取平均','約兩成',20,'var(--line)'],['獨立升到最高五分一','翻倍到四成多',40,'var(--good)'],['問責升到最高五分一','跌到 11.6%',11.6,'var(--bad)']];
+  return `<svg viewBox="0 0 680 290" class="vis">
+  ${svgT(20,28,'Model 3（GCR 評級；30 國、46 個監管者時段）',{w:700,s:13})}
+  ${R.map((r,k)=>{const y=50+k*64;return svgT(20,y+20,r[0],{s:13,w:700})+`<rect x="200" y="${y}" width="400" height="30" rx="6" fill="var(--surface2)"/>`+`<rect x="200" y="${y}" width="${r[2]*4}" height="30" rx="6" fill="${r[3]}"/>`+svgT(210+r[2]*4,y+20,r[1],{s:12.5,w:700})}).join('')}
+  ${svgT(200,256,'棒長按筆記嘅數字畫（「四成多」畫成 40%）；刻度 0–100%',{s:11.5,f:'var(--muted)'})}
+  ${svgT(20,280,'只量度法律上獨立，唔可以自動套落實際獨立',{s:12.5,w:700})}</svg>`}},
+ {id:'v-eriksen',t:'機構點樣處理政治價值：三個模式',n:'06 §二–五',svg:()=>{
+  const M=[['迴避（Vibert）','受事實約束、唔掂價值','保證唔到中立；誘因掩飾判斷'],['具體化（Richardson）','只將法例寫具體','忽略參與立法；冇涵蓋法例以上嘅推理'],['公共理性（Eriksen）','忠於授權','效率 · 可證成性 · 正當程序 · 專業']];
+  return `<svg viewBox="0 0 680 320" class="vis">
+  ${M.map((m,k)=>{const x=10+k*225,hot=k===2;return box(x,10,210,200,hot?'var(--accent-soft)':'var(--surface)',hot?'var(--accent)':'var(--line)')+svgT(x+105,36,m[0],{a:'middle',w:700,s:13})+svgT(x+105,62,m[1],{a:'middle',s:12.5,f:hot?'var(--accent)':'var(--ink)',w:700})+`<foreignObject x="${x+10}" y="74" width="190" height="130"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>${hot?'四類理由＝「貨幣組合」':'問題：'}</p><p>${m[2]}</p></div></foreignObject>`}).join('')}
+  ${box(10,222,660,90,'var(--surface2)')}${svgT(340,246,'三種德性：誠信 · 獨立（推理上）· 包容',{a:'middle',w:700,s:13})}
+  ${svgT(340,272,'問責要：對詮釋性授權敏感 · 適當尊重 · 翻譯畀公眾聽',{a:'middle',s:12.5})}
+  ${svgT(340,296,'唔係畀專家更多權決定政治目標',{a:'middle',s:12,f:'var(--muted)'})}</svg>`}},
+ {id:'v-south',t:'南方：移植、再分配、兩個階段',n:'02 §一–六',svg:()=>`<svg viewBox="0 0 680 330" class="vis">${DEFS}
+  ${box(10,10,660,64,'var(--surface2)')}${svgT(340,34,'三個共同處境',{a:'middle',w:700,s:13})}${svgT(340,58,'外來壓力（國際金融機構） · 再分配政治更激烈 · 國家能力有限（薄／厚）',{a:'middle',s:12.5})}
+  ${box(10,84,325,92)}${svgT(172,108,'移植：空殼機構',{a:'middle',w:700,s:13})}
+  <foreignObject x="22" y="116" width="300" height="58"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>省略本國政治篩選；自主文化唔可以速效硬塞</p></div></foreignObject>
+  ${box(345,84,325,92)}${svgT(507,108,'效率同再分配分唔開',{a:'middle',w:700,s:13})}
+  <foreignObject x="357" y="116" width="300" height="58"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>監管太重要，唔可以淨係交畀監管者→規管型社會</p></div></foreignObject>
+  ${svgT(340,198,'Koop 同 Kessler：獨立競爭主管機關（148 國，1990–2017）',{a:'middle',w:700,s:13})}
+  ${box(10,208,325,114,'var(--soft)')}${svgT(172,232,'① 正式設立',{a:'middle',w:700})}
+  <foreignObject x="22" y="240" width="300" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>越威權越少設（穩健）</p><p>石油依賴加強威權嘅負面作用</p><p>共產遺產：負，只係部分模型 10% 顯著</p></div></foreignObject>
+  ${arrow(336,265,344,265)}
+  ${box(345,208,325,114,'var(--accent-soft)','var(--accent)')}${svgT(507,232,'② 真正運作',{a:'middle',w:700})}
+  <foreignObject x="357" y="240" width="300" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>威權假設被否定</p><p>石油依賴：較少運作（任何政體）</p><p>靠功能需要同能力</p></div></foreignObject></svg>`},
+ {id:'v-uk',t:'英國：由「負責任」到「回應型」（疊層）',n:'03 §一–六',svg:()=>`<svg viewBox="0 0 680 320" class="vis">${DEFS}
+  ${box(10,196,660,70,'var(--surface2)')}${svgT(340,220,'底層（仍然喺度）：負責任＝審慎、一致',{a:'middle',w:700,s:13})}${svgT(340,246,'獨立 · 效率 · 證據為本 · 同政治保持距離 · 分配＝社會開支',{a:'middle',s:12.5})}
+  ${box(60,110,560,76,'var(--accent-soft)','var(--accent)')}${svgT(340,134,'疊上去：回應型',{a:'middle',w:700,s:13})}
+  <foreignObject x="72" y="142" width="536" height="42"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>重心轉向（弱勢）消費者 · 質疑總和福利標準 · 政府行近咗</p></div></foreignObject>
+  ${box(140,10,400,90,'var(--soft)','var(--bad)')}${svgT(340,34,'金融危機後被政治化',{a:'middle',w:700,s:13})}
+  <foreignObject x="152" y="42" width="376" height="56"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>關注、動員、兩極化增加；搵笨、忠誠罰款</p></div></foreignObject>
+  ${box(10,276,660,38)}${svgT(340,300,'Ofgem：職責 8→21 項；頂住價格上限：重大分配政策要政府立法',{a:'middle',w:700,s:12.5})}</svg>`}
+];
+function visuals(){
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">圖解 · ${VIS.length} 幅</span><h2>一幅圖睇一個概念</h2>
+   <p class="muted">每幅圖都對應筆記嘅某幾節。讀「讀懂版」或者玩完關卡之後，用嚟一眼溫返。</p></div>
+   <div class="stack">${VIS.map(v=>`<section class="panel vispanel" id="${v.id}"><div class="row" style="justify-content:space-between"><h3>${v.t}</h3><span class="tag">筆記 ${v.n}</span></div><div class="viswrap">${v.svg()}</div></section>`).join('')}</div>`;
+}
+
+/* ===================== READING NOTES ===================== */
+const LVNAME={swipe:'L1 算唔算監管',lobby:'L2 游說集團',families:'L3 四大家族',price:'L4 一個價兩筆數',judge:'L5 判案小法官',agency:'L6 合定拆',develop:'L7 因地制宜'};
+const cardsIn=(n,s)=>CARDS_DATA.filter(c=>c.n===n&&c.s===s);
+function notesPage(note){
+  note=note||NOTE_ORDER[0];
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  const m=NOTES_META[note];
+  const secs=NOTES.filter(x=>x.k.startsWith(note+'-'));
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">讀懂版 · 逐節淺白講解</span>
+    <div class="tabs">${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div></div>
+   <div class="panel stack"><h2>${note} ${m.t}</h2><p><b>呢篇問：</b>${m.q}</p><p class="muted">${m.read}</p></div>
+   <div class="stack" style="margin-top:14px">${secs.map(x=>{const n=+x.k.split('-')[1];const cs=cardsIn(note,n);const kn=cs.filter(c=>known[c.id]).length;
+     return `<section class="panel notesec" id="${x.k}">
+      <div class="row" style="justify-content:space-between"><h3>§${n} ${x.t}</h3>
+        <label class="readchk"><input type="checkbox" id="rd-${x.k}" data-k="${x.k}" ${read[x.k]?'checked':''}> 已讀</label></div>
+      <div class="nbody">${x.b}</div>
+      <div class="row links"><a class="chip" href="#lesson-${note}">▶ ${LNAME[note]}</a>
+        ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">◩ 圖：${VIS.find(z=>z.id===v).t}</a>`).join('')}
+        <a class="chip" href="#cards-${note}-${n}">▣ 呢節 ${cs.length} 張卡（識咗 ${kn}）</a></div></section>`}).join('')}</div>`;
+  app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash='notes-'+b.dataset.n;});
+  app.querySelectorAll('.readchk input').forEach(c=>c.onchange=()=>{const o=store.get().read||{};o[c.dataset.k]=c.checked;store.set('read',o);});
+  bindVisLinks();
+}
+function bindVisLinks(){app.querySelectorAll('[data-vis]').forEach(a=>a.onclick=e=>{e.preventDefault();const id=a.dataset.vis;location.hash='visuals';setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({block:'start'});},60);});}
+
+/* ===================== FLASHCARDS ===================== */
+const TYPE_ZH={fact:'事實',definition:'定義',conceptual:'概念',cause:'因果',evaluation:'評價',normative:'主張'};
+function cardsPage(arg){
+  const [note,sec]=(arg||'').split('-');
+  const pool=CARDS_DATA.filter(c=>(!note||c.n===note)&&(!sec||c.s===+sec));
+  let mode='unknown', order=[], idx=0, flipped=false;
+  function build(){
+    const known=store.get().known||{};
+    order=pool.filter(c=>mode==='all'||!known[c.id]).map(c=>c.id);
+    idx=0; flipped=false;
+  }
+  function shuffle(){for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;flipped=false;render();}
+  function render(){
+    const known=store.get().known||{};
+    const kn=pool.filter(c=>known[c.id]).length;
+    const scope=note?`${note} ${NOTES_META[note].t}${sec?` · §${sec} ${NOTES.find(x=>x.k===note+'-'+sec).t}`:''}`:'全部筆記';
+    let card='';
+    if(!order.length){ card=`<div class="fcard done"><div><h3>呢副卡你已經全部識晒 🎉</h3><p class="muted">轉「全部卡」可以再溫一次。</p></div></div>`; }
+    else{
+      const c=CARDS[order[idx]];
+      card=`<div class="fcard ${flipped?'flip':''}" id="fc" tabindex="0" role="button" aria-label="撳一下反卡">
+        ${!flipped?`<div class="ff"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fq">${c.f}</div><span class="muted" style="font-size:13px">撳一下（或者按空白鍵）睇答案</span></div>`
+        :`<div class="fb"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fa">${c.b}</div><blockquote>“${c.q}”</blockquote><span class="src">原文出處：${c.loc}</span></div>`}
+      </div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn ghost" id="bad">✗ 未識，等陣再嚟</button><button class="btn primary" id="good">✓ 識咗</button></div>`;
+    }
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">快速卡 · ${scope}</span>
+      <div class="tabs"><button class="tab ${!note?'on':''}" data-n="">全部</button>${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div>
+      <div class="row" style="justify-content:space-between"><span class="muted">呢副 ${pool.length} 張 · 識咗 ${kn} · 呢輪剩 ${order.length?order.length-idx:0}</span>
+      <div class="row"><button class="btn ghost sm" id="mode">${mode==='all'?'只溫未識':'全部卡'}</button><button class="btn ghost sm" id="shuf">洗牌</button><button class="btn ghost sm" id="reset">清除「識咗」</button></div></div>
+      <div class="progress"><i style="width:${pool.length?kn/pool.length*100:0}%"></i></div></div>
+      ${card}
+      <p class="muted" style="margin-top:14px;font-size:13.5px">卡面係我寫嘅問題；卡背係筆記入面嘅原子命題（中文）同原文英文引文，一字不改。卡背會出現人名，你唔使記，專心睇論點就得。</p>`;
+    app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash=b.dataset.n?'cards-'+b.dataset.n:'cards';});
+    $('#mode').onclick=()=>{mode=mode==='all'?'unknown':'all';build();render();};
+    $('#shuf').onclick=shuffle;
+    $('#reset').onclick=()=>{const k=store.get().known||{};pool.forEach(c=>delete k[c.id]);store.set('known',k);build();render();};
+    const fc=$('#fc'); if(fc){ fc.onclick=()=>{flipped=!flipped;render();$('#fc')&&$('#fc').focus();}; fc.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();fc.click();}}; }
+    const g=$('#good'), b=$('#bad');
+    if(g) g.onclick=()=>{const k=store.get().known||{};k[order[idx]]=true;store.set('known',k);next(true);};
+    if(b) b.onclick=()=>next(false);
+  }
+  function next(ok){ if(!ok){ order.push(order[idx]); } idx++; flipped=false; if(idx>=order.length){ build(); } render(); }
+  build(); render();
+}
+
+/* ===================== PROGRESS MAP ===================== */
+function mapPage(){
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  let tot=0, done=0;
+  const rows=NOTE_ORDER.map(n=>{
+    const secs=NOTES.filter(x=>x.k.startsWith(n+'-'));
+    return `<tr class="nh"><td colspan="5"><b>${n} ${NOTES_META[n].t}</b></td></tr>`+secs.map(x=>{
+      const s=+x.k.split('-')[1], cs=cardsIn(n,s), kn=cs.filter(c=>known[c.id]).length;
+      const lvDone=!!(st.done&&st.done['l'+n]);
+      const ok=read[x.k]&&kn===cs.length&&lvDone; tot++; if(ok) done++;
+      return `<tr><td><a href="#notes-${n}" data-sec="${x.k}">§${s} ${x.t}</a></td>
+        <td class="c">${read[x.k]?'✓':'—'}</td>
+        <td class="c mono">${kn}/${cs.length}</td>
+        <td><a class="chip ${lvDone?'ok':''}" href="#lesson-${n}">${LNAME[n]}${lvDone?' ✓':''}</a>
+          ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">圖</a>`).join(' ')}</td>
+        <td class="c">${ok?'<span class="okb">掌握</span>':''}</td></tr>`}).join('');
+  }).join('');
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">進度地圖 · 筆記每一節都喺度</span><h2>${done} / ${tot} 節已經全部做完</h2>
+    <p class="muted">一節要「讀懂版已讀」＋「嗰節嘅卡全部識咗」＋「嗰篇嘅課完成」，先算掌握。撳節名會跳去嗰節嘅讀懂版。</p>
+    <div class="progress"><i style="width:${done/tot*100}%"></i></div></div>
+    <div class="tablewrap"><table class="map"><thead><tr><th>節</th><th>讀懂版</th><th>卡</th><th>課／圖</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  app.querySelectorAll('[data-sec]').forEach(a=>a.onclick=e=>{e.preventDefault();const k=a.dataset.sec;location.hash='notes-'+k.split('-')[0];setTimeout(()=>{const el=document.getElementById(k);if(el)el.scrollIntoView({block:'start'});},60);});
+  bindVisLinks();
+}
+
+return {visuals,notesPage,cardsPage,mapPage};
+}
+(() => {
+const $=(s,el=document)=>el.querySelector(s);
+const app=$('#app');
+const MINE='<span class="mine">例子係我作嘅</span>';
+const MYNUM='<span class="mine">數字係我設嘅</span>';
+const KEY='reglab-02p3';
+const store={get(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}},
+  set(k,v){const o=this.get();o[k]=v;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}};
+const saveAll=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
+window.__S={store,$};
+const S=()=>Object.assign({xp:0,done:{},streak:0,last:null},store.get());
+function bumpStreak(st){const d=new Date();const today=d.toISOString().slice(0,10);
+  if(st.last===today) return; const y=new Date(d-864e5).toISOString().slice(0,10);
+  st.streak=(st.last===y)?st.streak+1:1; st.last=today;}
+const noteBody=k=>{const n=NOTES.find(x=>x.k===k);return n?{t:n.t,b:n.b}:null;};
+
+/* ---------- shared chart ---------- */
+function chart(P,MC,opt={}){
+  const W=340,H=250,L=34,B=26,T=8,R=8,x=q=>L+(q/100)*(W-L-R),y=p=>H-B-(p/100)*(H-B-T);
+  P=Math.max(P,MC); const Q=100-P;
+  const show=opt.show||['cs','c','a'];
+  let g='';
+  [0,20,40,60,80,100].forEach(t=>{g+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-5}" y="${y(t)+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`;});
+  if(show.includes('cs')) g+=`<polygon points="${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--cs)" fill-opacity="${opt.dim==='cs'?.15:.5}"/>`;
+  if(show.includes('c')&&P>MC) g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="${opt.cColor||'var(--cc)'}" fill-opacity=".65"/>`;
+  if(show.includes('a')&&P>MC) g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(100-MC)},${y(MC)}" fill="var(--aa)" fill-opacity=".8"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+13}" text-anchor="end" font-size="11" fill="var(--ink)">成本 ${MC}</text>`;
+  if(opt.old) g+=`<line x1="${x(0)}" y1="${y(opt.old)}" x2="${x(100)}" y2="${y(opt.old)}" stroke="var(--muted)" stroke-dasharray="2 4"/><text x="${x(100)}" y="${y(opt.old)-4}" text-anchor="end" font-size="10" fill="var(--muted)">合併前成本 ${opt.old}</text>`;
+  g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${x(Q)}" cy="${y(P)}" r="6" fill="var(--accent)"/>`;
+  g+=`<text x="${x(Q)+8}" y="${y(P)-6}" font-size="12" font-weight="700" fill="var(--accent)">售價 ${P}</text>`;
+  if(show.includes('cs')&&Q>10) g+=`<text x="${x(Q*.2)}" y="${y((100+P)/2)+16}" font-size="13" font-weight="900" fill="var(--ink)">CS</text>`;
+  if(show.includes('c')&&P-MC>7) g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+5}" text-anchor="middle" font-size="14" font-weight="900" fill="var(--ink)">C</text>`;
+  if(show.includes('a')&&P-MC>12) g+=`<text x="${x(Q+(100-MC-Q)/3)}" y="${y(MC+(P-MC)/3)+5}" text-anchor="middle" font-size="13" font-weight="900" fill="var(--ink)">A</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="需求線、成本線同售價">${g}</svg>`;
+}
+const calc=(P,MC)=>{P=Math.max(P,MC);const Q=100-P;return{Q,CS:.5*Q*(100-P),C:(P-MC)*Q,A:.5*(P-MC)**2,TW:.5*Q*(100-P)+(P-MC)*Q};};
+const f=n=>Math.round(n).toLocaleString('en');
+
+/* ---------- widgets ---------- */
+const W={
+ coffee(el,done){
+  let P=24;
+  el.innerHTML=`<div class="wid"><div class="lbl"><span>☕ 你最多肯畀：<b>$40</b></span><span>成本：<b>$20</b></span></div>
+   <div class="lbl"><span>舖頭收價</span><span class="mono" id="pv"></span></div><input type="range" id="sl" min="20" max="40" value="${P}" aria-label="收價">
+   <div class="barrow"><span>你賺咗</span><span class="track"><i id="b1" style="background:var(--cs)"></i></span><span class="mono" id="v1"></span></div>
+   <div class="barrow"><span>舖頭賺咗</span><span class="track"><i id="b2" style="background:var(--cc)"></i></span><span class="mono" id="v2"></span></div>
+   <div class="barrow"><span><b>加埋</b></span><span class="track"><i id="b3" style="background:var(--good)"></i></span><span class="mono" id="v3"></span></div>
+   <div class="task" id="tk">🎯 將收價拉到令「你賺咗」啱啱 $10</div></div>`;
+  const up=()=>{const a=40-P,b=P-20;$('#pv',el).textContent='$'+P;
+   $('#b1',el).style.width=a/20*100+'%';$('#b2',el).style.width=b/20*100+'%';$('#b3',el).style.width='100%';
+   $('#v1',el).textContent='$'+a;$('#v2',el).textContent='$'+b;$('#v3',el).textContent='$20';
+   if(P===30){$('#tk',el).className='task ok';$('#tk',el).innerHTML='✓ 啱！你肯畀 $40、實付 $30，賺咗 $10。留意「加埋」：拉嚟拉去都係 $20。';done(true);}};
+  $('#sl',el).oninput=e=>{P=+e.target.value;up();};up();
+ },
+ crowd(el,done){
+  let P=20, asked=false;
+  el.innerHTML=`<div class="wid"><div class="lbl"><span>售價</span><span class="mono" id="pv"></span></div>
+   <input type="range" id="sl" min="0" max="100" step="5" value="${P}" aria-label="售價"><div id="cv"></div>
+   <div class="task" id="tk">🎯 將售價拉到 $60</div><div id="qq"></div></div>`;
+  const draw=()=>{const W2=340,H2=200,L=30,B=22,x=q=>L+(q/100)*(W2-L-8),y=p=>H2-B-(p/100)*(H2-B-8);let g='';
+   g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--line)" stroke-width="2"/>`;
+   for(let k=0;k<20;k++){const q=2.5+k*5,w=100-q,buy=w>=P;g+=`<circle cx="${x(q)}" cy="${y(w)}" r="6" fill="${buy?'var(--accent)':'var(--card)'}" stroke="${buy?'var(--accent)':'var(--muted)'}" stroke-width="1.6"/>`;}
+   g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(100)}" y2="${y(P)}" stroke="var(--accent)" stroke-dasharray="4 3"/>`;
+   g+=`<text x="${x(100)}" y="${H2-4}" text-anchor="end" font-size="11" fill="var(--muted)">排第幾個客 →</text><text x="${L+4}" y="12" font-size="11" fill="var(--muted)">肯畀幾多 ↑</text>`;
+   $('#cv',el).innerHTML=`<svg class="chart" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="100 個客，每粒點代表 5 個人">${g}</svg>`;
+   $('#pv',el).textContent='$'+P;
+   if(P===60&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 好。數吓藍色實心點（每粒代表 5 個人）……';
+    $('#qq',el).innerHTML=`<div class="opts">${['60 人','40 人','70 人'].map(o=>`<button class="opt" data-o="${o}">${o}</button>`).join('')}</div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='40 人';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>肯畀 $60 或以上嘅，係排頭 40 個人。<b>你肯畀嘅 ≥ 售價，你就買。</b>將一百個人由最肯畀排到最唔肯畀，連埋就係<b>需求線</b>。</p></div>`:`<div class="fb no"><p>再睇吓：藍點有 8 粒，每粒 5 個人。</p></div>`; if(ok) done(true);});}};
+  $('#sl',el).oninput=e=>{P=+e.target.value;draw();};draw();
+ },
+ worth(el,done){
+  el.innerHTML=`<div class="wid">${chart(30,20,{show:[]})}<div class="scene" style="background:var(--soft)"><p>${MINE} <b>小明</b>最多肯畀 <b>$25</b>。舖頭售價 $30，成本 $20。</p></div>
+   <p style="font-weight:700">小明買唔買？呢單交易「值唔值得」發生？</p>
+   <div class="opts"><button class="opt" data-k="a">唔買；但值得發生</button><button class="opt" data-k="b">唔買；唔值得發生</button><button class="opt" data-k="c">會買</button></div><div id="fb"></div></div>`;
+  let tries=0;
+  el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.k==='a';tries++;b.classList.add(ok?'right':'wrong');
+   $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>佢肯畀 $25 &lt; 售價 $30，所以唔買。但佢嘅估值（$25）高過成本（$20），做咗就會產生 $5 價值。呢 $5 而家冇咗，<b>冇人得益</b>。</p></div>`
+    :`<div class="fb ${tries>1?'no':'hint'}"><p>${tries>1?'答案：唔買；但值得發生。':'提示：比較兩組數：佢肯畀 vs 售價（買唔買）；佢肯畀 vs 成本（值唔值得）。'}</p></div>`;
+   if(ok||tries>1) done(ok);});
+ },
+ areas(el,done){
+  let P=30,asked=false;
+  el.innerHTML=`<div class="wid"><div id="cv"></div><div class="lbl"><span>售價</span><span class="mono" id="pv"></span></div>
+   <input type="range" id="sl" min="20" max="80" value="${P}" aria-label="售價">
+   <div class="nums"><div><span class="sw" style="background:var(--cs)"></span>CS<b id="n1"></b></div><div><span class="sw" style="background:var(--cc)"></span>C<b id="n2"></b></div><div><span class="sw" style="background:var(--aa)"></span>A<b id="n3"></b></div></div>
+   <div class="task" id="tk">🎯 慢慢將售價拉高到 $60 或以上，留意紅色嗰塊</div><div id="qq"></div></div>`;
+  const up=()=>{const r=calc(P,20);$('#cv',el).innerHTML=chart(P,20);$('#pv',el).textContent='$'+P;$('#n1',el).textContent=f(r.CS);$('#n2',el).textContent=f(r.C);$('#n3',el).textContent=f(r.A);
+   if(P>=60&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 好。問你：';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">紅色（A）呢班人肯畀高過成本，但因為價太高冇買。售價越高，A 會點？</p><div class="opts">${['越大','越細','唔變'].map(o=>`<button class="opt" data-o="${o}">${o}</button>`).join('')}</div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='越大';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>越多值得做嘅交易冇做到。A 叫<b>無謂損失</b>（deadweight loss）：價值消失咗，冇人攞到。黃色 C 就唔同：佢冇消失，只係由消費者袋搬咗去企業袋。</p></div>`:`<div class="fb hint"><p>再拉吓個滑桿，睇住紅色三角形。</p></div>`; if(ok) done(true);});}};
+  $('#sl',el).oninput=e=>{P=+e.target.value;up();};up();
+ },
+ merger(el,done){
+  let P=20,step=0; const base=calc(20,20);
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>合併前：成本 $20，競爭令售價 = $20。<br>合併後：<b>成本跌到 $8</b>，但合併公司可以加價。${MYNUM}</p></div>
+   <div id="cv"></div><div class="lbl"><span>合併後售價</span><span class="mono" id="pv"></span></div>
+   <input type="range" id="sl" min="8" max="80" value="${P}" aria-label="合併後售價">
+   <div class="nums"><div>消費者福利<b id="n1"></b></div><div>總福利<b id="n2"></b></div><div>同合併前比<b id="n3" style="font-size:14px"></b></div></div>
+   <div class="task" id="tk">🎯 搵一個售價：總福利<b>升</b>，但消費者福利<b>跌</b></div><div id="qq"></div></div>`;
+  const up=()=>{const r=calc(P,8);$('#cv',el).innerHTML=chart(P,8,{old:20});$('#pv',el).textContent='$'+P;
+   $('#n1',el).textContent=f(r.CS);$('#n2',el).textContent=f(r.TW);
+   const dc=r.CS-base.CS,dt=r.TW-base.TW;$('#n3',el).innerHTML=`CS ${dc>=0?'↑':'↓'} · 總 ${dt>=0?'↑':'↓'}`;
+   if(step===0&&dc<0&&dt>0){step=1;$('#tk',el).className='task ok';$('#tk',el).innerHTML='✓ 搵到！兩把尺分岔咗。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">用「消費者福利標準」（只計 CS）嘅監管者，會唔會批准呢宗合併？</p><div class="opts"><button class="opt" data-o="y">批准</button><button class="opt" data-o="n">唔批准</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='n';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>只計 CS，CS 跌咗就唔批。用<b>總福利標準</b>（計 CS＋C）嘅就會批，因為個餅大咗。用邊把尺，直接決定批唔批。</p></div>`:`<div class="fb hint"><p>提示：消費者福利標準只睇消費者剩餘。佢係升定跌？</p></div>`; if(ok) done(true);});}};
+  $('#sl',el).oninput=e=>{P=+e.target.value;up();};up();
+ },
+ pocket(el,done){
+  /* Own scale for THIS story (tutoring centres): price axis in $ per lesson, $0–$400.
+     Competitive price = cost $200; cartel price $250 (both from the notes' example). */
+  let mode='no',asked=false; const M=400,MC=200,PC=250;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>幾間補習社夾價，每堂由 <b>$200</b> 加到 <b>$250</b>。<span class="muted">（例子出自筆記）</span></p><p class="muted" style="font-size:14px">圖入面：每堂成本當係 $200（即係夾價前嘅競爭價）；家長對一堂嘅估值由 $400 到 $0 唔等。${MYNUM}</p></div>
+   <div class="tog" role="group" aria-label="競爭法管唔管"><button data-m="no" class="on">唔管（夾價 $250）</button><button data-m="yes">管（返去 $200）</button></div>
+   <div id="cv"></div><div id="ex"></div><div id="qq"></div></div>`;
+  const draw=P=>{const W2=340,H2=250,L=42,B=26,T=8,R=8,x=q=>L+(q/100)*(W2-L-R),y=p=>H2-B-(p/M)*(H2-B-T);
+   const Q=100*(1-P/M), Qc=100*(1-MC/M); let g='';
+   [0,100,200,300,400].forEach(t=>{g+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-5}" y="${y(t)+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">$${t}</text>`;});
+   g+=`<polygon points="${x(0)},${y(M)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--cs)" fill-opacity=".5"/>`;
+   if(P>MC){g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="var(--cc)" fill-opacity=".7"/>`;
+     g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(Qc)},${y(MC)}" fill="var(--aa)" fill-opacity=".85"/>`;}
+   g+=`<line x1="${x(0)}" y1="${y(M)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+   g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+14}" text-anchor="end" font-size="11" fill="var(--ink)">每堂成本 $200</text>`;
+   g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${x(Q)}" cy="${y(P)}" r="6" fill="var(--accent)"/><text x="${x(Q)+8}" y="${y(P)-7}" font-size="12" font-weight="700" fill="var(--accent)">每堂 $${P}</text>`;
+   g+=`<text x="${x(Q*.18)}" y="${y((M+P)/2)+18}" font-size="12" font-weight="900" fill="var(--ink)">家長賺咗</text>`;
+   if(P>MC){g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+5}" text-anchor="middle" font-size="12" font-weight="900" fill="var(--ink)">C：每堂多畀 $50</text>`;
+     g+=`<text x="${x(Q)+4}" y="${y(MC)-4}" font-size="11" font-weight="900" fill="var(--ink)">A</text>`;}
+   g+=`<text x="${x(100)}" y="${H2-4}" text-anchor="end" font-size="11" fill="var(--muted)">報讀嘅家長 →</text>`;
+   return `<svg class="chart" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="補習社夾價前後：每堂價錢、成本同三塊面積">${g}</svg>`;};
+  const up=()=>{$('#cv',el).innerHTML=draw(mode==='yes'?MC:PC);
+   $('#ex',el).innerHTML=mode==='yes'?`<p>每堂返到 $200：<b>多畀嘅 $50 留返喺家長袋</b>；嫌貴唔報嘅家長（A）亦返嚟報讀。</p>`:`<p>夾價成立：繼續報嘅家長每堂多畀 $50，<b>呢筆錢（C）落咗補習社袋</b>；嫌貴唔報嘅家長就係 A，呢部分冇人得益。</p>`;
+   el.querySelectorAll('.tog button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+   if(mode==='yes'&&!asked){asked=true;$('#qq',el).innerHTML=`<p style="font-weight:700">咁「唔管」嗰陣，有冇分配後果？</p><div class="opts"><button class="opt" data-o="y">有：每堂 $50 搬咗去補習社</button><button class="opt" data-o="n">冇：唔管即係中立</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='y';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">正正係重點！</b><p><b>用</b>競爭法有分配後果；<b>唔用</b>都有。管定唔管，本身就係決定呢 $50（C）落邊個袋。</p></div>`:`<div class="fb hint"><p>撳返「唔管」睇吓：每堂多畀嘅 $50 落咗去邊？</p></div>`; if(ok) done(true);});}};
+  el.querySelectorAll('.tog button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;up();});up();
+  $('#qq',el).innerHTML='<div class="task">🎯 撳「管」，比較兩邊</div>';
+ }
+};
+
+/* ---------- lessons ---------- */
+/* ===== Folder 02 · Part 3 lessons (notes 10, 09, 06, 02, 03) ===== */
+const SCENE_TAG='<p class="muted" style="font-size:14px">情境係我作嘅（海島國係虛構），概念全部出自筆記。</p>';
+Object.assign(W,{
+ redund(el,done){
+  const M=[['ctrl','駐場控制員'],['court','法院'],['audit','審計署'],['insp','監獄督察'],['omb','申訴專員']];
+  const on={ctrl:true}; let cap=false, step=0;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>海島國將一間監獄外判。為咗慳錢，有人提議淨係留低<b>駐場控制員</b>一個問責機制。筆記講外判監獄面對嘅機制：法院、審計署、監獄督察、申訴專員，加駐場控制員。<span class="mine">情境係我作嘅</span></p></div>
+   <p style="font-weight:700">而家開咗邊啲機制？（撳嚟開／關）</p>
+   <div class="opts" id="mechs">${M.map(m=>`<button class="opt mech" data-k="${m[0]}">${m[1]}</button>`).join('')}</div>
+   <button class="opt" id="cap" style="margin-top:8px">🕵️ 監獄長俘虜咗控制員，隱瞞問題</button>
+   <div class="task" id="tk">🎯 淨係留低控制員，然後撳「監獄長俘虜咗控制員」</div><div id="res"></div><div id="qq"></div></div>`;
+  const paint=()=>{el.querySelectorAll('.mech').forEach(b=>{b.classList.toggle('right',!!on[b.dataset.k]);b.textContent=(on[b.dataset.k]?'✅ ':'⬜ ')+M.find(m=>m[0]===b.dataset.k)[1];});
+   if(!cap){$('#res',el).innerHTML='';return;}
+   const others=M.filter(m=>m[0]!=='ctrl'&&on[m[0]]).map(m=>m[1]);
+   $('#res',el).innerHTML=others.length?`<div class="fb ok"><p>🔔 ${others.join('、')}好可能會發現問題：就算控制員被俘虜，其他機制仍然可以追究監獄長。</p></div>`:`<div class="fb hint"><p>🙈 冇人發現：得一個機制，佢一失效就冇後備。</p></div>`;
+   if(step===0&&!others.length){step=1;$('#tk',el).innerHTML='🎯 而家加多一個機制試吓';}
+   if(step===1&&others.length){step=2;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 呢個就係冗餘模式：又綁皮帶又揹吊帶。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">咁係咪機制越多越好？冗餘模式有乜難處？</p><div class="opts"><button class="opt" data-o="a">難計幾多先夠，而且幾個機制可能因同一原因同時失效</button><button class="opt" data-o="b">冇任何難處，越多越好</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(x=>x.onclick=()=>{const r=x.dataset.o==='a';x.classList.add(r?'right':'wrong');
+     $('#fb',el).innerHTML=r?`<div class="fb ok"><b class="t">啱！</b><p>幾時多一層問責係冇效率，好難計；資料亦可能同時瞞過幾個機制。</p><span class="src">出處：筆記 10 §六–七（外判監獄例子出自筆記）</span></div>`:`<div class="fb hint"><p>💡 多一層問責有冇成本？會唔會一齊失效？</p></div>`; if(r) done(true);});}};
+  el.querySelectorAll('.mech').forEach(b=>b.onclick=()=>{on[b.dataset.k]=!on[b.dataset.k];paint();});
+  $('#cap',el).onclick=()=>{if(!on.ctrl){on.ctrl=true;}cap=true;$('#cap',el).classList.add('wrong');paint();};
+  paint();
+ },
+ kh(el,done){
+  const S={avg:['所有變數取平均','約兩成',20,'var(--line)'],ind:['獨立升到最高五分一','翻倍到四成多',40,'var(--good)'],acc:['問責升到最高五分一','跌到 11.6%',11.6,'var(--bad)']};
+  let m='avg'; const seen=new Set(['avg']); let ok=false;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>海島國國會想加強對 NCA 嘅問責條文。你翻查 Koop 同 Hanretty（Model 3）：一個競爭主管機關攞 GCR 四星或以上評級嘅機會。<span class="mine">情境係我作嘅</span></p></div>
+   <div class="tog" role="group" aria-label="情況"><button data-m="avg" class="on">平均</button><button data-m="ind">獨立 ↑</button><button data-m="acc">問責 ↑</button></div>
+   <p id="khl" style="font-weight:700"></p>
+   <div class="barrow"><span>攞四星<br>或以上</span><span class="track"><i id="khbar"></i></span><span class="mono" id="khv"></span></div>
+   <p class="muted" style="font-size:13px">數字出自筆記 09 §四；棒全長＝100%，「四成多」畫成 40%。</p>
+   <div class="task" id="tk">🎯 三個情況都撳吓</div><div id="qq"></div></div>`;
+  const up=()=>{const s=S[m];$('#khl',el).textContent=s[0];$('#khbar',el).style.width=s[2]+'%';$('#khbar',el).style.background=s[3];$('#khv',el).textContent=s[1];
+   el.querySelectorAll('.tog button').forEach(x=>x.classList.toggle('on',x.dataset.m===m));
+   if(!ok&&seen.size===3){ok=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 法律上獨立有幫助；正式政治問責冇，仲同較低質素相關。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">作者點樣解釋問責冇幫助？</p><div class="opts"><button class="opt" data-o="a">條文多數係一般性例行要求；機構可能預先迎合，令政治由後門返入</button><button class="opt" data-o="b">因為海島國問責太少</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(x=>x.onclick=()=>{const r=x.dataset.o==='a';x.classList.add(r?'right':'wrong');
+     $('#fb',el).innerHTML=r?`<div class="fb ok"><b class="t">啱！</b><p>但作者冇話唔要問責：從民主正當性角度，政治問責好關鍵，就算有代價都可能要設。</p><span class="src">出處：筆記 09 §五</span></div>`:`<div class="fb hint"><p>💡 研究係跨 30 國嘅數據，唔係講海島國。諗吓問責條文係邊類。</p></div>`; if(r) done(true);});}};
+  el.querySelectorAll('.tog button').forEach(x=>x.onclick=()=>{m=x.dataset.m;seen.add(m);up();});up();
+ }
+});
+
+const P3L1={id:'l10',note:'10',icon:'1',name:'規管型國家入面嘅問責',sub:'筆記 10 · 約 6 分鐘',screens:[
+ {type:'story',h:'NCA 運作咗幾年',html:`<div class="scene"><div class="big">🔍</div><p>海島國 NCA 運作咗幾年。國會有議員話：「佢唔向國會負責，等於冇問責！」部長請你寫最後一份報告：問責網絡、問責同表現、政治價值，再睇吓南方同英國點做。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'問責嘅兩難',lead:'問責辯論要面對乜兩難？',
+  opts:['點樣畀受權者足夠自主，同時確保足夠控制','點樣慳最多錢'],ans:0,hint:'Smith 同 Hague。',
+  ex:'信任問責機制係正當授權嘅中心前提。但喺廣泛下放酌情權嘅複雜行政國家，傳統「中央負責」好多時係虛構；公法學者幾乎一致認為傳統機制唔夠。',deep:'10-1',src:'筆記 10 §一'},
+ {type:'sort',h:'向邊個交代？',lead:'筆記嘅例子：私營巴士公司。分去三個方向。',cats:['向上','橫向','向下'],items:[
+  ['向運輸署交代有冇守牌照條件',0,'較高權力。'],
+  ['向核數師交代數簿',1,'大致平行嘅機構。'],
+  ['向乘客交代班次同車費',2,'較低層嘅群體，例如消費者。']],deep:'10-2',src:'筆記 10 §二'},
+ {type:'match',h:'為乜交代？（Hood）',lead:'配對巴士公司嘅例子同價值類別。',pairs:[
+  ['經濟價值','有冇浪費錢'],['社會同程序價值','有冇公平對待乘客'],['延續／安全價值','車有冇保養好']],deep:'10-2',src:'筆記 10 §二'},
+ {type:'mcq',h:'責任打散',lead:'BT 私有化後脫離國會、法律、行政同財政嘅傳統問責，改向 OFTEL 交代牌照條件；監獄分咗政策同運作，仲有外判。結果傳統問責……',
+  opts:['好似縮咗水：唔再清楚邊個負責，難追蹤由邊個追究','完全唔受影響'],ans:0,hint:'規管型國家：由提供變監察。',
+  ex:'規管型國家最根本嘅特徵係提供同監察嘅責任被打散。',deep:'10-3',src:'筆記 10 §三'},
+ {type:'mcq',h:'延伸問責',lead:'Scott 嘅「延伸問責」係乜意思？',
+  opts:['傳統問責只係實際令機構被追究嘅一組機制之中嘅一部分','傳統問責已經冇用，要全部換走'],ans:0,hint:'唔係取代，係睇闊啲。',
+  ex:'佢唔係傳統公法模式，亦唔單純係新自由主義市場模式；市場式問責疊喺層級上面，所以係混合式。',deep:'10-4',src:'筆記 10 §四'},
+ {type:'mcq',h:'互相依存：電訊業',lead:'BT 對國會嘅向上問責少咗，但要向 OFTEL、公司管治、股東同市場交代；OFTEL 又被 BT、其他持牌者、部長、法院同審計署緊盯。呢種問責好似……',
+  opts:['伺服機制：靠各方對立張力，將制度維持喺可接受位置','一條直線：由下而上'],ans:0,hint:'人人都要向人交代先行得郁。',
+  ex:'權威、資訊、專業同正當性分散，持份者行動上互相依賴。OFTEL 為咗正當性發展新嘅諮詢程序。',deep:'10-5',src:'筆記 10 §五'},
+ {type:'widget',h:'冗餘：外判監獄',lead:'試吓得一個機制，同多過一個機制。',w:'redund',deep:'10-6'},
+ {type:'mcq',h:'多層管治嘅冗餘',lead:'歐盟結構基金要成員國同歐盟共同出資。結果？',
+  opts:['本國同歐盟審計機構都會關心同一個項目','冇人審計'],ans:0,hint:'兩層都有錢喺入面。',
+  ex:'冗餘模式至少有兩種：傳統（外判監獄）同多層管治（歐盟基金）。',deep:'10-6',src:'筆記 10 §六'},
+ {type:'mcq',h:'司法覆核嘅意外效果',lead:'BT 用司法覆核挑戰 OFTEL。整體嚟睇，Scott 話可能……',
+  opts:['削弱其他人追究 OFTEL 嘅能力','令所有人都更易追究 OFTEL'],ans:0,hint:'法律會改變平衡，有時出人意表。',
+  ex:'對照：Wils 話司法覆核加強 NCA 獨立（Part 2）。兩人問嘅問題唔同。',deep:'10-7',src:'筆記 10 §七'},
+ {type:'mcq',h:'collibration',lead:'Dunsire 嘅 collibration：問責網絡嘅目標係？',
+  opts:['撫平所有衝突','利用衝突，令制度保持適當張力'],ans:1,hint:'調整各方平衡。',
+  ex:'兩個模式都唔可以直接寫入公平、合法、理性；互相依存有被特殊利益俘虜嘅風險。',deep:'10-7',src:'筆記 10 §七'},
+ {type:'review',h:'快速溫習',ids:[311,312,316,321,326,333]}
+],take:['自主同控制嘅兩難；傳統「中央負責」好多時係虛構。','問責：邊個、向邊個（上、橫、下）、為乜（三類價值）。','延伸問責：互相依存（伺服機制）同冗餘（皮帶加吊帶）。','collibration：利用衝突保持張力；兩個模式各有風險。']};
+
+const P3L2={id:'l09',note:'09',icon:'2',name:'獨立同問責會唔會令監管做得好啲',sub:'筆記 09 · 約 5 分鐘',screens:[
+ {type:'story',h:'有冇證據？',html:`<div class="scene"><div class="big">📊</div><p>議員追問：「你哋成日話獨立機構做得好啲，有冇證據？加多啲問責條文會唔會更好？」你翻查 Koop 同 Hanretty 嘅研究。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'點解要驗？',lead:'「越獨立做得越好」差唔多冇人驗過。點解要驗？',
+  opts:['授權削弱咗選民同國家權力嘅連繫；民主正當性減少，就需要證據證明用得更好','因為獨立機構好貴'],ans:0,hint:'非民選技術官僚嘅權力增加咗。',
+  ex:'過去幾十年大量授權，理由正正係表現優於政府部門。',deep:'09-1',src:'筆記 09 §一'},
+ {type:'flips',h:'兩條理由同三個假設',lead:'撳開睇。',items:[
+  ['🎓 專業','獨立機構更易攞到、更識處理資訊。'],
+  ['🔒 可信承諾','交畀時間視野同誘因唔同嘅官員，政客綁住雙手。→ 假設一：越獨立質素越高。'],
+  ['📝 答責式問責','政客憑法例要求資料同解釋；同獨立相容。有防濫權嘅好處，亦有成本同繁文縟節。'],
+  ['🛡️ 假設三','獨立增加懈怠同官僚漂移；問責做防線，所以問責越高，獨立嘅作用越強。']],deep:'09-2',src:'筆記 09 §二'},
+ {type:'mcq',h:'獨立係乜嘢？',lead:'作者點樣處理「獨立」？',
+  opts:['程度問題；量度法律上獨立（法例喺決定前減少政客影響嘅程度）','有或冇；量度首長性格'],ans:0,hint:'18 項法例指標。',
+  ex:'所以結論只關乎法律上獨立。',deep:'09-2',src:'筆記 09 §二'},
+ {type:'mcq',h:'點樣量度質素？',lead:'質素用乜量度？',
+  opts:['以過程為主：GCR 每年嘅執法評級（專家問卷加編輯判斷）','罰款總額'],ans:0,hint:'受訪者大部分係律師同經濟學家。',
+  ex:'數據涵蓋 30 國、46 個監管者時段；問責用 11 項指標，用 IRT 合成分數。',deep:'09-3',src:'筆記 09 §三'},
+ {type:'widget',h:'結果',lead:'三個情況撳吓，睇攞四星或以上嘅機會。',w:'kh',deep:'09-4|09-5'},
+ {type:'mcq',h:'仲有乜有幫助？',lead:'除咗法律上獨立，仲有乜提升質素？',
+  opts:['人手、監管權力、政府整體效能；歐盟成員國身份嘅作用同提高獨立差唔多大','更多年度報告要求'],ans:0,hint:'能力因素。',
+  ex:'結論：有好理由用「做得更好」合理化政治獨立；但唔可以自動套落實際獨立。',deep:'09-4',src:'筆記 09 §四'},
+ {type:'mcq',h:'咁唔要問責？',lead:'問責冇提升質素。作者係咪話唔要問責？',
+  opts:['唔係：從民主正當性角度，政治問責好關鍵；表現更好係咪足以抽離民主政治係規範性問題','係，全部刪走'],ans:0,hint:'質素唔係唯一價值。',
+  ex:'另外，行業監管者被俘虜嘅機會大得多，研究佢哋要考慮獨立於行業。',deep:'09-5',src:'筆記 09 §五'},
+ {type:'review',h:'快速溫習',ids:[275,278,287,293,294,306]}
+],take:['「越獨立做得越好」以前冇人驗過；民主正當性減少就要證據。','兩條理由：專業、可信承諾；問責用答責定義。','法律上獨立有幫助；正式政治問責冇，甚至相關較低質素。','但問責對民主正當性仍然關鍵。']};
+
+const P3L3={id:'l06',note:'06',icon:'3',name:'獨立機構點樣處理政治價值',sub:'筆記 06 · 約 6 分鐘',screens:[
+ {type:'story',h:'「公平」點計？',html:`<div class="scene"><div class="big">⚖️</div><p>海島國 NCA 要研究：法例叫佢「促進公平嘅市場」。職員問你：「我哋係技術機構，應唔應該對『公平』表態？點樣表態先算正當？」</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'純技術？',lead:'歐盟委員會話歐盟機構提供純技術、唔受政治考慮影響嘅評估。Eriksen 點睇？',
+  opts:['機構無可避免要作政治判斷：決定會對政治價值嘅意思表態','同意，機構完全中立'],ans:0,hint:'風險評估、成本效益分析會塑造「安全」「公平」嘅理解。',
+  ex:'權力係政治性嘅，唔止因為再分配效果。三個評估準則：特殊性、證成力、制度契合。',deep:'06-1',src:'筆記 06 §一'},
+ {type:'mcq',h:'迴避模式',lead:'Vibert 話機構應該「受事實約束」、唔好掂實質價值。Eriksen 嘅批評？',
+  opts:['保證唔到中立，仲令機構有誘因掩飾實際作出嘅政治判斷','完全啱'],ans:0,hint:'ESMA 推動「社會企業」，點避得開「社會公義」？',
+  ex:'結果只會做出政治性、但冇人承認係政治性嘅決定；如果價值判斷注定被視為唔正當，專家點會想公開？',deep:'06-2',src:'筆記 06 §二'},
+ {type:'mcq',h:'具體化模式',lead:'Richardson：乘客（立法者）話「去個好地方野餐」，司機（機構）揀去邊。即係機構只可以……',
+  opts:['將立法指令具體化','自己決定去唔去野餐'],ans:0,hint:'只限詮釋已完成嘅法例。',
+  ex:'毛病：忽略機構正當參與立法；冇涵蓋法例以上嘅推理。Acs：監管者可以喺唔同法例之間揀政策（美國環保局用《清潔空氣法》處理氣候）。',deep:'06-3',src:'筆記 06 §三'},
+ {type:'mcq',h:'舊法例、新問題',lead:'要負責任咁將舊法例用落新問題，Eriksen 話唯一方法係？',
+  opts:['解釋新目的點樣由機構更廣嘅授權推出嚟','等國會再立法先做'],ans:0,hint:'睇整體授權。',
+  ex:'呢個就引出公共理性模式。',deep:'06-3',src:'筆記 06 §三'},
+ {type:'sort',h:'政黨、法院、機構',lead:'每種推理方式屬於邊類機構？',cats:['政黨','法院','獨立機構'],items:[
+  ['為爭選票提出鮮明立場',0,''],
+  ['負責劃出合理界線',1,''],
+  ['政治價值係被託付、要落實嘅嘢：忠於授權',2,'機構獨特嘅推理方式。']],deep:'06-4',src:'筆記 06 §四'},
+ {type:'match',h:'授權嘅「貨幣組合」',lead:'四類理由。配對（右邊嘅簡短解釋係我寫嘅，四類理由出自筆記）。',pairs:[
+  ['效率','用最少資源達到目標'],['道德同民主上嘅可證成性','講得出點解對公眾係啱'],['正當程序','公平聽取各方'],['專業','根據專業知識判斷']],deep:'06-4',src:'筆記 06 §四'},
+ {type:'mcq',h:'考試委員會（筆記嘅例子）',lead:'學校考試委員會決定「公平」點計，考生有特殊需要點處理？「忠於授權」嘅做法係？',
+  opts:['問「學校嘅教育使命要求我點做」，再公開講清楚理由','話「我哋淨係計分，唔理公平」'],ans:0,hint:'第二個係迴避模式。',
+  ex:'面對對立壓力時，呢個模式分得開「策略性迎合」同「忠於授權」。',deep:'06-4',src:'筆記 06 §四'},
+ {type:'match',h:'三種德性',lead:'配對。',pairs:[
+  ['誠信','堅守原則、公開講理由、言行一致；包括尊重同真誠'],
+  ['獨立','組織上獨立唔夠，仲要推理上獨立'],
+  ['包容','包括市場理性以外嘅評價方式']],deep:'06-5',src:'筆記 06 §五'},
+ {type:'mcq',h:'背棄授權',lead:'NCA 因為「公平」好難量化，就淨係計價格效率。Eriksen 會點講？',
+  opts:['將目標縮窄到傳統方法做得到嘅範圍，就係背棄授權','好專業'],ans:0,hint:'Dryzek 對「行政理性主義」嘅批評。',
+  ex:'三個陷阱：排除唔量化得嘅價值、迴避多因素問題、排除激進選項。',deep:'06-5',src:'筆記 06 §五'},
+ {type:'flips',h:'問責點樣配合',lead:'合適問責制度嘅三個特徵。撳開睇。',items:[
+  ['① 對詮釋性授權敏感','唔淨係執死條規則，要問有冇忠於更廣嘅使命。'],
+  ['② 適當尊重','唔係盲目信任；避免不信任變成自我實現嘅預言（過多監控令人玩數字遊戲）。'],
+  ['③ 翻譯','將監管術語翻譯成公眾聽得明嘅考慮。']],deep:'06-6',src:'筆記 06 §六'},
+ {type:'mcq',h:'畀專家更多權？',lead:'公共理性模式係咪要畀非民選專業人士更多權決定政治目標？',
+  opts:['唔係：係講清楚佢哋點樣先算以合適方式處理目標','係'],ans:0,hint:'Eriksen 最後特別強調。',
+  ex:'機構有幾大責任實踐德性，要睇佢哋係咪要為此負責。',deep:'06-6',src:'筆記 06 §六'},
+ {type:'review',h:'快速溫習',ids:[178,183,188,193,197,205]}
+],take:['技術外衣遮唔住政治判斷。','迴避模式掩飾判斷；具體化模式太窄。','公共理性：忠於授權；四類理由＝貨幣組合。','三種德性＋三個問責特徵；唔係畀專家更多權。']};
+
+const P3L4={id:'l02',note:'02',icon:'4',name:'南方嘅規管型國家',sub:'筆記 02 · 約 6 分鐘',screens:[
+ {type:'story',h:'朋友嘅問題',html:`<div class="scene"><div class="big">🌏</div><p>一位喺發展中國家做官嘅朋友問你：「國際機構叫我哋照抄北方嘅獨立監管機構。抄唔抄得過嚟？點解有啲國家連設都唔設？」</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'規管型國家係乜',lead:'Yeung 最闊嘅定義：規管型國家更依賴乜嘢機構？',
+  opts:['同政府保持距離、唔受日常政治壓力、用技術專業做決定嘅機構','國有企業'],ans:0,hint:'獨立、專業。',
+  ex:'「南方」唔係地理標籤，而係殖民歷史、貧窮、以「發展」為主要政策關注嘅共同背景。',deep:'02-1',src:'筆記 02 §一'},
+ {type:'match',h:'三個共同處境',lead:'配對。',pairs:[
+  ['外來壓力','國際金融機構要求喺基建行業設監管機構'],
+  ['再分配政治','基建服務極差甚至冇，爭拗更激烈'],
+  ['國家能力','有限，分「薄」同「厚」兩層']],deep:'02-1',src:'筆記 02 §一'},
+ {type:'mcq',h:'移植嘅結果',lead:'世界銀行將「透明獨立嘅監管」寫入貸款條件，省略咗本國政治篩選。機構一開始通常係……',
+  opts:['空洞嘅制度外殼，之後先慢慢被填滿','即刻運作良好'],ans:0,hint:'好似法治文化要幾十年先扎根。',
+  ex:'機構嘅自主文化唔可以由外面當「速效方案」硬塞。',deep:'02-2',src:'筆記 02 §二'},
+ {type:'mcq',h:'Majone 條線企唔企得穩？',lead:'Majone 話效率交畀專家、再分配要政治問責。喺南方，「收回成本」可以等於將窮人排除喺基本服務以外。呢條線……',
+  opts:['更加唔可信：再分配政治嵌喺催生機構嘅處境入面','更加清楚'],ans:0,hint:'三個原因：覆蓋率低、行業失靈、行政立法正當性弱。',
+  ex:'所以監管太重要，唔可以淨係交畀監管者：法院同公民社會會介入；聽證會等程序可以令機構成為新嘅民主空間；焦點轉去「規管型社會」。',deep:'02-3',src:'筆記 02 §三'},
+ {type:'sort',h:'薄定厚？',lead:'分去「薄」嘅國家能力，定「厚」嘅國家能力。',cats:['薄','厚'],items:[
+  ['機構自主',0,'制度設計標準。'],['財政獨立',0,'制度設計標準。'],['足夠人手',0,'制度設計標準。'],
+  ['同時接觸國家同非國家持份者，又保住程序正確、獨立同說理',1,'同規管型社會打交道要嘅能力。']],deep:'02-4',src:'筆記 02 §四'},
+ {type:'mcq',h:'同邊派學者對話？',lead:'同時做到「嵌入」同「自主」，正係邊派文獻嘅核心？',
+  opts:['發展型國家（Evans）','公共選擇學派'],ans:0,hint:'作者建議兩派多啲對話。',
+  ex:'北方學者開始講規管型國家嘅「危機」，呢種「轉向政治」值得歡迎。',deep:'02-4',src:'筆記 02 §四'},
+ {type:'mcq',h:'幾多國家唔設？',lead:'到 2017 年，118 個有全面競爭法嘅新興同發展中經濟體……',
+  opts:['25% 未正式設立獨立主管機關；89 個設立咗嘅又有 15% 未運作','全部都設立咗'],ans:0,hint:'Koop 同 Kessler（2021）。',
+  ex:'研究問題：點解有啲經濟體正式或實際上避開監管獨立？',deep:'02-5',src:'筆記 02 §五'},
+ {type:'sort',h:'點解威權國家唔設？',lead:'邊啲係 Koop 同 Kessler 嘅理由？',cats:['係佢哋嘅理由','唔係'],items:[
+  ['可信承諾論本來係為民主國家而設',0,'冇選舉，時間不一致問題冇咁深。'],
+  ['威權政府寧願投資者靠官員保護',0,'而唔係中立可預測嘅規則。'],
+  ['威權政府嘅制度承諾本身冇咁可信',0,''],
+  ['石油國家行擁有權模式，唔係監管模式',0,'獨立同自由放任較夾，同國家控制經濟唔夾。'],
+  ['威權國家冇競爭法',1,'研究對象本身就係有全面競爭法嘅經濟體。']],deep:'02-5',src:'筆記 02 §五'},
+ {type:'sort',h:'兩個階段，兩套原因',lead:'每個發現屬於「正式設立」定「真正運作」階段？',cats:['正式設立','真正運作'],items:[
+  ['越威權越少設立（穩健）',0,''],
+  ['石油依賴加強威權嘅負面作用',0,''],
+  ['威權假設被否定',1,''],
+  ['主要靠功能需要同能力（經濟大、富有、原本有部門競爭單位）',1,'同 Dubash 同 Morgan 講嘅國家能力呼應。']],deep:'02-6',src:'筆記 02 §六'},
+ {type:'mcq',h:'象徵式？',lead:'正式設立獨立監管機構，係咪只係做個樣？',
+  opts:['唔係：政府喺設立嗰步特別計算獨立嘅政治代價','係，純粹象徵'],ans:0,hint:'威權政府喺呢步特別抗拒。',
+  ex:'結果顯示國際規範同監管移植嘅擴散有制度上嘅限制，同「移植」嘅講法一致。佢哋冇評價應唔應該獨立。',deep:'02-6',src:'筆記 02 §六'},
+ {type:'review',h:'快速溫習',ids:[32,35,37,41,54,59]}
+],take:['南方：外來壓力、再分配政治、國家能力有限。','移植出嚟嘅係空殼；自主文化唔可以速效硬塞。','效率同再分配分唔開→規管型社會；要厚嘅國家能力。','設立睇政體（威權、石油），運作睇功能同能力。']};
+
+const P3L5={id:'l03',note:'03',icon:'5',name:'由「負責任」到「回應型」',sub:'筆記 03 · 約 6 分鐘',screens:[
+ {type:'story',h:'去英國考察',html:`<div class="scene"><div class="big">🇬🇧</div><p>最後一站：你去英國考察，呢度係 Majone 心目中最典型嘅規管型國家。但 2008 年之後，英國監管者好似越嚟越「政治」。發生咩事？</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'原本嘅模式',lead:'1980、90 年代英國嘅規管型國家有乜特徵？',
+  opts:['獨立機構、以效率為本、經濟技術官僚式分析；分配含意當係社會開支','部長逐案決定價格'],ans:0,hint:'戴卓爾政府刻意去政治化。',
+  ex:'兩個邏輯：可信承諾（功能）同避責（政治）：獨立監管者係理想嘅「擋箭牌」。借 Birch 嘅字叫「負責任」：審慎同一致。',deep:'03-1',src:'筆記 03 §一'},
+ {type:'mcq',h:'被政治化',lead:'政治化即係對監管嘅關注、動員同兩極化增加。乜嘢令英國監管者意外地被政治化？',
+  opts:['金融危機','脫歐公投'],ans:0,hint:'經濟轉差、信任下跌、公用事業加價。',
+  ex:'大眾關注被「搵笨」同「忠誠罰款」（唔轉供應商嘅舊客畀貴價），於是更關注弱勢消費者。',deep:'03-2',src:'筆記 03 §二'},
+ {type:'mcq',h:'點解變難？',lead:'以競爭為目標嘅決定起碼理論上可以追求柏累托效率。以保護消費者為目標嘅「市場矯正」點解難啲？',
+  opts:['有好多唔同方法，而目標含糊，揀邊個好難說得通','因為冇人投訴'],ans:0,hint:'目標一含糊，取捨就要有人負責。',
+  ex:'柏累托效率即冇人變差。',deep:'03-2',src:'筆記 03 §二'},
+ {type:'sort',h:'監管者實際點變',lead:'邊啲係訪問嘅發現？',cats:['係發現','唔係'],items:[
+  ['2008 年 Mandelson 以公眾利益推翻 OFT 阻止 Lloyds TSB 收購 HBOS 嘅建議',0,'政府行近咗。'],
+  ['重心由投資者同公司轉向（弱勢）消費者',0,''],
+  ['開始質疑總和消費者福利標準',0,'行為經濟學：唔轉供應商嘅人比預期多。'],
+  ['上訴嘅通常係受影響公司，唔係消費者團體',0,'「單向壓力」。'],
+  ['監管者而家大量用交叉補貼做再分配',1,'佢哋仍然避開完全再分配嘅方法，認為只有政客先應該判斷邊啲消費者值得更多保護。']],deep:'03-3',src:'筆記 03 §三'},
+ {type:'mcq',h:'分配後果「盲」？',lead:'直到 2010 年代中，大家都同意監管者要對分配後果「盲」。而家呢？',
+  opts:['越嚟越覺得既唔可接受亦唔可行','照樣全部人都同意'],ans:0,hint:'但仍然避開完全再分配。',
+  ex:'監管者亦更多用溝通、客戶參與同地區關注建立信任。',deep:'03-3',src:'筆記 03 §三'},
+ {type:'mcq',h:'邊種改變？',lead:'第一級（換工具）、轉化型第二級（疊層）、取代型第二級（突然換晒）。英國屬於？',
+  opts:['轉化型：新元素疊喺舊元素上面，邁向回應型','取代型：舊嘢全部冇晒'],ans:0,hint:'同政治保持距離、證據為本、重視競爭仍然喺度。',
+  ex:'後果：返唔到淨係講柏累托效率嘅世界，有啲元素互相唔兼容。真正問題係可以政治到咩程度而唔被黨派衝突波及。',deep:'03-4',src:'筆記 03 §四'},
+ {type:'mcq',h:'「回應」唔係嗰個「回應」',lead:'Koop 同 Lodge 講嘅「回應型」，同執法文獻嘅「回應式監管」有乜分別？',
+  opts:['呢度係回應公眾同政治關注；執法文獻係回應業界行為同結構','完全一樣'],ans:0,hint:'留意用詞。',
+  ex:'政客暫時冇收回授權，所以改變冇挑戰到規管型國家嘅存在；政治化唔會消失。',deep:'03-4',src:'筆記 03 §四'},
+ {type:'mcq',h:'Ofgem：職責膨脹',lead:'自 1986 年《煤氣法》，英國能源規管機構嘅一般職責……',
+  opts:['由八項增加到二十一項','由二十一項減到八項'],ans:0,hint:'加入咗社會同環保目標。',
+  ex:'職責越多、排序越複雜，衝突同取捨越易出現；加上司法覆核威脅，處理分配問題傾向過分小心。',deep:'03-5',src:'筆記 03 §五'},
+ {type:'mcq',h:'Ofgem 頂住價格上限',lead:'2017–18 年政府要 Ofgem 設全面價格上限。Ofgem 點樣頂住？',
+  opts:['法定權力只容許保護弱勢消費者；有重大分配含意嘅政策要由政府立法','話自己唔識計'],ans:0,hint:'結果有 2018 年《價格上限法》。',
+  ex:'報告立場：監管者應該「聽」政府，但互相尊重表示可以講「唔」而受尊重。整體嚟講獨立性近年減弱。',deep:'03-5',src:'筆記 03 §五'},
+ {type:'mcq',h:'道德雷區',lead:'轉同唔轉供應商嘅消費者之間嘅公平，一位監管界人士點講？',
+  opts:['係道德雷區，唯一解決過程係政治過程同投票箱','監管者自己計就得'],ans:0,hint:'獨立監管者自己判斷就冇問責。',
+  ex:'難處：政府可能唔想清楚排列優先次序，怕被列「低優先」嘅利益反彈。',deep:'03-6',src:'筆記 03 §六'},
+ {type:'mcq',h:'點解係能源？',lead:'點解公平問題喺能源市場特別強烈？',
+  opts:['能源係必需品，低收入家庭能源開支比例高好多','因為能源公司特別多'],ans:0,hint:'負擔能力從來冇脫離政治干預。',
+  ex:'私有化初期嘅教科書分工：市場最大化效率，分配交畀稅收同入息福利；之後監管者目標越嚟越多。筆記連到 Townley 同 Majone 嘅類似分工（Part 2）。',deep:'03-6',src:'筆記 03 §六'},
+ {type:'review',h:'快速溫習',ids:[65,66,73,81,84,93]}
+],take:['負責任：去政治化、效率、擋箭牌。','金融危機後被政治化；重心轉向弱勢消費者。','疊層式轉變，邁向回應型；問題係可以政治到幾多。','Ofgem 職責 8→21；重大分配決定由政府立法。']};
+const LESSONS=[P3L1,P3L2,P3L3,P3L4,P3L5];
+
+const LNAME={};LESSONS.forEach((l,k)=>{LNAME[l.note]=`第 ${k+1} 課：${l.name}`;});window.__S.LNAME=LNAME;
+
+
+/* ---------- home ---------- */
+const GROUPS={"0": "五、授權之後：問責同表現", "2": "六、價值、南方同英國"};
+function home(){
+  const st=S();
+  const open=k=>k===0||st.done[LESSONS[k-1].id];
+  const allDone=LESSONS.every(l=>st.done[l.id]);
+  const nodes=LESSONS.map((l,k)=>{const d=st.done[l.id],o=open(k);
+    return (GROUPS[k]?`<div class="grp">${GROUPS[k]}</div>`:'')+`<div class="node ${d?'done':o?'open':'locked'}"><button class="dot" data-l="${k}" ${o?'':'disabled'} aria-label="${l.name}">${d?'✓':o?l.icon:'🔒'}</button><div class="nm">${l.name}</div><div class="sub">${l.sub}</div></div>`;}).join('');
+  app.innerHTML=`<div class="home">
+   <div class="stats"><a href="../" class="brand" style="text-decoration:none;color:inherit" aria-label="返去課程目錄">⌂ 規管型國家 · 3</a><span class="pills"><span class="pill" title="連續學習日數">🔥 ${st.streak}</span><span class="pill" title="經驗值">⭐ ${st.xp}</span><button class="pill" id="menu" aria-label="選單">☰</button></span></div>
+   <div class="course"><span class="eyebrow">Regulatory Law · 規管型國家 · Part 3 / 3 · 5 課</span><h1>問責、價值、南方同英國</h1>
+    <p class="muted">Part 3 講授權之後嘅問題：責任打散咗，問責變成點（Scott）；獨立同問責有冇令監管做得好啲（Koop 同 Hanretty）；獨立機構點樣處理政治價值先算正當（Eriksen）；南方嘅規管型國家同北方點唔同、點解有啲國家唔設獨立機構（Dubash 同 Morgan；Koop 同 Kessler）；英國 2008 年後點樣由「負責任」變「回應型」（Koop 同 Lodge；Deller 同 Waddams Price）。故事接住 Part 2：海島國嘅新競爭主管機關運作咗幾年，你寫最後一份報告。</p>
+    <p class="muted" style="font-size:14px;margin-top:8px"><b>用法：</b>玩一課 → 好奇就撳「📖 想深入啲」→ 課尾溫卡 → 有空喺選單睇圖解同進度地圖。</p>
+    ${Object.keys(st.done).some(k=>st.done[k])?`<button class="review-btn" id="rev">🔁 溫習已學嘅卡</button>`:''}
+    ${allDone?`<p class="okline" style="margin-top:10px">🎉 Part 3 五課全部完成！成個「規管型國家」三個 Part 都行完。去「進度地圖」睇吓仲有邊節未掌握。</p>`:''}</div>
+   <div class="path" id="path">${nodes}</div></div>`;
+  app.querySelectorAll('.dot[data-l]').forEach(b=>b.onclick=()=>play(+b.dataset.l));
+  const r=$('#rev'); if(r) r.onclick=reviewAll;
+  $('#menu').onclick=menu;
+}
+function menu(){
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="選單"><div class="grab"></div><h3>選單</h3>
+   <div class="opts">${[['notes','📖 讀懂版：30 節逐節講解'],['cards','🃏 快速卡：166 張，全部原子命題'],['visuals','🗺️ 圖解：5 幅'],['map','📊 進度地圖：邊節掌握咗']].map(([h,t])=>`<a class="opt" href="#${h}" style="text-decoration:none;color:inherit">${t}</a>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d); d.onclick=e=>{if(e.target===d||e.target.closest('a')) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+/* ---------- player ---------- */
+function play(li){
+  const L=LESSONS[li]; let i=0, xp=0, first=0, total=0;
+  function shell(inner,ready,ctaText){
+    const sc=L.screens[i];
+    app.innerHTML=`<div class="top"><button class="x" id="quit" aria-label="離開">✕</button><div class="bar"><i style="width:${i/L.screens.length*100}%"></i></div><span class="xp">⭐ ${xp}</span></div>
+     <div class="screen" id="sc">${inner}</div>
+     <div class="foot">${sc.deep?`<button class="deep" id="deep">📖 想深入啲</button>`:''}<button class="cta ${ready?'go':''}" id="cta" ${ready?'':'disabled'}>${ctaText||'繼續'}</button></div>`;
+    $('#quit').onclick=()=>{location.hash='';home();};
+    if(sc.deep) $('#deep').onclick=()=>drawer(sc.deep);
+    $('#cta').onclick=()=>{i++; i>=L.screens.length?finish():render();};
+  }
+  const ready=()=>{const c=$('#cta');c.disabled=false;c.classList.add('go');};
+  function render(){
+    const sc=L.screens[i]; const head=`<h2>${sc.h}</h2>${sc.lead?`<p class="lead">${sc.lead}</p>`:''}`;
+    if(sc.type==='story'){shell(head+sc.html,true,'開始');return;}
+    if(sc.type==='mcq'){
+      total++; let tries=0;
+      shell(head+`<div class="opts">${sc.opts.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><div id="fb"></div>`,false);
+      app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(b.disabled) return; tries++;
+        if(j===sc.ans){b.classList.add('right'); if(tries===1){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+          app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+          $('#fb').innerHTML=`<div class="fb ok"><b class="t">${tries===1?'啱！':'啱咗！'}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}
+        else{b.classList.add('wrong');b.disabled=true;
+          if(tries===1) $('#fb').innerHTML=`<div class="fb hint"><b class="t">再諗一諗</b><p>💡 ${sc.hint}</p></div>`;
+          else{const r=app.querySelector(`.opt[data-j="${sc.ans}"]`);r.classList.add('right');app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+            $('#fb').innerHTML=`<div class="fb no"><b class="t">答案係：${sc.opts[sc.ans]}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}}
+      }); return;}
+    if(sc.type==='widget'){
+      total++;
+      shell(head+`<div id="w"></div><div id="aft"></div>`,false);
+      W[sc.w]($('#w'),ok=>{ if(ok){first++;xp+=10;$('.xp').textContent='⭐ '+xp;} if(sc.after) $('#aft').innerHTML=`<div class="fb ok"><p>${sc.after}</p></div>`; ready();});
+      return;}
+    if(sc.type==='flips'){
+      shell(head+`<div class="flips">${sc.items.map((it,j)=>`<button class="flip" data-j="${j}"><span class="h">${it[0]}</span><span class="b">撳一下睇</span></button>`).join('')}</div>${sc.src?`<span class="src">出處：${sc.src}</span>`:''}`,false);
+      const seen=new Set();
+      app.querySelectorAll('.flip').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;b.classList.add('open');b.querySelector('.b').innerHTML=sc.items[j][1];seen.add(j);if(seen.size===sc.items.length) ready();});
+      return;}
+    if(sc.type==='match'){
+      total++; let errs=0, sel=null, matched=0;
+      const R=sc.pairs.map((p,j)=>({t:p[1],j})).sort(()=>Math.random()-.5);
+      shell(head+`<div class="match"><div class="col">${sc.pairs.map((p,j)=>`<button class="mt" data-l="${j}">${p[0]}</button>`).join('')}</div><div class="col">${R.map(r=>`<button class="mt" data-r="${r.j}">${r.t}</button>`).join('')}</div></div><div id="fb"></div>`,false);
+      app.querySelectorAll('.mt[data-l]').forEach(b=>b.onclick=()=>{if(b.classList.contains('done'))return;app.querySelectorAll('.mt[data-l]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=+b.dataset.l;});
+      app.querySelectorAll('.mt[data-r]').forEach(b=>b.onclick=()=>{if(sel===null||b.classList.contains('done'))return;
+        if(+b.dataset.r===sel){b.classList.add('done');const l=app.querySelector(`.mt[data-l="${sel}"]`);l.classList.remove('sel');l.classList.add('done');sel=null;matched++;
+          if(matched===sc.pairs.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+            $('#fb').innerHTML=`<div class="fb ok"><b class="t">全部配啱！</b><span class="src">出處：${sc.src}</span></div>`;ready();}}
+        else{errs++;b.classList.add('err');setTimeout(()=>b.classList.remove('err'),320);}});
+      return;}
+    if(sc.type==='sort'){
+      total++; let errs=0, ok=0;
+      shell(head+`<div class="sortl">${sc.items.map((it,j)=>`<div class="si" data-j="${j}"><div class="st">${it[0]}</div><div class="sc">${sc.cats.map((c,ci)=>`<button class="sb" data-c="${ci}">${c}</button>`).join('')}</div><div class="sw2"></div></div>`).join('')}</div><span class="src">出處：${sc.src}</span>`,false);
+      app.querySelectorAll('.si').forEach(row=>{const j=+row.dataset.j, it=sc.items[j]; let tries=0;
+        row.querySelectorAll('.sb').forEach(b=>b.onclick=()=>{ if(row.classList.contains('done')) return; tries++;
+          if(+b.dataset.c===it[1]){row.classList.add('done');b.classList.add('right');row.querySelector('.sw2').innerHTML=`<span class="okline">✓ ${it[2]}</span>`;ok++;
+            if(ok===sc.items.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp; ready(); }}
+          else{errs++;b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),350);
+            if(tries>=2){row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 答案係「${sc.cats[it[1]]}」：${it[2]}</span>`;}
+            else row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 再諗吓：睇返上面嘅分類標準。</span>`;}});});
+      return;}
+    if(sc.type==='review'){
+      let k=0, flipped=false;
+      const draw=()=>{const c=CARDS[sc.ids[k]];
+        shell(head+`<p class="muted" style="font-size:14px">第 ${k+1} / ${sc.ids.length} 張 · 撳卡反轉。卡背係筆記原文，人名唔使記。</p>
+         <button class="rcard" id="rc">${!flipped?`<span class="q">${c.f}</span><span class="muted" style="font-size:14px">諗好答案，撳一下</span>`
+          :`<span style="font-weight:700">${c.b}</span><blockquote>“${c.q}”</blockquote><span class="src">筆記 ${c.n} §${c.s} · ${c.loc}</span>`}</button>`,
+         flipped&&k===sc.ids.length-1, flipped&&k===sc.ids.length-1?'完成':'繼續');
+        $('#rc').onclick=()=>{ if(!flipped){flipped=true;draw();if(k<sc.ids.length-1){const c2=$('#cta');c2.disabled=false;c2.classList.add('go');c2.onclick=()=>{k++;flipped=false;draw();};}} };
+      }; draw(); return;}
+  }
+  function finish(){
+    const st=S(); const bonus=20; st.xp+=xp+bonus; st.done[L.id]=true; bumpStreak(st); saveAll(st);
+    app.innerHTML=`<div class="done-screen"><div><div class="trophy">🏆</div><h2 style="font-size:26px;margin:6px 0">完成「${L.name}」</h2>
+      <div class="stat3"><div>⭐ XP<b>+${xp+bonus}</b></div><div>🎯 一次答啱<b>${first}/${total}</b></div><div>🔥 連續<b>${st.streak} 日</b></div></div>
+      <div class="take" style="margin:16px auto"><b>帶走呢幾句</b><ul>${L.take.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      ${li+1<LESSONS.length&&L.id!=='rev'?`<button class="cta go" id="nextL" style="width:100%;max-width:520px;margin-bottom:10px">下一課：${LESSONS[li+1].name} →</button>`:''}
+      <button class="cta" id="back" style="width:100%;max-width:520px">返去路線圖</button></div></div>`;
+    confetti(); $('#back').onclick=()=>{location.hash='';home();}; const nl=$('#nextL'); if(nl) nl.onclick=()=>play(li+1);
+  }
+  render();
+}
+function drawer(k){
+  const ks=k.split('|').filter(x=>noteBody(x)); if(!ks.length) return;
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="深入講解"><div class="grab"></div>${ks.map(x=>{const n=noteBody(x);return `<span class="eyebrow">筆記 ${x.replace('-',' §')} · 讀懂版</span><h3>${n.t}</h3><div class="nb" style="margin-bottom:14px">${n.b}</div>`;}).join('')}
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+function reviewAll(){
+  const st=S(); const ids=LESSONS.filter(l=>st.done[l.id]).flatMap(l=>l.screens.find(s=>s.type==='review').ids);
+  const fake={id:'rev',name:'溫習',screens:[{type:'review',h:'溫習已學嘅卡',ids:ids.sort(()=>Math.random()-.5)}],take:['隔幾日再嚟溫一次，記得更牢。']};
+  LESSONS.push(fake); play(LESSONS.length-1); LESSONS.pop();
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=document.createElement('canvas'); c.className='confetti'; document.body.appendChild(c);
+  const x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const cols=['#4B4FD9','#1F9D62','#E5A800','#D2423A'];
+  const ps=Array.from({length:90},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.4,v:2+Math.random()*3,r:Math.random()*6.28,s:5+Math.random()*5,c:cols[Math.floor(Math.random()*4)]}));
+  let t=0; (function fr(){x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore();});
+    if(++t<150) requestAnimationFrame(fr); else c.remove();})();
+}
+function sub(title,fn,arg){
+  app.innerHTML=`<div class="top"><button class="x" id="bk" aria-label="返回">←</button><b style="flex:1">${title}</b></div><div class="home pg" id="pg"></div>`;
+  $('#bk').onclick=()=>{location.hash='';};
+  const P=makePages($('#pg')); P[fn](arg);
+}
+function route(){
+  const h=location.hash.replace('#',''); const base=h.split('-')[0], arg=h.slice(base.length+1);
+  if(base==='notes') sub('讀懂版','notesPage',arg||null);
+  else if(base==='cards') sub('快速卡','cardsPage',arg||'');
+  else if(base==='visuals') sub('圖解','visuals');
+  else if(base==='map') sub('進度地圖','mapPage');
+  else if(base==='lesson'){const k=LESSONS.findIndex(l=>l.note===arg); if(k>=0){const st=S(); const ok=k===0||st.done[LESSONS[k-1].id]; ok?play(k):home();} else home();}
+  else home();
+}
+window.addEventListener('hashchange',route);
+window.__RL={NOTES,CARDS_DATA,LESSONS};
+route();
+})();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{}));}</script>
+</body>
+</html>

@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="監管實驗室">
+<meta name="theme-color" content="#141A26">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;-webkit-text-size-adjust:100%}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>規管型國家 Part 1</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: mobile-first full-screen lesson player — one idea per screen, Continue pinned to the bottom; a course path is home. */
+:root{
+  --bg:#F2F4F8; --card:#FFFFFF; --ink:#141A26; --muted:#5D6779; --line:#D9DEE8; --soft:#E9ECF3;
+  --accent:#4B4FD9; --accent-ink:#FFFFFF; --accent-soft:#E6E7FB;
+  --good:#1F9D62; --good-soft:#DFF4EA; --bad:#D2423A; --bad-soft:#FBE6E4; --warn:#B7790A;
+  --cs:#4B4FD9; --cc:#E5A800; --aa:#D2423A;
+  --f:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{overflow:hidden;height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+.muted{color:var(--muted)} .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mine{display:inline-block;font-size:12px;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 6px;margin-left:4px;vertical-align:middle}
+
+/* ---------- home / path ---------- */
+.home{flex:1;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.stats{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{font-weight:900;font-size:22px;letter-spacing:.02em}
+.pills{display:flex;gap:8px}
+.pill{display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px}
+.course{background:var(--card);border-radius:22px;padding:18px;border:1px solid var(--line);margin-bottom:22px}
+.course h1{font-size:24px;line-height:1.3;margin:4px 0 6px;font-weight:900;text-wrap:balance}
+.course p{margin:0}
+.eyebrow{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0 20px}
+.path svg.line{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:220px}
+.node:nth-child(odd){transform:translateX(-60px)} .node:nth-child(even){transform:translateX(60px)}
+.dot{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:900;background:var(--soft);color:var(--muted);border:3px solid var(--line);box-shadow:0 6px 0 var(--line)}
+.node.open .dot{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 6px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.node.done .dot{background:var(--good);color:#fff;border-color:var(--good);box-shadow:0 6px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.node.open .dot{animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.node .nm{font-weight:700;text-align:center;font-size:15.5px;line-height:1.35}
+.node .sub{font-size:13px;color:var(--muted);text-align:center}
+.node.locked{opacity:.55}
+.review-btn{width:100%;margin-top:6px;background:var(--card);border:1.5px dashed var(--accent);color:var(--accent);border-radius:16px;padding:14px;font-weight:700}
+
+/* ---------- lesson player ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+.x{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:var(--muted)}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:999px;transition:width .35s}
+.xp{font-weight:900;font-size:15px;color:var(--warn);min-width:52px;text-align:right}
+.screen{flex:1;overflow-y:auto;padding:10px max(18px,env(safe-area-inset-right,0px)) 24px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.screen h2{font-size:23px;line-height:1.35;margin:4px 0 0;font-weight:900;text-wrap:balance}
+.screen p{margin:0}
+.lead{font-size:17.5px}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:8px}
+.big{font-size:44px;line-height:1}
+.opts{display:grid;gap:10px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;font-weight:700;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt.sel{border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft);box-shadow:0 4px 0 var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 4px 0 var(--bad);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opt[disabled]{cursor:default}
+.fb{border-radius:16px;padding:14px 16px;display:grid;gap:6px;animation:in .2s ease}
+.fb.ok{background:var(--good-soft)} .fb.no{background:var(--bad-soft)} .fb.hint{background:var(--accent-soft)}
+.fb b.t{font-size:17px}
+.src{font-size:12.5px;color:var(--muted)}
+.foot{padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;border-top:1px solid var(--line);background:var(--bg)}
+.cta{flex:1;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:15px;font-weight:900;font-size:17px;box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.cta:disabled{background:var(--soft);color:var(--muted);box-shadow:0 5px 0 var(--line);cursor:default}
+.cta.go{background:var(--good);color:#fff;box-shadow:0 5px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.deep{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:0 14px;font-weight:700;font-size:14px;color:var(--muted);box-shadow:0 5px 0 var(--line)}
+/* drawer */
+.sheet{position:fixed;inset:0;background:rgba(10,14,22,.45);display:flex;align-items:flex-end;z-index:20;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet .in{background:var(--card);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:78%;overflow-y:auto;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px)}}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h3{margin:0 0 8px;font-size:19px}
+.sheet .nb{display:grid;gap:8px;font-size:15.5px}.sheet ul{margin:0;padding-left:20px;display:grid;gap:6px}
+/* widgets */
+.wid{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
+input[type=range]{width:100%;accent-color:var(--accent);height:30px}
+.lbl{display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.barrow{display:grid;grid-template-columns:76px 1fr 54px;gap:8px;align-items:center;font-size:14.5px}
+.barrow .track{height:22px;background:var(--soft);border-radius:8px;overflow:hidden}
+.barrow .track i{display:block;height:100%;border-radius:8px;transition:width .2s}
+.chart{width:100%;height:auto;display:block}
+.task{font-weight:700;color:var(--accent);font-size:15px;display:flex;gap:8px;align-items:center}
+.task.ok{color:var(--good)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{background:var(--soft);border-radius:12px;padding:8px;text-align:center;font-size:12.5px;color:var(--muted);font-weight:700}
+.nums b{display:block;font-family:var(--mono);font-size:19px;color:var(--ink)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.tog{display:flex;background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.tog button{flex:1;padding:10px;border-radius:11px;font-weight:700;font-size:15px;color:var(--muted)}
+.tog button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.flips{display:grid;gap:10px}
+.flip{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;box-shadow:0 4px 0 var(--line);display:grid;gap:4px}
+.flip .h{font-weight:900}.flip .b{color:var(--muted);font-size:15px}
+.flip.open{border-color:var(--accent)}
+.flip.open .b{color:var(--ink)}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:grid;gap:10px;align-content:start}
+.mt{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;font-weight:700;font-size:15px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.mt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.mt.done{border-color:var(--good);background:var(--good-soft);opacity:.8}
+.mt.err{animation:shake .3s;border-color:var(--bad)}
+.rcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;min-height:210px;display:grid;align-content:center;gap:10px;box-shadow:0 5px 0 var(--line);text-align:left}
+.rcard .q{font-size:21px;font-weight:900;line-height:1.4}
+.rcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+/* complete */
+.done-screen{flex:1;display:grid;place-items:center;text-align:center;padding:24px;gap:10px}
+.done-screen .trophy{font-size:72px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.stat3{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat3 div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 16px;font-weight:700}
+.stat3 b{display:block;font-size:24px}
+.take{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;display:grid;gap:6px;max-width:520px}
+.take ul{margin:0;padding-left:20px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+/* sort screen */
+.sortl{display:grid;gap:12px}
+.si{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:8px}
+.si.done{border-color:var(--good)}
+.si .st{font-weight:700}
+.si .sc{display:flex;flex-wrap:wrap;gap:8px}
+.sb{border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:700;font-size:14.5px;background:var(--bg);min-height:44px}
+.sb.right{border-color:var(--good);background:var(--good-soft)}
+.sb.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s}
+.si.done .sb:not(.right){opacity:.4}
+.okline{color:var(--good);font-weight:700;font-size:14.5px}
+.hintline{color:var(--accent);font-weight:700;font-size:14.5px}
+.grp{z-index:1;font-weight:900;font-size:14px;color:var(--muted);letter-spacing:.06em;background:var(--bg);padding:2px 10px;border-radius:8px}
+button.pill{cursor:pointer}
+/* sub pages (reading notes, cards, visuals, map) */
+.pg{--surface:var(--card);--surface2:var(--soft);--area-cs:var(--cs);--area-c:var(--cc);--area-a:var(--aa);--f-display:var(--f);--r:16px}
+.pg h2{font-size:22px;line-height:1.35;margin:4px 0;font-weight:900;text-wrap:balance}
+.pg h3{font-size:18px;margin:0;line-height:1.35}
+.pg p{margin:0}
+.pg .lvhead{display:grid;gap:8px;margin-bottom:14px}
+.pg .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.pg .stack{display:flex;flex-direction:column;gap:12px}
+.pg .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pg .tabs{display:flex;flex-wrap:wrap;gap:6px}
+.pg .tab{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 11px;font-size:13.5px;font-weight:700;min-height:36px}
+.pg .tab.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.pg .chip{display:inline-block;font-size:13px;font-weight:700;text-decoration:none;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:3px 10px;background:var(--card)}
+.pg .chip.ok{color:var(--good);border-color:var(--good)}
+.pg .links{gap:8px;margin-top:6px}
+.pg .nbody{display:grid;gap:8px;font-size:16px}
+.pg .nbody ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.pg .readchk{font-size:14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.pg .readchk input{width:22px;height:22px}
+.pg .tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);background:var(--soft)}
+.pg .btn{border:1.5px solid var(--ink);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:700;min-height:40px}
+.pg .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pg .btn.ghost{border-color:var(--line)}
+.pg .btn.sm{padding:5px 12px;font-size:13.5px;min-height:36px}
+.pg .progress{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.pg .progress i{display:block;height:100%;background:var(--good)}
+.pg .fcard{min-height:240px;border:2px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);padding:22px 18px;display:grid;align-items:center;cursor:pointer;margin-top:10px}
+.pg .fcard.flip{border-color:var(--accent)}
+.pg .fcard.done{cursor:default;text-align:center}
+.pg .ff,.pg .fcard .fb{display:grid;gap:12px;background:none;padding:0;animation:none;border-radius:0}
+.pg .fq{font-size:21px;font-weight:900;line-height:1.4}
+.pg .fa{font-size:16.5px;font-weight:600}
+.pg .fcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+.pg .vis{width:100%;height:auto;display:block;font-family:var(--f)}
+.pg .viswrap{overflow-x:auto;margin-top:8px}
+.pg .viswrap .vis{min-width:560px}
+.pg .fo{font-size:12.5px;line-height:1.45;color:var(--ink);display:grid;gap:4px}
+.pg .fo p{margin:0}.pg .fo.c{text-align:center}
+.pg .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.pg table.map{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+.pg table.map th{text-align:left;font-size:12px;color:var(--muted);padding:10px 12px;border-bottom:1.5px solid var(--line)}
+.pg table.map td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.pg table.map td.c{text-align:center}
+.pg table.map tr.nh td{background:var(--soft)}
+.pg table.map a{color:var(--ink)}
+.pg .okb{font-size:12px;font-weight:700;color:var(--good);border:1.5px solid var(--good);border-radius:5px;padding:0 6px}
+.pg .mono{font-family:var(--mono)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px">
+ <form id="gf" style="display:grid;gap:12px;max-width:320px;width:100%;text-align:center">
+  <div style="font-size:30px;font-weight:900">規管型國家 · 1</div>
+  <label for="gp" class="muted">輸入密碼</label>
+  <input id="gp" type="password" inputmode="numeric" autocomplete="current-password" style="font-size:22px;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)">
+  <button class="cta go" type="submit">入去</button>
+  <p id="ge" style="color:var(--bad);min-height:1.4em"></p>
+ </form></div>
+<script>(function(){const H='d83036ffb5b49a153bc391fd12b4a10df06bbb200f39fed97c331b03b6833ce7',K='reglab-ok',g=document.getElementById('gate');
+ try{if(localStorage.getItem(K)===H){g.remove();return;}}catch(e){}
+ document.getElementById('gf').addEventListener('submit',async e=>{e.preventDefault();
+  const v=document.getElementById('gp').value.trim();
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const x=[...new Uint8Array(b)].map(n=>n.toString(16).padStart(2,'0')).join('');
+  if(x===H){try{localStorage.setItem(K,H)}catch(e){} g.remove();} else document.getElementById('ge').textContent='密碼唔啱，再試一次';});
+})();</script>
+<div id="app"></div>
+
+<script>
+const CARDS_DATA=[{"id": 0, "n": "01", "s": 1, "t": "conceptual", "f": "歐洲國家管治嘅主要方式，由乜轉做乜？", "b": "Majone 認為喺歐洲，規則制定正在取代收稅同使錢，成為國家管治嘅主要方式", "q": "rule making is replacing taxing and spending", "loc": "Majone1997 p.139"}, {"id": 1, "n": "01", "s": 1, "t": "definition", "f": "監管政策想糾正邊幾種市場失靈？", "b": "Majone 將監管政策界定為糾正壟斷權力、負外部性、資訊不完全同公共財供應不足等市場失靈嘅政策", "q": "Regulatory policies are aimed at correcting various types of 'market failure': monopoly power, negative externalities, incomplete information, insufficient provision of public goods.", "loc": "Majone1997 p.141"}, {"id": 2, "n": "01", "s": 1, "t": "fact", "f": "歐洲實際發生嘅「放寬監管」，係咪拆晒監管？", "b": "Majone 指出歐洲實際出現嘅唔係拆晒公共監管，而係放寬監管同重新監管嘅組合，可能喺另一個管治層級", "q": "a combination of deregulation and re-regulation, possibly at a different level of governance", "loc": "Majone1997 p.143"}, {"id": 3, "n": "01", "s": 2, "t": "fact", "f": "歷史上，歐洲經濟監管嘅主要方式係乜？", "b": "Majone 指出公有制歷來係歐洲經濟監管嘅主要方式", "q": "public ownership has been, historically, the main mode of economic regulation in Europe", "loc": "Majone1997 p.144"}, {"id": 4, "n": "01", "s": 2, "t": "cause", "f": "以公有制監管失敗之後，改用咩控制方式？", "b": "Majone 認為以公有制監管嘅失敗，解釋咗點解改為將公用事業留喺私人手、但由專門機構訂立同執行規則去控制", "q": "The failure of regulation by public ownership explains the shift to an alternative mode of control whereby public utilities and other industries deemed to affect the public interest are left in private hands, but are subject to rules developed and enforced by specialised agencies.", "loc": "Majone1997 p.144"}, {"id": 5, "n": "01", "s": 2, "t": "cause", "f": "權力交上歐洲層面，對成員國國內嘅監管機構有咩影響？", "b": "Majone 認為將重要權力交上歐洲層面，反而加重咗成員國國內監管政策同機構嘅重要性", "q": "the delegation of important powers to European level has not reduced, but actually increased the importance of regulatory policies and institutions at national level", "loc": "Majone1997 p.146"}, {"id": 6, "n": "01", "s": 2, "t": "cause", "f": "「靠代理人治理」同「靠規管治理」有咩關係？", "b": "Seidman 同 Gilmour 認為靠規管嚟治理，係靠代理人嚟治理嘅必然伴隨", "q": "government by regulation is the inevitable concomitant of government by proxy", "loc": "Seidman and Gilmour (1986), in Majone1997 p.147"}, {"id": 7, "n": "01", "s": 3, "t": "cause", "f": "點解公共預算約束唔到規則制定者？", "b": "Majone 認為公共預算對規則制定者只係軟約束，因為監管計劃嘅真正成本由守規則嘅人而唔係監管者負擔", "q": "The public budget is a soft constraint on rule makers because the real cost of regulatory programmes is borne not by the regulators but by those who have to comply with the regulation.", "loc": "Majone1997 p.149"}, {"id": 8, "n": "01", "s": 3, "t": "cause", "f": "歐共體冇獨立收稅使錢權，點樣擴大權限？", "b": "Majone 認為歐共體因為冇獨立嘅收稅使錢權力，只能透過發展成幾乎純粹嘅規管型國家去擴大權限", "q": "since the EC lacks an independent power to tax and spend, it could increase its competencies only by developing as an almost pure type of regulatory state", "loc": "Majone1997 p.150"}, {"id": 9, "n": "01", "s": 3, "t": "conceptual", "f": "喺規管型國家，政治爭拗由邊度搬去邊度？", "b": "Majone 認為喺規管型國家，政治爭拗由預算程序轉移到爭奪審查同控制監管程序嘅管轄權", "q": "in the regulatory state the political contest shifts from the traditional arena of the budgetary process to a new arena where jurisdiction over the review and control of the regulatory process provides the main source of conflict", "loc": "Majone1997 p.151"}, {"id": 10, "n": "01", "s": 4, "t": "normative", "f": "邊類政策應該留喺民選政治首長直接控制之下？", "b": "Majone 認為再分配政策，或者有重大再分配後果嘅政策，應該留喺民選政治首長直接控制之下", "q": "redistributive policies, or policies with significant redistributive consequences, should remain under the direct control of political executives", "loc": "Majone1997 p.152"}, {"id": 11, "n": "01", "s": 4, "t": "evaluation", "f": "喺經濟同社會監管，獨立機構有咩兩大優勢？", "b": "Majone 認為喺經濟同社會監管範疇，獨立機構有專業知識同作出可信政策承諾兩大優勢", "q": "In such areas, independent agencies enjoy two significant advantages: expertise and the possibility of making credible policy commitments.", "loc": "Majone1997 p.152"}, {"id": 12, "n": "01", "s": 4, "t": "cause", "f": "點解預期政府輪替，會令政客短視？", "b": "Majone 認為因為預期政府會輪替，政客冇乜誘因推行要喺下次選舉之後先見效嘅政策", "q": "Under the expectation of alternation, politicians have few incentives to develop policies whose success, if at all, will come after the next election.", "loc": "Majone1997 p.153"}, {"id": 13, "n": "01", "s": 4, "t": "normative", "f": "解決承諾問題嘅一個重要方法係乜？", "b": "Majone 認為解決承諾問題嘅重要方法之一，係將政策制定權交畀獨立中央銀行同監管機構", "q": "One important solution of the commitment problem consists in delegating policy-making powers to institutions such as independent central banks and regulatory agencies", "loc": "Majone1997 p.153"}, {"id": 14, "n": "01", "s": 4, "t": "definition", "f": "機構模式同傳統官僚模式有咩分別？", "b": "Majone 認為機構模式同傳統官僚模式嘅分別，在於結合專業同獨立，並專注於相當窄嘅政策範圍", "q": "What distinguishes the agency model from the traditional bureaucratic model, then, is the combination of expertise and independence, together with specialisation in a fairly narrow range of policy issues.", "loc": "Majone1997 p.154"}, {"id": 15, "n": "01", "s": 5, "t": "conceptual", "f": "立法者用乜嚟監察監管機構？", "b": "Majone 認為對一小撮政策有近乎壟斷管轄權嘅國會委員會，係立法者監察監管機構嘅工具", "q": "Legislative committees with near-monopoly jurisdiction over a small subset of policies are such monitoring devices.", "loc": "Majone1997 p.155"}, {"id": 16, "n": "01", "s": 5, "t": "evaluation", "f": "規管型國家擴張最重要嘅後果可能係乜？", "b": "Majone 認為法院介入行政同政策制定，可能係規管型國家擴張最重要嘅後果", "q": "the involvement of the courts in administration and policy making is perhaps the most important consequence of the growth of the regulatory state", "loc": "Majone1997 p.156"}, {"id": 17, "n": "01", "s": 5, "t": "cause", "f": "歐盟嘅「相互承認」原則帶嚟乜？", "b": "Majone 認為歐盟嘅相互承認原則製造咗成員國規例之間嘅競爭", "q": "mutual recognition creates a system of competition among the regulations of the member states", "loc": "Majone1997 p.157"}, {"id": 18, "n": "01", "s": 6, "t": "conceptual", "f": "如果民主正當性只有一個標準，由法院同專家主導嘅國家會點？", "b": "Majone 指出如果民主正當性嘅唯一標準係直接向選民或者國會多數負責，由法院同技術專家主導嘅國家就有嚴重民主赤字", "q": "If it is assumed that the only standard of democratic legitimacy is direct responsibility to the voters or to the government expressing the current parliamentary majority, then a state of courts and technocratic experts obviously suffers from a serious democratic deficit.", "loc": "Majone1997 p.159"}, {"id": 19, "n": "01", "s": 6, "t": "normative", "f": "提高監管機構透明度同問責，最簡單最基本嘅方法係乜？", "b": "Majone 認為提高監管機構透明度同問責最簡單最基本嘅方法，係要求監管者為決定說明理由", "q": "The simplest and most basic means of improving agency transparency and accountability is to require regulators to give reasons for their decisions.", "loc": "Majone1997 p.160"}, {"id": 20, "n": "01", "s": 6, "t": "evaluation", "f": "非多數決機構要守嘅問責標準，同傳統部門比點？", "b": "Majone 認為非多數決機構可能要守比傳統政府部門更嚴格嘅問責標準", "q": "non-majoritarian institutions may be subject to … stricter standards of accountability than the traditional departments of government", "loc": "Majone1997 p.161"}, {"id": 21, "n": "01", "s": 6, "t": "normative", "f": "點解監管機構嘅目標要清晰？", "b": "Majone 認為清晰目標喺規範上重要，因為目標太含糊或太闊就冇辦法按結果問責", "q": "Clear objectives are important from a normative viewpoint because accountability by results cannot be enforced when the objectives are either too vague or too broad.", "loc": "Majone1997 p.161"}, {"id": 22, "n": "01", "s": 6, "t": "normative", "f": "再分配後果對監管者嚟講，應該係目標定約束？", "b": "Majone 認為監管政策嘅再分配後果，對監管者嚟講應該係政策約束而唔係政策目標", "q": "Regulatory policies, like all public policies, have redistributive consequences … should represent potential policy constraints rather than policy objectives", "loc": "Majone1997 p.162"}, {"id": 23, "n": "01", "s": 6, "t": "normative", "f": "將重要政策權交畀獨立機構，喺邊個範疇先有民主理據？", "b": "Majone 認為將重要政策制定權交畀獨立機構，只喺效率問題範疇先有民主理據", "q": "the delegation of important policy-making powers to independent institutions is democratically justified only in the sphere of efficiency issues", "loc": "Majone1997 p.162"}, {"id": 24, "n": "01", "s": 6, "t": "conceptual", "f": "「冇人控制機構，但機構受控」係乜意思？", "b": "Majone 認為一組多重控制機制運作得好時，冇人控制監管機構，但機構仍然受控", "q": "When such a system of multiple controls works properly, no one controls an agency, yet the agency is 'under control' (Moe 1987).", "loc": "Majone1997 p.163"}, {"id": 25, "n": "01", "s": 7, "t": "cause", "f": "點解歐洲嘅管治結構追唔上新策略？", "b": "Majone 認為干預型國家留低嘅制度同思想包袱，係管治結構迅速適應新策略嘅主要障礙", "q": "the institutional and intellectual legacy of the interventionist state is a major impediment to the speedy adjustment of governance structures to the new strategies", "loc": "Majone1997 p.163"}, {"id": 26, "n": "01", "s": 7, "t": "cause", "f": "監管競爭會獎勵邊類制度？", "b": "Majone 認為監管競爭會獎勵制度創新唔太落後於新策略嘅制度", "q": "Regulatory competition will reward regimes in which institutional innovations do not lag too far behind the new strategies.", "loc": "Majone1997 p.165"}, {"id": 337, "n": "11", "s": 1, "t": "definition", "f": "監管有幾多個規範理據？係乜？", "b": "Majone 認為監管只有一個規範理據：透過糾正壟斷、資訊不完全同負外部性等特定市場失靈，提高經濟效率", "q": "regulation has a single normative justification: improving the efficiency of the economy by correcting specific forms of market failure such as monopoly, imperfect information, and negative externalities", "loc": "Majone1994 p.79"}, {"id": 338, "n": "11", "s": 1, "t": "cause", "f": "私有化會削弱定加強國家嘅監管能力？", "b": "Majone 認為歐洲嘅私有化傾向加強、而唔係削弱國家嘅監管能力", "q": "privatisations tend to strengthen, rather than weaken, the regulatory capacity of the state", "loc": "Majone1994 p.79"}, {"id": 339, "n": "11", "s": 1, "t": "conceptual", "f": "美國放寬監管同歐洲私有化，係咪國家撤退？", "b": "Majone 認為美國嘅放寬監管同歐洲嘅私有化都唔係國家撤退，而係國家職能被重新界定", "q": "neither American deregulations nor European privatizations can be interpreted as a retreat of the state, but rather as a redefinition of its functions", "loc": "Majone1994 p.80"}, {"id": 340, "n": "11", "s": 2, "t": "definition", "f": "Selznick 點樣定義監管？", "b": "Selznick 將監管界定為公共機構對社會認為有價值嘅活動作出持續而集中嘅控制", "q": "regulation refers to sustained and focused control exercised by a public agency over activities that are socially valued", "loc": "Selznick (1985), in Majone1994 p.81"}, {"id": 341, "n": "11", "s": 2, "t": "cause", "f": "實證理論點樣睇監管點解出現？", "b": "Stigler 嘅實證理論認為監管唔係為公眾利益而設，而係由行業爭取返嚟、主要為行業利益而設計同運作", "q": "regulation is not instituted in the public interest, that is, for the protection and benefit of the public at large or some large subclass of the public, but is acquired by an industry and is designed and operated primarily for its benefit", "loc": "Stigler (1971), in Majone1994 p.82"}, {"id": 342, "n": "11", "s": 2, "t": "normative", "f": "就算監管最好用自私利益去解釋，想合理化佢嘅人仍然要做乜？", "b": "Majone 認為即使一項監管最好用自私利益團體嘅政治或經濟權力去解釋，想合理化該項監管嘅人仍然要訴諸理據本身", "q": "even when regulation is best explained by the political or economic power of groups seeking selfish ends, those who attempt to justify it must appeal to the merits of the case", "loc": "Majone1994 p.83"}, {"id": 343, "n": "11", "s": 3, "t": "cause", "f": "如果冇公共監管，私有化會變成點？", "b": "Majone 認為如果冇對利潤、價格、入行同服務條件嘅公共監管，私有化只會將公營壟斷換成私營壟斷", "q": "privatization would only mean the replacement of public by private monopolies unless the newly privatised companies were subjected to public regulation of profits, prices, and entry and service conditions", "loc": "Majone1994 p.84"}, {"id": 344, "n": "11", "s": 3, "t": "cause", "f": "設立獨立機構嘅功能解釋係乜？", "b": "Majone 引述嘅功能解釋認為，獨立機構嘅理據在於高度複雜或技術性事務需要專業，加上規則制定或裁決職能唔適合交畀政府部門或法院", "q": "agencies are justified by the need of expertise in highly complex or technical matters, combined with a rule-making or adjudicative function that is inappropriate for a government department or a court", "loc": "Teitgen-Colly, Vesperini, Baldwin and McCrudden, Guédon (n 19), in Majone1994 p.84"}, {"id": 345, "n": "11", "s": 3, "t": "cause", "f": "歐洲行政監管增長，好大程度源於乜？", "b": "Majone 認為歐洲行政監管嘅增長，好大程度源於新認識到現有制度能力同越嚟越複雜嘅政策問題之間唔匹配", "q": "The growth of administrative regulation in Europe owes much to these newly articulated perceptions of a mismatch between existing institutional capacities and the growing complexity of policy problems", "loc": "Majone1994 p.85"}, {"id": 346, "n": "11", "s": 4, "t": "cause", "f": "喺預算限制之下，委員會點樣擴大自己角色？", "b": "Majone 認為由於歐共體預算嘅限制，委員會擴大自己角色嘅唯一方法就係擴大監管活動嘅範圍", "q": "Given this constraint, the only way for the Commission to increase its role was to expand the scope of its regulatory activities.", "loc": "Majone1994 p.87"}, {"id": 347, "n": "11", "s": 4, "t": "cause", "f": "跨國企業點解支持歐共體監管？", "b": "Majone 認為出口型跨國企業想避開歐共體同非歐共體國家之間唔一致、越嚟越嚴嘅規例，係歐共體監管增長嘅另一個重要原因", "q": "Another important element in an explanation of the growth of Community regulation is the interest of multinational, export-oriented industries in avoiding inconsistent and progressively more stringent regulations in various EC and non-EC countries.", "loc": "Majone1994 p.87"}, {"id": 348, "n": "11", "s": 4, "t": "fact", "f": "1979 年化學品指令幫到歐共體乜？", "b": "Brickman、Jasanoff 同 Ilgen 指出歐共體 1979 年化學品指令令歐共體可以喺同美國同其他 OECD 國家嘅討論中一把聲講嘢", "q": "the 1979 Directive has enabled the Community to speak with one voice in discussions with the United States and other Organization For Economic Co-operation and Development (OECD) countries", "loc": "Brickman, Jasanoff and Ilgen (1985), in Majone1994 p.88"}, {"id": 349, "n": "11", "s": 4, "t": "cause", "f": "將監管權交畀超國家機關，點樣改善企業行為？", "b": "Gatsios 同 Seabright 認為將監管權交畀歐盟委員會呢類超國家機關，令更嚴格嘅監管變得可信，可能改善受監管企業嘅行為", "q": "Hence the transfer of regulatory powers to a supranational authority like the European Commission, by making more stringent regulation credible, may improve the behaviour of regulated firms.", "loc": "Gatsios and Seabright (1989), in Majone1994 p.90"}, {"id": 350, "n": "11", "s": 4, "t": "cause", "f": "成員國點解願意將監管權交畀超國家機關？", "b": "Majone 認為政府間協議可信度低，解釋咗成員國點解願意將監管權交畀超國家機關", "q": "In short, the low credibility of inter-governmental agreements explains the willingness of member states to delegate regulatory powers to a supranational authority.", "loc": "Majone1994 p.90"}, {"id": 351, "n": "11", "s": 4, "t": "cause", "f": "委員會官員點解傾向推創新監管？", "b": "Eichener 認為歐盟委員會嘅招聘同晉升結構，令官員傾向支持新諗法、追求超越成員國現行做法嘅創新監管", "q": "The structural conditions of recruitment and career favour a tendency to support new ideas and to pursue a strategy of innovative regulation which attempts to go beyond everything which can presently be found in the Member States.", "loc": "Eichener (1992), in Majone1994 p.91"}, {"id": 352, "n": "11", "s": 4, "t": "fact", "f": "委員會建議去到政治層面時，通常係咩狀態？", "b": "Majone 指出委員會嘅建議去到 COREPER 同部長理事會呢個政治層面時，技術細節已經全部定好，修改通常唔影響核心內容", "q": "By the time a Commission proposal reaches the political level, first in COREPER (the committee of permanent representatives of the member states) and then in the Council of Ministers, all the technical details have been worked out and modifications usually leave the essentials untouched.", "loc": "Majone1994 p.92"}, {"id": 353, "n": "11", "s": 5, "t": "conceptual", "f": "用傳統講法，獨立監管機構面對咩兩難？", "b": "Majone 指出用傳統講法，獨立監管機構面對兩難：屬於國家行政就唔可以獨立，獨立就唔知向邊個問責", "q": "either the regulatory agencies are part of the state administration, and then they cannot be independent; or else they are independent, but in this case to whom are they accountable?", "loc": "Majone1994 p.93"}, {"id": 354, "n": "11", "s": 5, "t": "normative", "f": "根據美國經驗，複雜嘅監管點樣先可以保持問責？", "b": "Majone 認為根據美國經驗，監管呢種高度複雜同專門嘅活動，只能靠一組控制工具先監察得到同保持政治問責", "q": "can be monitored and kept politically accountable only by a combination of control instruments", "loc": "Majone1994 p.93"}, {"id": 355, "n": "11", "s": 5, "t": "evaluation", "f": "英國學者點樣評價歐洲嘅監管？", "b": "Prosser、Baldwin 同 McCrudden 同 Veljanovski 嘅研究被 Majone 引述為顯示歐洲嘅監管高度酌情，對國會問責弱、司法覆核弱、缺乏程序保障同公眾參與不足", "q": "regulation in Europe is seen to be highly discretionary, suffering from weak accountability to Parliament, weak judicial review, absence of procedural safeguards, and insufficient public participation", "loc": "Prosser, Baldwin and McCrudden, Veljanovski (n 34), in Majone1994 p.94"}, {"id": 356, "n": "11", "s": 5, "t": "evaluation", "f": "歐盟監管嘅比較優勢喺邊度？", "b": "Majone 認為歐盟監管嘅比較優勢，主要在於歐共體監管者相對隔絕於短期政治考慮同壓力", "q": "The comparative advantage of EU regulation lies mainly in the relative insulation of Community regulators from the short-run political considerations and pressures", "loc": "Majone1994 p.94"}, {"id": 357, "n": "11", "s": 5, "t": "normative", "f": "點樣令歐盟監管嘅公眾問責成為可能？", "b": "Majone 認為為歐盟訂一部類似《行政程序法》嘅法律，比將傳統黨派政治整套搬去布魯塞爾更能令公眾問責成為可能", "q": "The adoption of something like an Administrative Procedures Act for the European Union could do more to make public accountability possible than the wholesale transfer of traditional party politics to Brussels.", "loc": "Majone1994 p.95"}, {"id": 358, "n": "11", "s": 6, "t": "evaluation", "f": "委員會零碎咁出監管建議，帶嚟咩問題？", "b": "Majone 認為委員會零碎咁提出新監管措施，導致喺協調優先度低嘅範疇出咗指令，反而忽略咗好需要協調嘅範疇", "q": "The piecemeal procedure of the Commission in proposing new regulatory measures has resulted in directives in areas where harmonisation is a low priority, while neglecting other areas which need a considerable amount of harmonisation.", "loc": "Majone1994 p.95"}, {"id": 359, "n": "11", "s": 6, "t": "normative", "f": "監管結算所應該設喺邊？", "b": "Majone 建議喺歐盟設立監管結算所，位置要夠高，可能設喺歐盟委員會主席辦公室", "q": "In the EU context, such a clearing house should be located at a sufficiently high level in the Union bureaucracy, possibly in the office of the President of the Commission.", "loc": "Majone1994 p.96"}, {"id": 360, "n": "11", "s": 6, "t": "cause", "f": "點樣落實輔助原則？", "b": "Majone 認為只有系統審查各總司提出嘅所有建議，委員會先可以判斷幾時需要歐盟出手，從而落實輔助原則", "q": "only through systematic review of all proposals put forward by the various Directorates-General will the Commission be able to determine when action by the Union is necessary", "loc": "Majone1994 p.97"}, {"id": 361, "n": "11", "s": 7, "t": "conceptual", "f": "放寬監管好多時只係乜嘅第一步？", "b": "Majone 認為放寬監管好多時只係重新監管嘅第一步，即係用其他手段、或者喺另一個政府層級（例如歐共體而唔係國家層面）去監管", "q": "Often, deregulation is only a first step towards re-regulation, that is, regulation by other means - economic incentives instead of administrative rules, statutory instead of self-regulation - or at different levels of government - for example, at Community rather than national level.", "loc": "Majone1994 p.97"}, {"id": 362, "n": "11", "s": 7, "t": "cause", "f": "成員國點解冇意識到預算綁唔住委員會？", "b": "Majone 認為成員國領袖習慣用收稅使錢嘅角度理解國家權力，所以冇意識到監管活動唔可以用傳統預算約束去控制", "q": "Accustomed to think of state power primarily in terms of the power of taxing and spending, national leaders did not apparently realise that regulatory activities cannot be controlled by means of the traditional budget constraints", "loc": "Majone1994 p.98"}, {"id": 363, "n": "11", "s": 7, "t": "evaluation", "f": "「民主赤字」係咪只係歐盟嘅問題？", "b": "Majone 認為「民主赤字」問題關乎所有規管型國家，唔止係歐盟", "q": "The problem of a 'democratic deficit' concerns all regulatory states, not just the Union.", "loc": "Majone1994 p.98"}, {"id": 364, "n": "12", "s": 1, "t": "fact", "f": "規例同指令喺歐盟規管治理入面有咩地位？", "b": "Cardwell 指出規例同指令都普遍適用於所有成員國，已成為歐盟規管治理嘅招牌", "q": "Both have general application across the member states and have become the hallmarks of the system of EU regulatory governance.", "loc": "Cardwell2011 p.537"}, {"id": 365, "n": "12", "s": 1, "t": "fact", "f": "歐洲法院點樣確立歐盟規管工具嘅效力？", "b": "Cardwell 指出歐洲法院已清楚確立歐盟規管工具喺成員國有直接效力，並凌駕包括憲法在內嘅國內法", "q": "the Court has clearly stated that the regulatory instruments have direct effect in the member states and enjoy supremacy over national law, including constitutional law", "loc": "Cardwell2011 p.537"}, {"id": 366, "n": "12", "s": 1, "t": "fact", "f": "每次主要修約都有乜不變主題？", "b": "Cardwell 指出每次主要條約修訂都有一個不變主題，就係加強歐洲議會喺規管制度入面嘅權力", "q": "One constant theme which has emerged from every major Treaty revision is the increase in powers of the European Parliament in the regulatory regime.", "loc": "Cardwell2011 p.537"}, {"id": 367, "n": "12", "s": 1, "t": "cause", "f": "如果冇「有約束力、可執行措施」嘅政治選擇，歐盟會點？", "b": "Cardwell 認為如果冇作出建立有約束力、可執行措施嘅政治選擇，歐盟好難喺一體化路上行得咁遠", "q": "It is unlikely that the Union would have moved so far along the path of integration had the political choice to create binding, enforceable measures not been made.", "loc": "Cardwell2011 p.538"}, {"id": 368, "n": "12", "s": 1, "t": "normative", "f": "成員國社經條件差異大，對規例有咩含意？", "b": "Majone（2009）認為成員國之間社經條件嘅重大差異，意味住提升福利嘅規例要因國而異、而唔係統一協調", "q": "Significant inter-country differences in socio-economic conditions are necessarily mirrored in a diversity of national priorities and policy preferences, and this implies that welfare-enhancing regulations have to be different rather than harmonized.", "loc": "Majone (2009), in Cardwell2011 p.538"}, {"id": 369, "n": "12", "s": 2, "t": "cause", "f": "委員會程序（comitology）點樣產生？", "b": "Cardwell 指出「執行歐盟法應該由委員會定理事會負責」嘅爭論，產生咗委員會程序（comitology）呢個妥協制度", "q": "Debate on whether the task of implementation falls to the Commission or the Council resulted in the emergence of the compromise system of 'comitology'.", "loc": "Cardwell2011 p.539"}, {"id": 370, "n": "12", "s": 2, "t": "fact", "f": "委員會程序有幾多個委員會？佢哋有幾重要？", "b": "Verhoeven 指出委員會程序下約有 300 個委員會，佢哋可以對規例最終嘅法律同政策效果起決定性作用", "q": "There are approximately 300 such committees, which makes their use extremely widespread and particularly important since the committee may play a decisive role in the eventual legal and policy effects of the regulation", "loc": "Verhoeven (2005), in Cardwell2011 p.539"}, {"id": 371, "n": "12", "s": 2, "t": "evaluation", "f": "委員會程序係咪單純技術程序？", "b": "Cardwell 認為委員會程序唔止係執行規管工具嘅技術程序，而係觸及歐盟機構平衡核心嘅政治問題", "q": "Comitology is more than a technical process for the implementation of regulatory instruments but a political issue which goes to the heart of the Union's institutional balance.", "loc": "Cardwell2011 p.539"}, {"id": 372, "n": "12", "s": 2, "t": "evaluation", "f": "有人點樣批評委員會程序？", "b": "Vos 認為委員會程序喺機構平衡同正當性兩方面都成問題，因為過程隱晦、極度複雜同缺乏問責", "q": "the comitology regime as a feature of regulatory governance is often viewed as being problematic in terms both of institutional balances and of legitimacy, as the processes are obscure, highly complex and lacking in accountability", "loc": "Vos (2005), in Cardwell2011 p.539"}, {"id": 373, "n": "12", "s": 3, "t": "fact", "f": "委員會點樣形容歐盟嘅專門機構？", "b": "歐盟委員會形容歐盟嘅專門機構係逐步設立、並且「以多樣性為特徵」", "q": "Specialized agencies and organs have been created incrementally and, in the words of the Commission, are 'typified by their diversity'", "loc": "Commission (2005), in Cardwell2011 p.540"}, {"id": 374, "n": "12", "s": 3, "t": "evaluation", "f": "有人話歐盟面對新威脅嘅第一反應係乜？", "b": "van Ooik 認為歐盟面對每一個新威脅，第一反應往往就係設立另一個機構", "q": "the first reaction is to set up another Agency", "loc": "van Ooik (2005), in Cardwell2011 p.540"}, {"id": 375, "n": "12", "s": 3, "t": "cause", "f": "點解大部分歐盟機構唔符合美國獨立監管機構嘅標準？", "b": "Cardwell 認為大部分歐盟機構唔符合美國獨立監管機構嘅標準，原因係好多機構只係協助委員會執行行政任務，冇完整嘅監管權", "q": "The explanation for this is that many of the agencies assist the Commission in the performance of its executive tasks, rather than having full regulatory powers of their own.", "loc": "Cardwell2011 p.541"}, {"id": 376, "n": "12", "s": 3, "t": "cause", "f": "設立歐盟機構有咩歐盟獨有嘅好處？", "b": "Cardwell 認為歐盟機構嘅一個歐盟獨有好處，係可以設喺布魯塞爾以外，令歐盟機器睇落冇咁中央集權、更貼近成員國人民", "q": "These include the ability to locate agencies outside Brussels, making the EU institutional machinery appear less centralized and (physically) closer to the populations of member states.", "loc": "Cardwell2011 p.541"}, {"id": 377, "n": "12", "s": 3, "t": "definition", "f": "點解有啲歐盟機構先叫做「監管」機構？", "b": "Cardwell 指出部分歐盟機構有權作出對第三方有法律約束力嘅個別決定，呢點被理解為稱佢哋做「監管」機構嘅主要理由", "q": "several agencies are empowered to take individual decisions which have legally binding effects on third parties, which is understood to be the main reason why terming them 'regulatory' agencies is appropriate", "loc": "Cardwell2011 p.541"}, {"id": 378, "n": "12", "s": 3, "t": "evaluation", "f": "委員會對歐盟機構有咩擔心？", "b": "Cardwell 認為歐盟委員會明顯擔心自己嘅中心監管角色會逐漸被機構奪去", "q": "The Commission is clearly nervous about its central regulatory role being gradually usurped.", "loc": "Cardwell2011 p.542"}, {"id": 379, "n": "12", "s": 4, "t": "definition", "f": "「新管治」係指乜？", "b": "Cardwell 指出「新管治」意味住歐洲一體化離開傳統監管模式，轉向更多參與、更包容同更「軟」嘅措施", "q": "'New governance' suggests a move with the process of integration away from the traditional regulatory model towards incorporation of more participatory, inclusive and 'soft' measures.", "loc": "Cardwell2011 p.542"}, {"id": 380, "n": "12", "s": 4, "t": "definition", "f": "開放協調方法（OMC）有邊四個元素？", "b": "2000 年里斯本歐洲理事會結論將開放協調方法界定為四個元素：定目標同指引、用指標做基準比較、將目標轉化為國家同地區政策嘅具體指標、用監察評估同同儕審視互相學習", "q": "fixing short-, medium- and long-term goals and guidelines for the Union; benchmarking and using quantitative and qualitative indicators as a means of comparing best practice; translating the guidelines and goals into national and regional policies through specific targets; and using monitoring, evaluation and peer review as mutual learning processes", "loc": "European Council (2000), in Cardwell2011 p.542"}, {"id": 381, "n": "12", "s": 4, "t": "cause", "f": "新管治模式冇執法條文，有咩含意？", "b": "Cardwell 認為新管治模式缺乏執法條文，顯示佢哋唔涉及匯集主權、可以抵擋權限蔓延", "q": "the lack of enforcement provisions suggests that the new modes of governance do not involve the pooling of sovereignty and resist 'competence creep'", "loc": "Cardwell2011 p.543"}, {"id": 382, "n": "12", "s": 4, "t": "evaluation", "f": "委員會點樣傾向描述新管治模式？點解？", "b": "Cardwell 認為歐盟委員會有私心，傾向將新管治模式講成傳統監管方法嘅變奏，而唔係根本轉變", "q": "the Commission has a self-interest in presenting new modes of governance as a variation on the traditional regulatory method (where it enjoys a monopoly on the initiation of legislative measures), rather than a more radical departure", "loc": "Cardwell2011 p.544"}, {"id": 383, "n": "12", "s": 5, "t": "normative", "f": "硬規則同新管治模式，邊個必然較好？", "b": "Cardwell 認為冇一種管治方式必然較優：規則嘅約束力同新管治模式嘅自願性，喺一體化入面視乎目標同脈絡各有位置", "q": "it should not be argued that one form of governance is necessarily superior: the binding nature of rules and the voluntarism of new modes of governance both have their place within the integration process depending on the aims and context", "loc": "Cardwell2011 p.544"}, {"id": 384, "n": "12", "s": 5, "t": "evaluation", "f": "歐盟傳統監管制度係咪已經過時？", "b": "Cardwell 認為冇證據顯示歐盟傳統監管制度已經過時", "q": "Nevertheless, there is no evidence to suggest that the traditional regulatory regime is obsolete.", "loc": "Cardwell2011 p.545"}, {"id": 385, "n": "12", "s": 5, "t": "normative", "f": "歐盟規管治理嘅關鍵任務係乜？", "b": "Cardwell 認為歐盟嘅關鍵任務，係確保其規管治理喺歐洲公民眼中處理正當性、問責同效能嘅問題", "q": "The key task is to ensure that its system of regulatory governance confronts ongoing issues of legitimacy, accountability and effectiveness in the eyes of the citizens of Europe.", "loc": "Cardwell2011 p.545"}, {"id": 407, "n": "14", "s": 1, "t": "conceptual", "f": "規管型國家係咪歐洲現象？歐洲獨特之處喺邊？", "b": "Finger 認為規管型國家本身唔係歐洲現象，歐洲嘅獨特之處在於歐洲（至少喺網絡產業）用放寬監管、尤其係重新監管，作為提升全球競爭力嘅手段", "q": "My main argument is that it is not the Regulatory State that is a European phenomenon; rather, there is a European specificity to the Regulatory State, which in turn stems from the fact that Europe – at least in the case of network industries – uses deregulation and more especially re-regulation as a means to increase its global competitiveness.", "loc": "Finger2011 p.525"}, {"id": 408, "n": "14", "s": 1, "t": "conceptual", "f": "喺規管型國家嘅特徵入面，邊樣先係普遍特徵？", "b": "Finger 認為喺 Lodge 列出嘅規管型國家特徵之中，只有獨立監管機構（IRAs）係規管型國家興起嘅普遍特徵", "q": "There remain thus only the independent regulatory authorities or agencies (IRAs) as a general characteristic of the rise of the Regulatory State.", "loc": "Finger2011 p.526"}, {"id": 409, "n": "14", "s": 2, "t": "cause", "f": "設立獨立監管機構有咩三個主要理由？", "b": "Gilardi 認為設立獨立監管機構有三個主要理由：政治承諾需要可信（例如投資保障）、需要限制將來決策者嘅酌情權、同需要限制否決者嘅權力", "q": "the need for credibility of political commitment (e.g., investment security), the need to limit the discretionary power of future policy makers, and to limit the power of veto players", "loc": "Gilardi (2008), in Finger2011 p.527"}, {"id": 410, "n": "14", "s": 2, "t": "cause", "f": "全球化時代，國家點解要靠獨立監管機構？", "b": "Finger 認為全球化時代嘅民族國家要向全球投資者提供更多可信度（例如法律確定性）先保持到競爭力，而技術官僚式嘅獨立監管機構比越嚟越反覆嘅決策者提供更多法律確定性", "q": "the nation-state, in the age of globalization, needs to offer more credibility to global investors (e.g., legal security) in order to remain competitive: technocratic IRAs provide more legal security than increasingly volatile policy makers", "loc": "Finger2011 p.527"}, {"id": 411, "n": "14", "s": 2, "t": "evaluation", "f": "獨立監管機構會唔會長期存在？", "b": "Finger 認為獨立監管機構嘅出現好可能只係過渡現象，因為民族國家嘅轉變深遠得多", "q": "Indeed, most likely the emergence of the IRAs is only a passing phenomenon, as the transformation of the nation-state is much more profound.", "loc": "Finger2011 p.527"}, {"id": 412, "n": "14", "s": 3, "t": "cause", "f": "網絡產業開放市場之後，點解會有監管需要？", "b": "Finger 認為特別喺網絡產業（其實喺任何出現市場集中嘅地方），開放市場原則上都會帶嚟監管需要", "q": "Especially in the network industries – but actually anywhere market concentration takes place – liberalization is in principle accompanied by a need to regulate.", "loc": "Finger2011 p.529"}, {"id": 413, "n": "14", "s": 3, "t": "conceptual", "f": "民主控制流失同監管出現有冇因果關係？", "b": "Finger 認為全球化下民主控制嘅流失雖然同監管嘅出現同時發生，但兩者冇因果關係", "q": "the loss of democratic control, though simultaneous with the emergence of regulation, does not mean they are causally related", "loc": "Finger2011 p.529"}, {"id": 414, "n": "14", "s": 3, "t": "definition", "f": "點樣更精確咁定義規管型國家嘅出現？", "b": "Finger 將規管型國家嘅出現界定為國家放棄制定政策同提供服務、角色縮減，並認為呢個現象按定義係全球性嘅", "q": "the emergence of the Regulatory State, which now can be defined much more precisely as the reduction of the role of the State since it gives up policy making and service delivery, is by definition a global phenomenon", "loc": "Finger2011 p.529"}, {"id": 415, "n": "14", "s": 4, "t": "conceptual", "f": "「監管歐洲」可以點樣解讀？", "b": "Finger 將「監管歐洲」嘅建立解讀為歐洲對全球化嘅制度回應", "q": "The creation of a Regulatory Europe can thus be interpreted as Europe’s institutional answer to globalization.", "loc": "Finger2011 p.530"}, {"id": 416, "n": "14", "s": 4, "t": "evaluation", "f": "而家講唔講得出一個歐洲規管治理模式？", "b": "Finger 認為而家仲太早去界定一個歐洲規管治理模式，只能夠觀察到國家同歐洲層面嘅監管動態逐步整合", "q": "It is therefore too early to identify a European model of regulatory governance other than to observe that national and European regulatory dynamics gradually integrate", "loc": "Finger2011 p.530"}, {"id": 417, "n": "14", "s": 5, "t": "fact", "f": "委員會有乜工具增加對成員國嘅權力？", "b": "Finger 列出指令、委員會程序（comitology）、歐盟機構同元監管（例如監管者網絡），作為歐盟委員會可以用嚟增加對成員國權力嘅工具", "q": "One may mention here the directives, comitology (committee procedures), EU agencies, or meta-regulation (e.g., networks of regulators, see below).", "loc": "Finger2011 p.532"}, {"id": 418, "n": "14", "s": 5, "t": "definition", "f": "歐洲監管者網絡係乜嘅結果？", "b": "Coen 同 Thatcher 將歐洲監管者網絡解釋為「雙重授權」嘅結果：成員國喺國家層面將監管權交畀獨立監管機構，同時喺國際層面將監管權交畀歐盟委員會", "q": "the nation-states delegating regulatory powers to independent regulatory agencies at the national level and delegating regulatory powers to the European Commission on the international level", "loc": "Coen and Thatcher (2008), in Finger2011 p.532"}, {"id": 419, "n": "14", "s": 5, "t": "fact", "f": "委員會最終想要乜？點解接受監管者網絡？", "b": "Coen 同 Thatcher 指出歐盟委員會最終想要一個全面嘅歐洲行業監管者，但因為得唔到成員國支持，所以接受歐洲監管者網絡（ERNs）", "q": "what the Commission ultimately wants is a fully fledged European sector-specific regulator, but, lacking the support from the member states, the Commission settles for European regulators’ networks (ERNs)", "loc": "Coen and Thatcher (2008), in Finger2011 p.532"}, {"id": 420, "n": "14", "s": 5, "t": "evaluation", "f": "監管者網絡係唔係穩定模式？", "b": "Finger 認為歐洲監管者網絡只係中途一步、絕對唔係穩定模式，尤其考慮到跨國企業嘅角色", "q": "ERNs are, in my view, only an intermediate step and by no means a stable model, especially if one considers the role played by TNCs", "loc": "Finger2011 p.532"}, {"id": 421, "n": "14", "s": 6, "t": "conceptual", "f": "歐洲規管治理模式嘅特色係乜？", "b": "Finger 認為國家監管者、歐洲機構、監管者網絡同跨國企業之間嘅動態，已經構成一個前所未有、獨一無二嘅歐洲規管治理模式", "q": "it is this dynamic which already constitutes an unprecedented and unique European model of regulatory governance", "loc": "Finger2011 p.534"}];
+const NOTES_META={
+ '01':{t:'由積極國家到規管型國家',q:'歐洲政府點解由「收稅使錢」轉做「立規則」？轉咗之後有乜新制度？獨立機構點樣先算正當？',read:'兩種國家模式；三個成因；預算約束唔到監管；獨立機構嘅專業同可信承諾；法院同專家變主角；程序同實質正當性。'},
+ '11':{t:'歐共體點解成為監管者',q:'歐共體冇乜預算、條約冇明文授權，點解可以越管越多？帶嚟咩問責同協調問題？',read:'私有化唔係國家退場；監管嘅定義；歐洲點樣追上設獨立機構；四個解釋；獨立定問責嘅兩難；監管結算所；三個悖論。'},
+ '12':{t:'歐盟用乜工具立規則',q:'歐盟「點樣」立規則？傳統工具同新角色、新模式點樣並存？',read:'規例同指令；委員會程序；歐盟機構；新管治同開放協調方法；新舊並存。'},
+ '14':{t:'有冇一個歐洲規管模式',q:'規管型國家係咪歐洲獨有？歐洲模式嘅特色喺邊？',read:'拆開全球同歐洲嘅成因；獨立機構同全球投資者；網絡產業點解要監管；監管歐洲；雙重授權同監管者網絡；制度動態。'}
+};
+const NOTE_ORDER=['01','11','12','14'];
+const NOTES=[
+{k:'01-1',t:'兩種國家模式',lv:[],vis:['v-states'],b:`<p>一句講晒：<b>規則制定正在取代收稅同使錢</b>。國家干預經濟有三種：收入再分配、宏觀經濟穩定、市場監管。<b>積極國家</b>主力做頭兩樣；<b>規管型國家</b>主力做第三樣。監管政策嘅目的係糾正市場失靈：壟斷、負外部性、資訊不完全、公共財供應不足。</p>
+ <p>對比：積極國家靠收稅使錢，爭拗喺預算分配，主角係國會、部門、國企同福利服務，風格酌情、文化統合主義；規管型國家靠立規則，爭拗喺點樣審查同控制規則制定，主角係國會委員會、獨立機構、審裁處、單一議題運動、專家同法官，風格依規則、重法律，文化多元，問責間接。</p>
+ <p>「放寬監管」唔係拆晒監管，而係<b>放寬同重新監管一齊嚟</b>，可能搬咗去另一個管治層級（例如公用事業私有化之後即刻有價格監管）。</p>`},
+{k:'01-2',t:'點解會轉：私有化、歐洲化、間接管治',lv:[],vis:['v-states'],b:`<ul><li><b>私有化：</b>公有制歷來係歐洲經濟監管嘅主要方式，但「國家擁有」唔等於「控制得到」。於是改為公用事業留喺私人手，但受專門機構訂立同執行嘅規則約束。</li>
+ <li><b>歐洲化：</b>歐盟本身主要靠立規則；權力交上歐洲層面反而<b>加重</b>咗成員國國內監管政策同機構嘅份量，因為歐盟法要成員國執行。例：羅馬條約時得德國有現代反壟斷法，四十年後所有成員國都有。</li>
+ <li><b>間接管治：</b>外判、單一目的機構、英國將半數以上公務員搬入執行機構。政府唔再直接做，就要靠合約同規則控制：靠規管治理係靠代理人治理嘅必然伴隨（規管型國家嘅「內面」）。</li></ul>`},
+{k:'01-3',t:'規則制定嘅政治：預算約束唔到監管',lv:[],vis:['v-states'],b:`<p>關鍵：公共預算對規則制定者只係<b>軟約束</b>，因為監管嘅真正成本唔係監管者負擔，而係由守規則嘅人負擔。</p>
+ <p>所以歐盟偏向監管：歐盟預算只係成員國公共開支嘅 2.4%、歐盟 GDP 嘅 1.3% 以下，冇獨立收稅使錢嘅權，唯有發展成幾乎純粹嘅規管型國家先擴得到權限。政治爭拗亦搬咗位：由預算程序搬去「邊個有權審查同控制監管程序」。例：美國列根 1981 年要所有主要規例過成本效益測試、由預算管理局把關。</p>`},
+{k:'01-4',t:'獨立監管機構：專業同可信承諾',lv:[],vis:[],b:`<p>唔係萬試萬靈：<b>再分配政策</b>（或有重大再分配後果嘅政策）應該留喺民選政治首長直接控制之下。但喺經濟同社會監管，獨立機構有兩大優勢：<b>專業知識</b>同<b>作出可信政策承諾</b>。</p>
+ <p>點解要可信承諾？民主預期會換人做，政客冇誘因推要喺下次選舉之後先見效嘅政策，一屆國會亦綁唔住下一屆。解決方法之一：將政策權交畀獨立中央銀行同監管機構。機構模式嘅特色＝專業＋獨立＋專注好窄嘅範圍。</p>
+ <p class="muted">筆記嘅例子：想減肥嘅人將朱古力交畀朋友保管，承諾先可信。之後嘅讀物（1999）再話可信承諾係今日授權最主要嘅原因；亦有人質疑呢個論點用喺競爭主管機關。</p>`},
+{k:'01-5',t:'新角色：國會委員會、法院、監管競爭',lv:[],vis:[],b:`<p>獨立唔等於冇人睇住：按委託人–代理人理論，立法者係最有影響力嘅委託人，用<b>專責委員會</b>監察（美國聯邦貿易委員會嘅政策會跟監察委員會嘅偏好轉）。</p>
+ <p><b>法院</b>角色變大，可能係規管型國家擴張最重要嘅後果：美國 1946 年《行政程序法》令機構決策「司法化」；歐洲法院由 Cassis de Dijon 案（1979）推「相互承認」，結果製造咗成員國規例之間嘅<b>競爭</b>。專家同單一議題團體（環保、消費者、民權）取代咗舊日大工會、大商會。</p>`},
+{k:'01-6',t:'正當性：Madison 模式、說理、清晰目標、效率',lv:[],vis:['v-legit'],b:`<p>如果民主正當性只有「直接向選民或國會多數負責」一個標準，由法院同專家主導嘅國家就有嚴重民主赤字。但多數決唔係唯一模式；<b>Madison 模式</b>本身就要分散、授出同限制權力，保護少數。</p>
+ <p><b>程序正當性：</b>由民主立法設立、民選官員委任、跟正式程序、說明理由、受司法覆核。最簡單最基本係要求監管者<b>說明理由</b>；非多數決機構可能要守比傳統部門<b>更嚴</b>嘅問責標準。</p>
+ <p><b>實質正當性：</b>政策一致、專業、保護分散利益、專業操守，最重要係<b>清晰目標</b>（太含糊就冇辦法按結果問責）。界線係效率同再分配：再分配係零和，要多數決；效率係正和，可以交專家。所以再分配後果對監管者只係約束，唔係目標；授權只喺效率範疇先有民主理據。</p>
+ <p>獨立同問責點調和？靠一組控制：清晰有限嘅目標、說理同透明、正當程序、專業精神。「冇人控制機構，但機構受控。」<span class="muted">（同 folder 入面其他讀物有反對：競爭案輸家唔會同意結果係帕累托效率；獨立機構無可避免要作政治判斷。）</span></p>`},
+{k:'01-7',t:'結構追唔上策略',lv:[],vis:[],b:`<p>借「結構跟策略」嘅講法：歐洲嘅結構調整慢過策略轉變，原因係干預型國家留低嘅<b>制度同思想包袱</b>。例：法國競爭委員會連自己展開調查嘅權都冇；英國好多公用事業監管權直接畀咗部長；歐盟委員會亦受成員國政治影響。國際競爭亦係<b>監管制度</b>之間嘅競爭，會獎勵制度創新唔太落後嘅制度。</p>`},
+{k:'11-1',t:'私有化唔係國家退場',lv:[],vis:[],b:`<p>私有化同放寬監管，為規管型國家取代舊日「指令型國家」鋪路。舊日國有化自然壟斷，功能上等如美國式監管，失敗方式亦一一對應（監管者被俘虜 vs 國企經理被政客同工會俘虜）。</p>
+ <p>分別在目的：國有化同時追發展、就業、地區再分配、國家安全等互相衝突嘅目標；監管只有<b>一個</b>規範理據：糾正市場失靈、提高效率。所以私有化反而<b>加強</b>國家嘅監管能力（英國賣電訊、煤氣，同時整出監管辦公室）。放寬監管同私有化都唔係國家撤退，而係<b>重新界定國家職能</b>：由生產者變咗做球證。</p>
+ <p class="muted">筆記嘅例子：政府由「揸巴士」變成「吹雞」。</p>`},
+{k:'11-2',t:'監管係乜：定義、規範理論、實證理論',lv:[],vis:[],b:`<p>將「監管」等同成個立法同社會控制領域太闊。定義：<b>公共機構對社會認為有價值嘅活動，作出持續而集中嘅控制</b>。「持續而集中」＝唔係通過一條法就算，要有專門機構深入了解行業；「社會認為有價值」＝市場活動本身值得保護，所以刑事司法唔算。</p>
+ <p>規範理論：市場失靈先應該介入。實證理論：監管係行業攞返嚟、為行業而設。兩邊都唔放棄：實證理論豐富理解，但想合理化一項監管嘅人始終要講道理，所以規範理論仍然係衡量政策嘅尺。</p>`},
+{k:'11-3',t:'歐洲各國點樣追上：功能理由',lv:[],vis:[],b:`<p>美國由 1887 年就有獨立監管機構；歐洲遲好多（法國 1978 年起約 20 個獨立行政機關；英國 1970 年代社會監管機構、1980 年代私有化後嘅監管辦公室）。英國保守黨憎 quango 都要設，因為冇人管利潤、價格同入行，私有化只會由<b>公營壟斷變私營壟斷</b>。</p>
+ <p>功能理由：專業、適合做規則制定或裁決、方便公眾參與、遠離黨派政治、穩定、靈活。總結：增長源於<b>舊制度能力同越嚟越複雜嘅政策問題唔夾</b>（跨境金融、新科技風險、污染），而呢啲問題有超國家一面，要歐共體補足。</p>`},
+{k:'11-4',t:'歐共體點解越管越多：四個解釋',lv:[],vis:['v-ec4'],b:`<p>謎題：條約幾乎冇提監管，預算唔夠歐共體 GDP 嘅 1.3%、八成用喺農業漁業地區發展；但 1967 至 1987 年單係環境就出咗近 200 項指令、規例同決定。</p>
+ <ol><li><b>預算唔約束監管：</b>監管成本由守規者負擔，連執行成本都由成員國負擔；委員會想擴大角色，唯一出路係擴大監管。</li>
+ <li><b>跨國企業想要一套規則：</b>避開各國唔一致、越嚟越嚴嘅規例（美國汽車業 1965 年支持聯邦排放標準，條件係凌駕州標準＝「先發制人嘅聯邦主義」；歐洲化工業借 1979 年指令一把聲同美國傾）。</li>
+ <li><b>政府間協議唔可信：</b>執法靠討價還價，外人睇唔到違規；交畀超國家機關，令更嚴嘅監管可信。</li>
+ <li><b>政策企業家：</b>委員會係議題網絡中心，招聘晉升結構令官員傾向創新監管；建議去到 COREPER 同部長理事會時技術細節已定好，修改通常唔掂核心。</li></ol>`},
+{k:'11-5',t:'政治問責：獨立定問責嘅兩難',lv:[],vis:['v-legit'],b:`<p>傳統講法嘅兩難：屬於國家行政就唔可以獨立；獨立就唔知向邊個問責。要走出去，就要質疑三權分立同「政策只應由向選民負責嘅人控制」；問題其實係<b>非多數決機構</b>喺民主社會嘅角色。</p>
+ <p>美國經驗：只能靠<b>一組控制工具</b>（立法同行政監察、嚴格程序、公眾參與、最重要係實質司法覆核）。用呢把尺量，歐洲監管好酌情、對國會問責弱、司法覆核弱、冇程序保障。但藥方唔可以損害長處：歐盟監管嘅比較優勢係<b>隔絕短期政治壓力</b>（管全歐企業，難被單一行業俘虜）。所以主張<b>歐盟版《行政程序法》</b>，好過將黨派政治搬去布魯塞爾。</p>`},
+{k:'11-6',t:'協調同控制：監管結算所',lv:[],vis:[],b:`<p>監管冇預算程序，冇機制逼政府決定「今期總共要企業使幾多錢守規」。歐盟更嚴重：冇中央政治權威，委員會零碎出建議，結果喺協調優先度低嘅範疇出咗指令，好需要協調嘅反而冇做。</p>
+ <p>美國有人建議「監管預算」（每個機構設強制私人開支上限），技術困難大。可行版本：<b>監管結算所</b>，設喺委員會主席辦公室，各總司每年交監管計劃去審。仲可以落實<b>輔助原則</b>：系統審查晒所有建議，先知道幾時真係要歐盟出手。</p>`},
+{k:'11-7',t:'結論：三個悖論',lv:[],vis:[],b:`<ol><li><b>放寬監管冇終結監管：</b>好多時只係重新監管嘅第一步，用其他手段或者喺另一個層級（例如歐共體）。</li>
+ <li><b>預算綁唔住：</b>成員國習慣用收稅使錢諗國家權力，冇意識到監管唔受傳統預算約束；結果歐盟立規權幾乎擋唔住，有啲範疇仲超越最先進成員國。</li>
+ <li><b>民主赤字</b>嘅辯論自相矛盾：批評歐盟機構冇直接民主正當性，同樣適用於國家層面嘅法院同獨立監管機構。民主赤字關乎<b>所有</b>規管型國家。</li></ol>`},
+{k:'12-1',t:'傳統工具：規例同指令',lv:[],vis:['v-tools'],b:`<p>寫喺條約第 288 條：規例同指令都普遍適用於所有成員國，係歐盟規管治理嘅招牌。兩者都有約束力，但<b>指令將「形式同方法」留畀成員國自己轉化入國內法</b>。歐洲法院確立佢哋有<b>直接效力</b>，並<b>凌駕國內法，連憲法都包括在內</b>。規模：想入盟要吸收 17,455 份現行法律文件；化學品規例 REACH 有 849 頁。</p>
+ <p>委員會壟斷提案權；大部分措施要部長理事會同歐洲議會都通過；每次大修約都<b>加強歐洲議會</b>，回應「唔夠民主」嘅批評。冇「有約束力、可執行」嘅政治選擇，歐盟好難行到咁遠。但呢套工具係為六國設計；27 國之後有人嫌太多太重（「更好監管」），亦有人質疑一刀切：各國社經條件差異大，提升福利嘅規例要<b>因國而異</b>。</p>`},
+{k:'12-2',t:'委員會程序（comitology）',lv:[],vis:['v-tools'],b:`<p>歐盟行政權越嚟越分散。國家層面執行法律係行政機關嘅事；但歐盟冇傳統三權分立，指令又要各國轉化，「執行應由委員會定理事會負責」嘅爭拗，產生咗一個<b>妥協制度</b>：成員國負責執行；需要統一條件時委員會可以出執行措施，但要受<b>由各國代表組成嘅委員會</b>監督。</p>
+ <p>約有 300 個委員會，可以對規例最終效果起決定性作用。所以佢唔止係技術程序，而係觸及<b>機構平衡核心</b>嘅政治問題。批評：過程隱晦、極度複雜、缺乏問責（亦有人讚係「審議式超國家主義」）。改革加強咗歐洲議會；里斯本條約改為「執行法令」（第 291 條）。</p>`},
+{k:'12-3',t:'歐盟機構：點解越開越多，有幾「監管」',lv:[],vis:['v-tools'],b:`<p>1990 年代完成單一市場後越開越多，「以多樣性為特徵」；有人話歐盟每遇到新威脅，第一反應就係開多個機構。但大部分<b>唔符合</b>美國獨立監管機構嘅標準：好多只係幫委員會做行政工作，冇完整監管權。</p>
+ <p>點解開：專業協助；歐盟獨有好處：可以設喺<b>布魯塞爾以外</b>，睇落冇咁中央集權；委員會可以外判技術工作；可以做各國機構之間嘅聯網。邊啲先算「監管」：執行機構只可以執行計劃；有啲（例如內部市場協調局、歐洲航空安全局、歐洲化學品管理局）可以作出<b>對第三方有法律約束力嘅個別決定</b>，叫佢哋「監管機構」先恰當。委員會明顯擔心自己嘅中心角色被奪去。</p>`},
+{k:'12-4',t:'新管治模式同開放協調方法（OMC）',lv:[],vis:['v-tools'],b:`<p>「新管治」大致係離開傳統監管，轉向更<b>參與、包容、「軟」</b>嘅措施；唔需要明確條約權限，所以政治問題同法律問題一樣多。</p>
+ <p><b>OMC</b>（2000 年里斯本確認）四個元素：①定短中長期目標同指引 ②用量化同質化指標做基準比較、比較最佳做法 ③將目標轉化為國家同地區政策嘅具體指標 ④用監察、評估同同儕審視互相學習。尊重各國唔同安排，用喺資訊社會、研發、教育、就業、社會排斥。</p>
+ <p>成員國鍾意：就業等貼近主權；冇執法條文，<b>唔涉及匯集主權、抵擋權限蔓延</b>。委員會有私心：想將新模式講成傳統方法（佢壟斷提案權）嘅變奏，而唔係根本轉變。</p>`},
+{k:'12-5',t:'結論：新舊並存',lv:[],vis:['v-tools'],b:`<p>冇一種管治方式必然較好：規則嘅約束力同新模式嘅自願性，視乎目標同脈絡各有位置。公投說不令傳統做法受質疑，但<b>冇證據顯示傳統監管制度已經過時</b>；新機構同新模式反而係成熟嘅標誌。關鍵任務：確保歐盟規管治理喺公民眼中面對<b>正當性、問責同效能</b>嘅問題。</p>`},
+{k:'14-1',t:'規管型國家唔係歐洲獨有',lv:[],vis:['v-double'],b:`<p>「規管型國家」呢個講法同歐盟綁埋一齊，因為最早寫嘅學者喺歐洲睇到佢出現。有人列出三個特徵：私有化國有活動；有準立法權、半自主嘅監管機構；關係正式化、合約化。逐個篩：第三點係公營部門改革同新公共管理嘅產物（主要英國）；私有化亦係典型英國、有限嘅現象。剩低<b>獨立監管機構</b>先係普遍特徵。</p>
+ <p>主論點：規管型國家本身唔係歐洲現象；歐洲獨特之處在於（至少喺網絡產業）用放寬、尤其<b>重新監管</b>去提升全球競爭力。所以要將全球成因同歐洲成因分開。</p>`},
+{k:'14-2',t:'獨立監管機構點解出現：可信度',lv:[],vis:[],b:`<p>獨立監管機構興起係全球性、統計上顯著嘅現象，集中喺市場已經或正在全球化嘅範疇（金融、藥物、電訊、能源、運輸）。三個理由：政治承諾要可信（例如投資保障）、限制將來決策者嘅酌情權、限制否決者嘅權力。淨係當政治策略睇就短視，但唔係錯。</p>
+ <p>放返入大框架：全球化時代嘅國家要向<b>全球投資者</b>提供更多可信度（法律確定性）先保持競爭力，而技術官僚式機構比越嚟越反覆嘅決策者提供更多確定性。再推一步：國家轉變深遠得多，獨立監管機構<b>好可能只係過渡現象</b>。</p>`},
+{k:'14-3',t:'全球成因：網絡產業點解要監管',lv:[],vis:[],b:`<p>經濟全球化係最深層嘅動力（電訊已經真正全球化；空運、海運、能源類似）。全球化帶嚟開放市場、私有化國營壟斷的壓力，跟住出現跨國企業。<b>開放市場本身就帶嚟監管需要</b>：基建市場必然唔完美；要協調技術標準等參數；仲有公共政策目標（供應安全、公共服務），因為市場唔會提供冇錢賺嘅服務。</p>
+ <p>民主控制流失同監管出現雖然同時發生，但<b>冇因果關係</b>，兩者都係全球化嘅後果。更精確嘅定義：規管型國家＝國家放棄制定政策同提供服務、角色縮減，按定義係全球現象。</p>`},
+{k:'14-4',t:'監管歐洲：超國家層面回應全球化',lv:[],vis:['v-double'],b:`<p>如果規管型國家係因為監管市場可以提升競爭力而出現，咁「<b>監管歐洲</b>」就係同一個反應喺超國家層面嘅版本：單靠每個國家自己冇能力面對全球化，所以交權畀歐洲、設歐洲監管機構，係<b>歐洲對全球化嘅制度回應</b>。</p>
+ <p>推動嘅係各方嘅策略行為：委員會、各國政府、國家監管機構、歐洲機構，同埋文獻通常忽略嘅<b>跨國企業</b>。起初按行業設歐洲監管機構（鐵路、航空安全、電子通訊、能源），而家開始見到跨行業動態。整合未完，所以仲太早講有一個歐洲模式。</p>`},
+{k:'14-5',t:'委員會嘅工具、雙重授權同監管者網絡',lv:[],vis:['v-double'],b:`<p>最大謎題：委員會對成員國有幾獨立、可以用乜工具增加權力。工具：<b>指令、委員會程序、歐盟機構、元監管（例如監管者網絡）</b>；後兩者最有趣，因為可以令委員會某程度上獨立於成員國。</p>
+ <p><b>雙重授權：</b>成員國喺國家層面將監管權交畀獨立監管機構，同時喺國際層面將監管權交畀委員會；結果委員會負責協調各國監管者。委員會最終想要一個<b>全面嘅歐洲行業監管者</b>，但得唔到成員國支持，退而求其次接受<b>歐洲監管者網絡</b>。背後動力係權力而唔係效率；網絡只係<b>中途一步</b>、唔係穩定模式，尤其要計埋跨國企業。</p>
+ <p class="muted">筆記嘅例子：大學總部想設全校統一考試局，各學院唔肯，退而求其次搞「各學院考試委員會聯席會議」。</p>`},
+{k:'14-6',t:'歐洲模式：制度動態同跨國企業',lv:[],vis:['v-double'],b:`<p>特色就係各元素之間嘅<b>制度動態</b>，網絡做中介。三個面向要突出：</p>
+ <ol><li>指令、網絡同機構之間嘅動態（會唔會由網絡走向歐盟機構）。</li>
+ <li>監管機構同政治機構（歐洲議會、部長理事會、委員會、各國政治）之間嘅動態；委員會揀用邊種方案。</li>
+ <li><b>跨國企業</b>：想要單一市場同有利條件，四圍游說甚至挑撥各方；委員會同部分政府亦需要佢哋推進整合。</li></ol>
+ <p>模式未穩定、結果未明，但呢種動態本身已經構成<b>前所未有、獨一無二</b>嘅歐洲規管治理模式。（佢主要講成因同動態，冇直接討論正當性同效能。）</p>`}
+];
+const CARDS={};CARDS_DATA.forEach(c=>{CARDS[c.id]=c;});
+function makePages(app){
+const {store,$,LNAME}=window.__S;
+/* ===================== VISUALS ===================== */
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" ${o.a?`text-anchor="${o.a}"`:''} font-weight="${o.w||400}" fill="${o.f||'var(--ink)'}">${t}</text>`;
+const box=(x,y,w,h,fill='var(--surface2)',stroke='var(--line)')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const arrow=(x1,y1,x2,y2,c='var(--muted)')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" marker-end="url(#ah)"/>`;
+const DEFS=`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+const VIS=[
+ {id:'v-states',t:'積極國家 vs 規管型國家',n:'01 §一–三',svg:()=>{
+  const rows=[['手段','收稅、借錢、使錢','立規則'],['政治爭拗','預算點分','邊個審查同控制規則制定'],['主要機構','國會、部門、國企、福利服務','國會委員會、獨立機構、審裁處'],['主角','大工會、大商會（統合主義）','單一議題運動、監管者、專家、法官'],['風格／文化','酌情；統合主義','依規則、重法律；多元主義']];
+  return `<svg viewBox="0 0 680 300" class="vis">
+  ${box(10,10,200,40,'var(--soft)')}${box(220,10,220,40,'var(--surface2)','var(--aa)')}${box(450,10,220,40,'var(--accent-soft)','var(--accent)')}
+  ${svgT(110,36,'',{a:'middle'})}${svgT(330,36,'積極國家',{a:'middle',w:700})}${svgT(560,36,'規管型國家',{a:'middle',w:700,f:'var(--accent)'})}
+  ${rows.map((r,k)=>{const y=60+k*40;return box(10,y,200,34,'var(--surface2)')+svgT(110,y+22,r[0],{a:'middle',w:700,s:12.5})+box(220,y,220,34,'var(--surface)')+svgT(330,y+22,r[1],{a:'middle',s:12})+box(450,y,220,34,'var(--surface)')+svgT(560,y+22,r[2],{a:'middle',s:12})}).join('')}
+  ${svgT(340,286,'點解轉：私有化 · 歐洲化 · 間接管治；預算約束唔到監管（成本由守規者負擔）',{a:'middle',s:12.5,w:700})}
+  </svg>`}},
+ {id:'v-ec4',t:'歐共體點解越管越多：四個解釋',n:'11 §四；01 §三',svg:()=>{
+  const F=[['💶 預算唔約束監管','監管成本由守規者（同成員國）負擔；委員會擴權唯有擴大監管'],['🏢 跨國企業','想要一套規則，避開各國唔一致、越嚟越嚴嘅規例'],['🤝 政府間協議唔可信','外人睇唔到違規；交畀超國家機關令嚴格監管可信'],['💡 政策企業家','委員會官員傾向創新監管；細節早喺技術層面定好']];
+  return `<svg viewBox="0 0 680 300" class="vis">
+  ${box(220,10,240,50,'var(--accent-soft)','var(--accent)')}${svgT(340,32,'謎題：預算細、條約冇提',{a:'middle',w:700})}${svgT(340,50,'點解仲越管越多？',{a:'middle',s:12})}
+  ${F.map((f,k)=>{const x=10+(k%2)*335,y=76+Math.floor(k/2)*110;return box(x,y,325,100)+svgT(x+12,y+26,f[0],{w:700})+`<foreignObject x="${x+12}" y="${y+36}" width="300" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>${f[1]}</p></div></foreignObject>`}).join('')}
+  </svg>`}},
+ {id:'v-legit',t:'獨立定問責：點樣調和',n:'01 §六；11 §五',svg:()=>`<svg viewBox="0 0 680 300" class="vis">${DEFS}
+  ${box(170,10,340,56,'var(--soft)','var(--bad)')}${svgT(340,32,'兩難：屬於行政就唔獨立；',{a:'middle',w:700,s:12.5})}${svgT(340,52,'獨立又向邊個問責？',{a:'middle',w:700,s:12.5})}
+  ${arrow(340,68,340,92)}
+  ${box(10,96,325,150)}${svgT(172,120,'程序正當性',{a:'middle',w:700})}
+  <foreignObject x="22" y="128" width="300" height="114"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>民主立法設立、民選官員委任</p><p>正式程序、<b>說明理由</b>（最基本）</p><p>司法覆核；可能要比傳統部門更嚴</p></div></foreignObject>
+  ${box(345,96,325,150)}${svgT(507,120,'實質正當性',{a:'middle',w:700})}
+  <foreignObject x="357" y="128" width="300" height="114"><div xmlns="http://www.w3.org/1999/xhtml" class="fo"><p>專業、政策一致、保護分散利益</p><p><b>清晰目標</b>（先可以按結果問責）</p><p>只限<b>效率</b>範疇；再分配留畀多數決</p></div></foreignObject>
+  ${box(80,256,520,38,'var(--accent-soft)','var(--accent)')}${svgT(340,280,'一組多重控制：冇人控制機構，但機構受控',{a:'middle',w:700,s:13})}</svg>`},
+ {id:'v-tools',t:'歐盟立規則嘅工具：由硬到軟',n:'12 §一–五',svg:()=>{
+  const T=[['規例','有約束力；直接效力、凌駕國內法'],['指令','有約束力；形式同方法由成員國轉化'],['委員會程序','委員會出執行措施，各國代表委員會監督'],['歐盟機構','專門機構；部分作有約束力個別決定'],['開放協調方法','目標、基準、同儕審視；冇執法條文']];
+  return `<svg viewBox="0 0 680 300" class="vis">${DEFS}
+  <line x1="30" y1="40" x2="650" y2="40" stroke="var(--ink)" stroke-width="3" marker-end="url(#ah)"/>
+  ${svgT(30,26,'硬（有約束力）',{w:700,f:'var(--muted)',s:12})}${svgT(650,26,'軟（自願）',{a:'end',w:700,f:'var(--muted)',s:12})}
+  ${T.map((t,k)=>{const x=10+k*134;return box(x,60,126,170,k===4?'var(--accent-soft)':'var(--surface2)',k===4?'var(--accent)':'var(--line)')+svgT(x+63,86,t[0],{a:'middle',w:700,s:13})+`<foreignObject x="${x+8}" y="96" width="110" height="130"><div xmlns="http://www.w3.org/1999/xhtml" class="fo c"><p>${t[1]}</p></div></foreignObject>`}).join('')}
+  ${svgT(340,262,'新嘅冇取代舊嘅：新舊並存，視乎目標同脈絡',{a:'middle',w:700,s:13})}
+  ${svgT(340,284,'要面對：正當性 · 問責 · 效能',{a:'middle',s:12,f:'var(--muted)'})}</svg>`}},
+ {id:'v-double',t:'雙重授權同監管者網絡',n:'14 §四–六',svg:()=>`<svg viewBox="0 0 680 320" class="vis">${DEFS}
+  ${box(250,10,180,46,'var(--soft)')}${svgT(340,38,'成員國',{a:'middle',w:700})}
+  ${arrow(300,58,150,110)}${arrow(380,58,530,110)}
+  ${svgT(150,84,'① 國家層面授權',{a:'middle',s:12,w:700})}${svgT(530,84,'② 國際層面授權',{a:'middle',s:12,w:700})}
+  ${box(40,112,220,50)}${svgT(150,142,'國家獨立監管機構',{a:'middle',w:700})}
+  ${box(420,112,220,50,'var(--accent-soft)','var(--accent)')}${svgT(530,142,'歐盟委員會',{a:'middle',w:700})}
+  ${arrow(420,150,262,150)}${svgT(340,176,'③ 委員會協調各國監管者',{a:'middle',s:12})}
+  ${box(170,190,340,56,'var(--surface2)','var(--good)')}${svgT(340,212,'歐洲監管者網絡',{a:'middle',w:700})}${svgT(340,232,'委員會想要全面嘅歐洲監管者，退而求其次',{a:'middle',s:11.5,f:'var(--muted)'})}
+  ${box(10,262,660,52,'var(--surface2)')}${svgT(340,284,'🏢 跨國企業喺各層游說；網絡只係中途一步',{a:'middle',w:700,s:12.5})}${svgT(340,304,'歐洲模式嘅特色＝各方之間嘅制度動態',{a:'middle',s:12,f:'var(--muted)'})}</svg>`}
+];
+function visuals(){
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">圖解 · ${VIS.length} 幅</span><h2>一幅圖睇一個概念</h2>
+   <p class="muted">每幅圖都對應筆記嘅某幾節。讀「讀懂版」或者玩完關卡之後，用嚟一眼溫返。</p></div>
+   <div class="stack">${VIS.map(v=>`<section class="panel vispanel" id="${v.id}"><div class="row" style="justify-content:space-between"><h3>${v.t}</h3><span class="tag">筆記 ${v.n}</span></div><div class="viswrap">${v.svg()}</div></section>`).join('')}</div>`;
+}
+
+/* ===================== READING NOTES ===================== */
+const LVNAME={swipe:'L1 算唔算監管',lobby:'L2 游說集團',families:'L3 四大家族',price:'L4 一個價兩筆數',judge:'L5 判案小法官',agency:'L6 合定拆',develop:'L7 因地制宜'};
+const cardsIn=(n,s)=>CARDS_DATA.filter(c=>c.n===n&&c.s===s);
+function notesPage(note){
+  note=note||NOTE_ORDER[0];
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  const m=NOTES_META[note];
+  const secs=NOTES.filter(x=>x.k.startsWith(note+'-'));
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">讀懂版 · 逐節淺白講解</span>
+    <div class="tabs">${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div></div>
+   <div class="panel stack"><h2>${note} ${m.t}</h2><p><b>呢篇問：</b>${m.q}</p><p class="muted">${m.read}</p></div>
+   <div class="stack" style="margin-top:14px">${secs.map(x=>{const n=+x.k.split('-')[1];const cs=cardsIn(note,n);const kn=cs.filter(c=>known[c.id]).length;
+     return `<section class="panel notesec" id="${x.k}">
+      <div class="row" style="justify-content:space-between"><h3>§${n} ${x.t}</h3>
+        <label class="readchk"><input type="checkbox" id="rd-${x.k}" data-k="${x.k}" ${read[x.k]?'checked':''}> 已讀</label></div>
+      <div class="nbody">${x.b}</div>
+      <div class="row links"><a class="chip" href="#lesson-${note}">▶ ${LNAME[note]}</a>
+        ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">◩ 圖：${VIS.find(z=>z.id===v).t}</a>`).join('')}
+        <a class="chip" href="#cards-${note}-${n}">▣ 呢節 ${cs.length} 張卡（識咗 ${kn}）</a></div></section>`}).join('')}</div>`;
+  app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash='notes-'+b.dataset.n;});
+  app.querySelectorAll('.readchk input').forEach(c=>c.onchange=()=>{const o=store.get().read||{};o[c.dataset.k]=c.checked;store.set('read',o);});
+  bindVisLinks();
+}
+function bindVisLinks(){app.querySelectorAll('[data-vis]').forEach(a=>a.onclick=e=>{e.preventDefault();const id=a.dataset.vis;location.hash='visuals';setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({block:'start'});},60);});}
+
+/* ===================== FLASHCARDS ===================== */
+const TYPE_ZH={fact:'事實',definition:'定義',conceptual:'概念',cause:'因果',evaluation:'評價',normative:'主張'};
+function cardsPage(arg){
+  const [note,sec]=(arg||'').split('-');
+  const pool=CARDS_DATA.filter(c=>(!note||c.n===note)&&(!sec||c.s===+sec));
+  let mode='unknown', order=[], idx=0, flipped=false;
+  function build(){
+    const known=store.get().known||{};
+    order=pool.filter(c=>mode==='all'||!known[c.id]).map(c=>c.id);
+    idx=0; flipped=false;
+  }
+  function shuffle(){for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;flipped=false;render();}
+  function render(){
+    const known=store.get().known||{};
+    const kn=pool.filter(c=>known[c.id]).length;
+    const scope=note?`${note} ${NOTES_META[note].t}${sec?` · §${sec} ${NOTES.find(x=>x.k===note+'-'+sec).t}`:''}`:'全部筆記';
+    let card='';
+    if(!order.length){ card=`<div class="fcard done"><div><h3>呢副卡你已經全部識晒 🎉</h3><p class="muted">轉「全部卡」可以再溫一次。</p></div></div>`; }
+    else{
+      const c=CARDS[order[idx]];
+      card=`<div class="fcard ${flipped?'flip':''}" id="fc" tabindex="0" role="button" aria-label="撳一下反卡">
+        ${!flipped?`<div class="ff"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fq">${c.f}</div><span class="muted" style="font-size:13px">撳一下（或者按空白鍵）睇答案</span></div>`
+        :`<div class="fb"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fa">${c.b}</div><blockquote>“${c.q}”</blockquote><span class="src">原文出處：${c.loc}</span></div>`}
+      </div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn ghost" id="bad">✗ 未識，等陣再嚟</button><button class="btn primary" id="good">✓ 識咗</button></div>`;
+    }
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">快速卡 · ${scope}</span>
+      <div class="tabs"><button class="tab ${!note?'on':''}" data-n="">全部</button>${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div>
+      <div class="row" style="justify-content:space-between"><span class="muted">呢副 ${pool.length} 張 · 識咗 ${kn} · 呢輪剩 ${order.length?order.length-idx:0}</span>
+      <div class="row"><button class="btn ghost sm" id="mode">${mode==='all'?'只溫未識':'全部卡'}</button><button class="btn ghost sm" id="shuf">洗牌</button><button class="btn ghost sm" id="reset">清除「識咗」</button></div></div>
+      <div class="progress"><i style="width:${pool.length?kn/pool.length*100:0}%"></i></div></div>
+      ${card}
+      <p class="muted" style="margin-top:14px;font-size:13.5px">卡面係我寫嘅問題；卡背係筆記入面嘅原子命題（中文）同原文英文引文，一字不改。卡背會出現人名，你唔使記，專心睇論點就得。</p>`;
+    app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash=b.dataset.n?'cards-'+b.dataset.n:'cards';});
+    $('#mode').onclick=()=>{mode=mode==='all'?'unknown':'all';build();render();};
+    $('#shuf').onclick=shuffle;
+    $('#reset').onclick=()=>{const k=store.get().known||{};pool.forEach(c=>delete k[c.id]);store.set('known',k);build();render();};
+    const fc=$('#fc'); if(fc){ fc.onclick=()=>{flipped=!flipped;render();$('#fc')&&$('#fc').focus();}; fc.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();fc.click();}}; }
+    const g=$('#good'), b=$('#bad');
+    if(g) g.onclick=()=>{const k=store.get().known||{};k[order[idx]]=true;store.set('known',k);next(true);};
+    if(b) b.onclick=()=>next(false);
+  }
+  function next(ok){ if(!ok){ order.push(order[idx]); } idx++; flipped=false; if(idx>=order.length){ build(); } render(); }
+  build(); render();
+}
+
+/* ===================== PROGRESS MAP ===================== */
+function mapPage(){
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  let tot=0, done=0;
+  const rows=NOTE_ORDER.map(n=>{
+    const secs=NOTES.filter(x=>x.k.startsWith(n+'-'));
+    return `<tr class="nh"><td colspan="5"><b>${n} ${NOTES_META[n].t}</b></td></tr>`+secs.map(x=>{
+      const s=+x.k.split('-')[1], cs=cardsIn(n,s), kn=cs.filter(c=>known[c.id]).length;
+      const lvDone=!!(st.done&&st.done['l'+n]);
+      const ok=read[x.k]&&kn===cs.length&&lvDone; tot++; if(ok) done++;
+      return `<tr><td><a href="#notes-${n}" data-sec="${x.k}">§${s} ${x.t}</a></td>
+        <td class="c">${read[x.k]?'✓':'—'}</td>
+        <td class="c mono">${kn}/${cs.length}</td>
+        <td><a class="chip ${lvDone?'ok':''}" href="#lesson-${n}">${LNAME[n]}${lvDone?' ✓':''}</a>
+          ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">圖</a>`).join(' ')}</td>
+        <td class="c">${ok?'<span class="okb">掌握</span>':''}</td></tr>`}).join('');
+  }).join('');
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">進度地圖 · 筆記每一節都喺度</span><h2>${done} / ${tot} 節已經全部做完</h2>
+    <p class="muted">一節要「讀懂版已讀」＋「嗰節嘅卡全部識咗」＋「嗰篇嘅課完成」，先算掌握。撳節名會跳去嗰節嘅讀懂版。</p>
+    <div class="progress"><i style="width:${done/tot*100}%"></i></div></div>
+    <div class="tablewrap"><table class="map"><thead><tr><th>節</th><th>讀懂版</th><th>卡</th><th>課／圖</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  app.querySelectorAll('[data-sec]').forEach(a=>a.onclick=e=>{e.preventDefault();const k=a.dataset.sec;location.hash='notes-'+k.split('-')[0];setTimeout(()=>{const el=document.getElementById(k);if(el)el.scrollIntoView({block:'start'});},60);});
+  bindVisLinks();
+}
+
+return {visuals,notesPage,cardsPage,mapPage};
+}
+(() => {
+const $=(s,el=document)=>el.querySelector(s);
+const app=$('#app');
+const MINE='<span class="mine">例子係我作嘅</span>';
+const MYNUM='<span class="mine">數字係我設嘅</span>';
+const KEY='reglab-02p1';
+const store={get(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}},
+  set(k,v){const o=this.get();o[k]=v;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}};
+const saveAll=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
+window.__S={store,$};
+const S=()=>Object.assign({xp:0,done:{},streak:0,last:null},store.get());
+function bumpStreak(st){const d=new Date();const today=d.toISOString().slice(0,10);
+  if(st.last===today) return; const y=new Date(d-864e5).toISOString().slice(0,10);
+  st.streak=(st.last===y)?st.streak+1:1; st.last=today;}
+const noteBody=k=>{const n=NOTES.find(x=>x.k===k);return n?{t:n.t,b:n.b}:null;};
+
+/* ---------- shared chart ---------- */
+function chart(P,MC,opt={}){
+  const W=340,H=250,L=34,B=26,T=8,R=8,x=q=>L+(q/100)*(W-L-R),y=p=>H-B-(p/100)*(H-B-T);
+  P=Math.max(P,MC); const Q=100-P;
+  const show=opt.show||['cs','c','a'];
+  let g='';
+  [0,20,40,60,80,100].forEach(t=>{g+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-5}" y="${y(t)+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`;});
+  if(show.includes('cs')) g+=`<polygon points="${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--cs)" fill-opacity="${opt.dim==='cs'?.15:.5}"/>`;
+  if(show.includes('c')&&P>MC) g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="${opt.cColor||'var(--cc)'}" fill-opacity=".65"/>`;
+  if(show.includes('a')&&P>MC) g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(100-MC)},${y(MC)}" fill="var(--aa)" fill-opacity=".8"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+13}" text-anchor="end" font-size="11" fill="var(--ink)">成本 ${MC}</text>`;
+  if(opt.old) g+=`<line x1="${x(0)}" y1="${y(opt.old)}" x2="${x(100)}" y2="${y(opt.old)}" stroke="var(--muted)" stroke-dasharray="2 4"/><text x="${x(100)}" y="${y(opt.old)-4}" text-anchor="end" font-size="10" fill="var(--muted)">合併前成本 ${opt.old}</text>`;
+  g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${x(Q)}" cy="${y(P)}" r="6" fill="var(--accent)"/>`;
+  g+=`<text x="${x(Q)+8}" y="${y(P)-6}" font-size="12" font-weight="700" fill="var(--accent)">售價 ${P}</text>`;
+  if(show.includes('cs')&&Q>10) g+=`<text x="${x(Q*.2)}" y="${y((100+P)/2)+16}" font-size="13" font-weight="900" fill="var(--ink)">CS</text>`;
+  if(show.includes('c')&&P-MC>7) g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+5}" text-anchor="middle" font-size="14" font-weight="900" fill="var(--ink)">C</text>`;
+  if(show.includes('a')&&P-MC>12) g+=`<text x="${x(Q+(100-MC-Q)/3)}" y="${y(MC+(P-MC)/3)+5}" text-anchor="middle" font-size="13" font-weight="900" fill="var(--ink)">A</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="需求線、成本線同售價">${g}</svg>`;
+}
+const calc=(P,MC)=>{P=Math.max(P,MC);const Q=100-P;return{Q,CS:.5*Q*(100-P),C:(P-MC)*Q,A:.5*(P-MC)**2,TW:.5*Q*(100-P)+(P-MC)*Q};};
+const f=n=>Math.round(n).toLocaleString('en');
+
+/* ---------- widgets ---------- */
+const W={
+ coffee(el,done){
+  let P=24;
+  el.innerHTML=`<div class="wid"><div class="lbl"><span>☕ 你最多肯畀：<b>$40</b></span><span>成本：<b>$20</b></span></div>
+   <div class="lbl"><span>舖頭收價</span><span class="mono" id="pv"></span></div><input type="range" id="sl" min="20" max="40" value="${P}" aria-label="收價">
+   <div class="barrow"><span>你賺咗</span><span class="track"><i id="b1" style="background:var(--cs)"></i></span><span class="mono" id="v1"></span></div>
+   <div class="barrow"><span>舖頭賺咗</span><span class="track"><i id="b2" style="background:var(--cc)"></i></span><span class="mono" id="v2"></span></div>
+   <div class="barrow"><span><b>加埋</b></span><span class="track"><i id="b3" style="background:var(--good)"></i></span><span class="mono" id="v3"></span></div>
+   <div class="task" id="tk">🎯 將收價拉到令「你賺咗」啱啱 $10</div></div>`;
+  const up=()=>{const a=40-P,b=P-20;$('#pv',el).textContent='$'+P;
+   $('#b1',el).style.width=a/20*100+'%';$('#b2',el).style.width=b/20*100+'%';$('#b3',el).style.width='100%';
+   $('#v1',el).textContent='$'+a;$('#v2',el).textContent='$'+b;$('#v3',el).textContent='$20';
+   if(P===30){$('#tk',el).className='task ok';$('#tk',el).innerHTML='✓ 啱！你肯畀 $40、實付 $30，賺咗 $10。留意「加埋」：拉嚟拉去都係 $20。';done(true);}};
+  $('#sl',el).oninput=e=>{P=+e.target.value;up();};up();
+ },
+ crowd(el,done){
+  let P=20, asked=false;
+  el.innerHTML=`<div class="wid"><div class="lbl"><span>售價</span><span class="mono" id="pv"></span></div>
+   <input type="range" id="sl" min="0" max="100" step="5" value="${P}" aria-label="售價"><div id="cv"></div>
+   <div class="task" id="tk">🎯 將售價拉到 $60</div><div id="qq"></div></div>`;
+  const draw=()=>{const W2=340,H2=200,L=30,B=22,x=q=>L+(q/100)*(W2-L-8),y=p=>H2-B-(p/100)*(H2-B-8);let g='';
+   g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--line)" stroke-width="2"/>`;
+   for(let k=0;k<20;k++){const q=2.5+k*5,w=100-q,buy=w>=P;g+=`<circle cx="${x(q)}" cy="${y(w)}" r="6" fill="${buy?'var(--accent)':'var(--card)'}" stroke="${buy?'var(--accent)':'var(--muted)'}" stroke-width="1.6"/>`;}
+   g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(100)}" y2="${y(P)}" stroke="var(--accent)" stroke-dasharray="4 3"/>`;
+   g+=`<text x="${x(100)}" y="${H2-4}" text-anchor="end" font-size="11" fill="var(--muted)">排第幾個客 →</text><text x="${L+4}" y="12" font-size="11" fill="var(--muted)">肯畀幾多 ↑</text>`;
+   $('#cv',el).innerHTML=`<svg class="chart" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="100 個客，每粒點代表 5 個人">${g}</svg>`;
+   $('#pv',el).textContent='$'+P;
+   if(P===60&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 好。數吓藍色實心點（每粒代表 5 個人）……';
+    $('#qq',el).innerHTML=`<div class="opts">${['60 人','40 人','70 人'].map(o=>`<button class="opt" data-o="${o}">${o}</button>`).join('')}</div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='40 人';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>肯畀 $60 或以上嘅，係排頭 40 個人。<b>你肯畀嘅 ≥ 售價，你就買。</b>將一百個人由最肯畀排到最唔肯畀，連埋就係<b>需求線</b>。</p></div>`:`<div class="fb no"><p>再睇吓：藍點有 8 粒，每粒 5 個人。</p></div>`; if(ok) done(true);});}};
+  $('#sl',el).oninput=e=>{P=+e.target.value;draw();};draw();
+ },
+ worth(el,done){
+  el.innerHTML=`<div class="wid">${chart(30,20,{show:[]})}<div class="scene" style="background:var(--soft)"><p>${MINE} <b>小明</b>最多肯畀 <b>$25</b>。舖頭售價 $30，成本 $20。</p></div>
+   <p style="font-weight:700">小明買唔買？呢單交易「值唔值得」發生？</p>
+   <div class="opts"><button class="opt" data-k="a">唔買；但值得發生</button><button class="opt" data-k="b">唔買；唔值得發生</button><button class="opt" data-k="c">會買</button></div><div id="fb"></div></div>`;
+  let tries=0;
+  el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.k==='a';tries++;b.classList.add(ok?'right':'wrong');
+   $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>佢肯畀 $25 &lt; 售價 $30，所以唔買。但佢嘅估值（$25）高過成本（$20），做咗就會產生 $5 價值。呢 $5 而家冇咗，<b>冇人得益</b>。</p></div>`
+    :`<div class="fb ${tries>1?'no':'hint'}"><p>${tries>1?'答案：唔買；但值得發生。':'提示：比較兩組數：佢肯畀 vs 售價（買唔買）；佢肯畀 vs 成本（值唔值得）。'}</p></div>`;
+   if(ok||tries>1) done(ok);});
+ },
+ areas(el,done){
+  let P=30,asked=false;
+  el.innerHTML=`<div class="wid"><div id="cv"></div><div class="lbl"><span>售價</span><span class="mono" id="pv"></span></div>
+   <input type="range" id="sl" min="20" max="80" value="${P}" aria-label="售價">
+   <div class="nums"><div><span class="sw" style="background:var(--cs)"></span>CS<b id="n1"></b></div><div><span class="sw" style="background:var(--cc)"></span>C<b id="n2"></b></div><div><span class="sw" style="background:var(--aa)"></span>A<b id="n3"></b></div></div>
+   <div class="task" id="tk">🎯 慢慢將售價拉高到 $60 或以上，留意紅色嗰塊</div><div id="qq"></div></div>`;
+  const up=()=>{const r=calc(P,20);$('#cv',el).innerHTML=chart(P,20);$('#pv',el).textContent='$'+P;$('#n1',el).textContent=f(r.CS);$('#n2',el).textContent=f(r.C);$('#n3',el).textContent=f(r.A);
+   if(P>=60&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 好。問你：';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">紅色（A）呢班人肯畀高過成本，但因為價太高冇買。售價越高，A 會點？</p><div class="opts">${['越大','越細','唔變'].map(o=>`<button class="opt" data-o="${o}">${o}</button>`).join('')}</div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='越大';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>越多值得做嘅交易冇做到。A 叫<b>無謂損失</b>（deadweight loss）：價值消失咗，冇人攞到。黃色 C 就唔同：佢冇消失，只係由消費者袋搬咗去企業袋。</p></div>`:`<div class="fb hint"><p>再拉吓個滑桿，睇住紅色三角形。</p></div>`; if(ok) done(true);});}};
+  $('#sl',el).oninput=e=>{P=+e.target.value;up();};up();
+ },
+ merger(el,done){
+  let P=20,step=0; const base=calc(20,20);
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>合併前：成本 $20，競爭令售價 = $20。<br>合併後：<b>成本跌到 $8</b>，但合併公司可以加價。${MYNUM}</p></div>
+   <div id="cv"></div><div class="lbl"><span>合併後售價</span><span class="mono" id="pv"></span></div>
+   <input type="range" id="sl" min="8" max="80" value="${P}" aria-label="合併後售價">
+   <div class="nums"><div>消費者福利<b id="n1"></b></div><div>總福利<b id="n2"></b></div><div>同合併前比<b id="n3" style="font-size:14px"></b></div></div>
+   <div class="task" id="tk">🎯 搵一個售價：總福利<b>升</b>，但消費者福利<b>跌</b></div><div id="qq"></div></div>`;
+  const up=()=>{const r=calc(P,8);$('#cv',el).innerHTML=chart(P,8,{old:20});$('#pv',el).textContent='$'+P;
+   $('#n1',el).textContent=f(r.CS);$('#n2',el).textContent=f(r.TW);
+   const dc=r.CS-base.CS,dt=r.TW-base.TW;$('#n3',el).innerHTML=`CS ${dc>=0?'↑':'↓'} · 總 ${dt>=0?'↑':'↓'}`;
+   if(step===0&&dc<0&&dt>0){step=1;$('#tk',el).className='task ok';$('#tk',el).innerHTML='✓ 搵到！兩把尺分岔咗。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">用「消費者福利標準」（只計 CS）嘅監管者，會唔會批准呢宗合併？</p><div class="opts"><button class="opt" data-o="y">批准</button><button class="opt" data-o="n">唔批准</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='n';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>只計 CS，CS 跌咗就唔批。用<b>總福利標準</b>（計 CS＋C）嘅就會批，因為個餅大咗。用邊把尺，直接決定批唔批。</p></div>`:`<div class="fb hint"><p>提示：消費者福利標準只睇消費者剩餘。佢係升定跌？</p></div>`; if(ok) done(true);});}};
+  $('#sl',el).oninput=e=>{P=+e.target.value;up();};up();
+ },
+ pocket(el,done){
+  /* Own scale for THIS story (tutoring centres): price axis in $ per lesson, $0–$400.
+     Competitive price = cost $200; cartel price $250 (both from the notes' example). */
+  let mode='no',asked=false; const M=400,MC=200,PC=250;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>幾間補習社夾價，每堂由 <b>$200</b> 加到 <b>$250</b>。<span class="muted">（例子出自筆記）</span></p><p class="muted" style="font-size:14px">圖入面：每堂成本當係 $200（即係夾價前嘅競爭價）；家長對一堂嘅估值由 $400 到 $0 唔等。${MYNUM}</p></div>
+   <div class="tog" role="group" aria-label="競爭法管唔管"><button data-m="no" class="on">唔管（夾價 $250）</button><button data-m="yes">管（返去 $200）</button></div>
+   <div id="cv"></div><div id="ex"></div><div id="qq"></div></div>`;
+  const draw=P=>{const W2=340,H2=250,L=42,B=26,T=8,R=8,x=q=>L+(q/100)*(W2-L-R),y=p=>H2-B-(p/M)*(H2-B-T);
+   const Q=100*(1-P/M), Qc=100*(1-MC/M); let g='';
+   [0,100,200,300,400].forEach(t=>{g+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-5}" y="${y(t)+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">$${t}</text>`;});
+   g+=`<polygon points="${x(0)},${y(M)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--cs)" fill-opacity=".5"/>`;
+   if(P>MC){g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="var(--cc)" fill-opacity=".7"/>`;
+     g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(Qc)},${y(MC)}" fill="var(--aa)" fill-opacity=".85"/>`;}
+   g+=`<line x1="${x(0)}" y1="${y(M)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+   g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+14}" text-anchor="end" font-size="11" fill="var(--ink)">每堂成本 $200</text>`;
+   g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${x(Q)}" cy="${y(P)}" r="6" fill="var(--accent)"/><text x="${x(Q)+8}" y="${y(P)-7}" font-size="12" font-weight="700" fill="var(--accent)">每堂 $${P}</text>`;
+   g+=`<text x="${x(Q*.18)}" y="${y((M+P)/2)+18}" font-size="12" font-weight="900" fill="var(--ink)">家長賺咗</text>`;
+   if(P>MC){g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+5}" text-anchor="middle" font-size="12" font-weight="900" fill="var(--ink)">C：每堂多畀 $50</text>`;
+     g+=`<text x="${x(Q)+4}" y="${y(MC)-4}" font-size="11" font-weight="900" fill="var(--ink)">A</text>`;}
+   g+=`<text x="${x(100)}" y="${H2-4}" text-anchor="end" font-size="11" fill="var(--muted)">報讀嘅家長 →</text>`;
+   return `<svg class="chart" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="補習社夾價前後：每堂價錢、成本同三塊面積">${g}</svg>`;};
+  const up=()=>{$('#cv',el).innerHTML=draw(mode==='yes'?MC:PC);
+   $('#ex',el).innerHTML=mode==='yes'?`<p>每堂返到 $200：<b>多畀嘅 $50 留返喺家長袋</b>；嫌貴唔報嘅家長（A）亦返嚟報讀。</p>`:`<p>夾價成立：繼續報嘅家長每堂多畀 $50，<b>呢筆錢（C）落咗補習社袋</b>；嫌貴唔報嘅家長就係 A，呢部分冇人得益。</p>`;
+   el.querySelectorAll('.tog button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+   if(mode==='yes'&&!asked){asked=true;$('#qq',el).innerHTML=`<p style="font-weight:700">咁「唔管」嗰陣，有冇分配後果？</p><div class="opts"><button class="opt" data-o="y">有：每堂 $50 搬咗去補習社</button><button class="opt" data-o="n">冇：唔管即係中立</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='y';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">正正係重點！</b><p><b>用</b>競爭法有分配後果；<b>唔用</b>都有。管定唔管，本身就係決定呢 $50（C）落邊個袋。</p></div>`:`<div class="fb hint"><p>撳返「唔管」睇吓：每堂多畀嘅 $50 落咗去邊？</p></div>`; if(ok) done(true);});}};
+  el.querySelectorAll('.tog button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;up();});up();
+  $('#qq',el).innerHTML='<div class="task">🎯 撳「管」，比較兩邊</div>';
+ }
+};
+
+/* ---------- lessons ---------- */
+/* ===== Folder 02 · Part 1 lessons (notes 01, 11, 12, 14) ===== */
+const SCENE_TAG='<p class="muted" style="font-size:14px">情境係我作嘅，概念全部出自筆記。</p>';
+Object.assign(W,{
+ budget(el,done){
+  let mode='spend', size=10, step=0;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>你想推一個全歐環保計劃。歐盟預算好細（筆記：唔夠歐盟 GDP 嘅 1.3%）；假設今年最多只可以額外使 <b>10 億</b>。${MYNUM}</p></div>
+   <div class="tog" role="group" aria-label="做法"><button data-m="spend" class="on">💶 自己使錢做</button><button data-m="rule">📜 立規則要企業做</button></div>
+   <div class="lbl"><span>計劃規模（每年成本）</span><span class="mono" id="pv"></span></div>
+   <input type="range" id="sl" min="10" max="50" step="10" value="10" aria-label="計劃規模">
+   <div class="barrow"><span>歐盟預算<br>要使</span><span class="track" style="position:relative"><i id="b1" style="background:var(--aa)"></i><span style="position:absolute;left:20%;top:-3px;bottom:-3px;border-left:2px dashed var(--ink)" title="預算上限 10 億"></span></span><span class="mono" id="v1"></span></div>
+   <div class="barrow"><span>企業守規<br>要使</span><span class="track"><i id="b2" style="background:var(--cc)"></i></span><span class="mono" id="v2"></span></div>
+   <p class="muted" style="font-size:13px">虛線＝預算上限 10 億；棒嘅全長＝50 億。立規則時歐盟淨係使少少行政費（當係 0.5 億）。${MYNUM}</p>
+   <div class="task" id="tk">🎯 先用「自己使錢做」，將計劃規模拉到 30 億</div><div id="qq"></div></div>`;
+  const up=()=>{const b=mode==='spend'?size:0.5, c=mode==='spend'?0:size;
+   $('#pv',el).textContent=size+' 億'; $('#b1',el).style.width=b/50*100+'%'; $('#b2',el).style.width=c/50*100+'%';
+   $('#v1',el).textContent=b+' 億'; $('#v2',el).textContent=c+' 億';
+   el.querySelectorAll('.tog button').forEach(x=>x.classList.toggle('on',x.dataset.m===mode));
+   const over=mode==='spend'&&size>10;
+   $('#b1',el).style.opacity=over?1:.8;
+   if(step===0&&mode==='spend'&&size>=30){step=1;$('#tk',el).className='task';$('#tk',el).innerHTML='⛔ 超出預算！使錢嘅做法推唔到。🎯 轉做「立規則要企業做」試吓';}
+   if(step===1&&mode==='rule'&&size>=30){step=2;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 推到！成本冇喺預算度出現，由守規嘅企業負擔。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">所以一個冇乜預算、又冇收稅權嘅機構，想擴大權限會傾向點做？</p><div class="opts"><button class="opt" data-o="a">爭取更多預算</button><button class="opt" data-o="b">擴大立規則（監管）</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(x=>x.onclick=()=>{const ok=x.dataset.o==='b';x.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>公共預算對規則制定者只係<b>軟約束</b>：監管嘅真正成本由守規則嘅人負擔。所以歐盟只能發展成幾乎純粹嘅規管型國家先擴得到權限。</p><span class="src">出處：筆記 01 §三；11 §四</span></div>`:`<div class="fb hint"><p>💡 預算已經頂到上限。邊種做法唔使經預算？</p></div>`; if(ok) done(true);});}};
+  el.querySelectorAll('.tog button').forEach(x=>x.onclick=()=>{mode=x.dataset.m;up();});
+  $('#sl',el).oninput=e=>{size=+e.target.value;up();};up();
+ }
+});
+const P1L1={id:'l01',note:'01',icon:'1',name:'由積極國家到規管型國家',sub:'筆記 01 · 約 6 分鐘',screens:[
+ {type:'story',h:'你嘅第一份報告',html:`<div class="scene"><div class="big">📑</div><p>你啱啱加入一間政策研究所。上司要你寫第一份報告：「歐洲國家點解唔再自己開國企、使錢，改為立規則、交畀獨立機構？」</p>${SCENE_TAG}</div>`},
+ {type:'sort',h:'兩種國家模式',lead:'將每個特徵分去積極國家，定規管型國家。',cats:['積極國家','規管型國家'],items:[
+  ['主要靠收稅、借錢同使錢',0,'積極國家主力做再分配同宏觀穩定。'],
+  ['主要靠立規則',1,'規管型國家主力做市場監管，糾正市場失靈。'],
+  ['政治爭拗喺預算點分',0,'積極國家嘅爭拗喺預算分配。'],
+  ['政治爭拗喺邊個審查同控制規則制定',1,'規管型國家嘅爭拗搬咗去度。'],
+  ['主角：國企同福利服務',0,'積極國家嘅主要機構。'],
+  ['主角：獨立機構、審裁處、專家同法官',1,'規管型國家嘅主要機構同角色。'],
+  ['風格：依規則、重法律；文化多元',1,'積極國家就係酌情、統合主義。']],deep:'01-1',src:'筆記 01 §一'},
+ {type:'mcq',h:'「放寬監管」即係拆晒監管？',lead:'公用事業私有化之後，即刻出現價格監管。呢個顯示所謂「放寬監管」其實係……',
+  opts:['國家退出','放寬同重新監管一齊嚟，可能搬去另一個管治層級'],ans:1,hint:'私有化之後即刻有乜？',
+  ex:'放寬監管唔係拆晒監管，而係放寬加重新監管，可能喺另一個層級（例如歐洲層面）。',deep:'01-1',src:'筆記 01 §一'},
+ {type:'match',h:'點解會轉？三個成因',lead:'配對每個成因同佢嘅講法。',pairs:[
+  ['私有化','國家擁有唔等於控制得到；改為私人擁有，由專門機構定規則'],
+  ['歐洲化','權力交上歐洲，反而加重成員國國內監管機構嘅份量'],
+  ['間接管治','服務外判、執行機構；政府要靠合約同規則去控制']],deep:'01-2',src:'筆記 01 §二'},
+ {type:'widget',h:'點解預算約束唔到監管？',lead:'兩種做法推同一個計劃。睇吓成本落喺邊度。',w:'budget',deep:'01-3|11-4'},
+ {type:'mcq',h:'爭拗搬咗去邊？',lead:'美國 1981 年要求所有主要規例過成本效益測試、由預算管理局把關。呢個係規管型國家嘅乜嘢典型爭拗？',
+  opts:['預算點分','邊個有權審查同控制監管程序'],ans:1,hint:'唔再係爭錢點分。',
+  ex:'政治爭拗由預算程序搬去一個新舞台：邊個有權審查同控制監管程序。',deep:'01-3',src:'筆記 01 §三'},
+ {type:'mcq',h:'乜嘢唔應該交畀獨立機構？',lead:'以下邊類政策應該留喺民選政治首長直接控制之下？',
+  opts:['技術性嘅安全標準','再分配政策，或有重大再分配後果嘅政策','電訊價格上限'],ans:1,hint:'邊類政策係零和？',
+  ex:'再分配政策要留喺民選首長手；喺經濟同社會監管，獨立機構有專業同可信承諾兩大優勢。',deep:'01-4',src:'筆記 01 §四'},
+ {type:'mcq',h:'朱古力交畀朋友保管',lead:'想減肥嘅人將朱古力交畀朋友，叫佢點求都唔好畀返。政府將利率交畀獨立機構，道理係乜？',
+  opts:['令承諾變得可信','慳錢'],ans:0,hint:'自己承諾唔食，可信唔可信？',
+  ex:'民主預期會換人做，政客冇誘因推要喺下次選舉之後先見效嘅政策；交畀獨立機構先令承諾可信。機構模式＝專業＋獨立＋專注窄範圍。（例子出自筆記）',deep:'01-4',src:'筆記 01 §四'},
+ {type:'mcq',h:'新主角：法院',lead:'規管型國家擴張，最重要嘅後果可能係乜？',
+  opts:['法院介入行政同政策制定','國企數目增加'],ans:0,hint:'行政程序法令決策「司法化」。',
+  ex:'美國《行政程序法》令機構決策司法化；歐洲法院推「相互承認」，製造咗成員國規例之間嘅競爭。立法者則用專責委員會監察機構。',deep:'01-5',src:'筆記 01 §五'},
+ {type:'mcq',h:'有冇民主赤字？',lead:'如果民主正當性只有一個標準：直接向選民或國會多數負責。咁由法院同專家主導嘅國家會點？',
+  opts:['有嚴重民主赤字','完全冇問題'],ans:0,hint:'獨立機構唔係選出嚟。',
+  ex:'會有嚴重民主赤字。但多數決唔係唯一民主模式：Madison 模式本身就要分散、授出同限制權力，保護少數；喺呢個模式下，獨立機構嘅正當性冇咁成問題。',deep:'01-6',src:'筆記 01 §六'},
+ {type:'sort',h:'兩種正當性',lead:'將每樣分去程序正當性，定實質正當性。',cats:['程序正當性','實質正當性'],items:[
+  ['要求監管者為決定說明理由',0,'最簡單最基本嘅透明同問責方法。'],
+  ['由民主立法設立、民選官員委任',0,'程序正當性嘅一部分。'],
+  ['受司法覆核',0,'程序正當性嘅一部分。'],
+  ['有清晰嘅目標',1,'目標太含糊就冇辦法按結果問責。'],
+  ['專業同專業操守',1,'實質正當性嘅一部分。'],
+  ['保護分散嘅利益',1,'實質正當性嘅一部分。']],deep:'01-6',src:'筆記 01 §六'},
+ {type:'mcq',h:'邊類決定可以交畀專家？',lead:'效率係正和遊戲，再分配係零和遊戲。將重要政策權交畀獨立機構，喺邊個範疇先有民主理據？',
+  opts:['效率','再分配'],ans:0,hint:'零和就要多數決。',
+  ex:'只喺效率範疇；再分配後果對監管者只應該係約束，唔係目標。點樣調和獨立同問責？靠一組控制（清晰目標、說理、正當程序、專業）：冇人控制機構，但機構受控。<span class="mine">連結係我整嘅</span> folder 入面有其他讀物反對呢條界線，Part 2 會講。',deep:'01-6',src:'筆記 01 §六'},
+ {type:'mcq',h:'點解歐洲轉得咁慢？',lead:'法國競爭委員會連自己展開調查嘅權都冇；英國好多公用事業監管權直接畀咗部長。原因係？',
+  opts:['干預型國家留低嘅制度同思想包袱','歐洲人唔鍾意監管'],ans:0,hint:'結構跟唔上策略。',
+  ex:'制度同思想包袱令結構追唔上策略；但監管制度之間都有競爭，會獎勵唔太落後嘅制度。',deep:'01-7',src:'筆記 01 §七'},
+ {type:'review',h:'快速溫習',ids:[0,7,11,13,22,24]}
+],take:['規則制定取代收稅使錢；放寬即係重新監管。','預算約束唔到監管：成本由守規者負擔。','獨立機構嘅兩大優勢：專業同可信承諾；再分配留畀民選首長。','正當性：程序（說理、覆核）＋實質（清晰目標、效率範疇）。']};
+
+const P1L2={id:'l11',note:'11',icon:'2',name:'歐共體點解成為監管者',sub:'筆記 11 · 約 6 分鐘',screens:[
+ {type:'story',h:'報告第二部分',html:`<div class="scene"><div class="big">🇪🇺</div><p>上司睇完第一份報告，問：「歐共體預算咁細，條約又幾乎冇提監管，點解佢可以越管越多？」你要寫報告第二部分。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'私有化＝國家撤退？',lead:'英國將電訊、煤氣賣畀私人，同時整出一批監管辦公室。呢個代表……',
+  opts:['國家撤退','國家職能被重新界定：由生產者變球證'],ans:1,hint:'由「揸巴士」變成「吹雞」。',
+  ex:'放寬監管同私有化都唔係國家撤退，而係重新界定國家職能；私有化反而加強國家嘅監管能力。（例子出自筆記）',deep:'11-1',src:'筆記 11 §一'},
+ {type:'mcq',h:'國有化 vs 監管',lead:'國有化同監管最大分別喺目的。監管有幾多個規範理據？',
+  opts:['好多個：就業、地區發展、國家安全','只有一個：糾正市場失靈、提高效率'],ans:1,hint:'邊個目標比較窄？',
+  ex:'國有化同時追好多互相衝突嘅目標；監管只有一個規範理據。正因為目標窄，私有化反而令國家嘅監管能力更強。',deep:'11-1',src:'筆記 11 §一'},
+ {type:'sort',h:'算唔算「監管」？',lead:'定義：公共機構對社會認為有價值嘅活動，作出持續而集中嘅控制。',cats:['算','唔算'],items:[
+  ['電訊監管辦公室長期管價格同入行條件',0,'持續、集中，對象係有價值嘅市場活動。'],
+  ['國會一次過通過一條法例，之後冇人跟',1,'唔係「持續而集中」：要有專門機構深入了解行業。'],
+  ['刑事司法打擊盜竊',1,'刑事司法唔算監管：佢管嘅唔係社會認為有價值、要保護嘅市場活動。（盜竊例子係我作嘅）'],
+  ['專門機構長期監察化學品安全',0,'持續、集中，對象係有價值嘅市場活動。（例子係我作嘅）']],deep:'11-2',src:'筆記 11 §二'},
+ {type:'mcq',h:'規範理論 vs 實證理論',lead:'規範理論：市場失靈先介入。實證理論：監管係行業攞返嚟。點樣處理？',
+  opts:['揀實證，放棄規範','兩樣都要：實證豐富理解，但想合理化監管始終要講道理'],ans:1,hint:'規範理論仍然係一把尺。',
+  ex:'就算一項監管最好用自私團體去解釋，想合理化佢嘅人始終要訴諸理據；規範理論仍然係衡量政策嘅尺。',deep:'11-2',src:'筆記 11 §二'},
+ {type:'mcq',h:'憎 quango 都要設',lead:'英國保守黨政府明明憎「quango」，私有化之後都要設監管辦公室。點解？',
+  opts:['冇人管利潤、價格同入行，私有化只會由公營壟斷變私營壟斷','想多啲官職'],ans:0,hint:'賣咗之後仲係壟斷。',
+  ex:'各國理由相似：專業、適合規則制定或裁決、遠離黨派政治。總結：舊制度能力同越嚟越複雜嘅政策問題唔夾，而好多問題有超國家一面。',deep:'11-3',src:'筆記 11 §三'},
+ {type:'match',h:'四個解釋',lead:'歐共體點解越管越多？配對。',pairs:[
+  ['預算唔約束監管','成本由守規者負擔；委員會擴權唯有擴大監管'],
+  ['跨國企業','想避開各國唔一致、越嚟越嚴嘅規例'],
+  ['政府間協議唔可信','外人睇唔到違規；交畀超國家機關令嚴格監管可信'],
+  ['政策企業家','委員會官員傾向追求創新監管']],deep:'11-4',src:'筆記 11 §四'},
+ {type:'mcq',h:'先發制人嘅聯邦主義',lead:'美國汽車業 1965 年突然支持聯邦排放標準。條件係乜？',
+  opts:['聯邦標準凌駕州標準','聯邦唔可以加任何標準'],ans:0,hint:'企業想要一套規則，唔想五十套。',
+  ex:'跨國企業想避開唔一致、越嚟越嚴嘅規例，所以寧願要一套統一規則。歐洲化工業亦借 1979 年指令，令歐共體可以一把聲同美國傾。',deep:'11-4',src:'筆記 11 §四'},
+ {type:'mcq',h:'去到部長嗰度已經……',lead:'委員會建議去到 COREPER 同部長理事會呢個政治層面時，通常係咩狀態？',
+  opts:['技術細節已經定好，修改通常唔掂核心','由零開始傾'],ans:0,hint:'政策企業家喺前面已經做晒。',
+  ex:'委員會係議題網絡嘅中心，咩人都聽、自己揀採納；諮詢委員會按實質而唔係國籍辯論。',deep:'11-4',src:'筆記 11 §四'},
+ {type:'mcq',h:'獨立定問責嘅兩難',lead:'「屬於國家行政就唔可以獨立；獨立又向邊個問責？」走出兩難嘅方向係？',
+  opts:['將傳統黨派政治整套搬去布魯塞爾','靠一組控制工具，同一部歐盟版《行政程序法》'],ans:1,hint:'美國經驗靠乜？',
+  ex:'只能靠一組控制工具（監察、嚴格程序、公眾參與、司法覆核）先問責得到。歐盟版行政程序法，好過搬黨派政治。',deep:'11-5',src:'筆記 11 §五'},
+ {type:'mcq',h:'歐盟監管嘅長處',lead:'改革唔可以損害歐盟監管嘅比較優勢。佢嘅比較優勢係？',
+  opts:['監管者相對隔絕於短期政治壓力','預算好大'],ans:0,hint:'管全歐企業，難被單一行業俘虜。',
+  ex:'佢管全歐企業，執法手軟會喺更多企業面前失信，亦較難被單一行業俘虜。',deep:'11-5',src:'筆記 11 §五'},
+ {type:'mcq',h:'協調問題',lead:'委員會零碎咁出監管建議，結果喺唔太需要協調嘅範疇出咗指令，好需要嘅反而冇做。建議嘅藥方係？',
+  opts:['監管結算所，設喺委員會主席辦公室','取消所有指令'],ans:0,hint:'監管冇預算程序，就整一個審查關口。',
+  ex:'各總司每年交監管計劃去審；系統審查晒所有建議，委員會先知道幾時真係要歐盟出手，從而落實輔助原則。',deep:'11-6',src:'筆記 11 §六'},
+ {type:'flips',h:'三個悖論',lead:'撳開睇。',items:[
+  ['① 放寬冇終結監管','放寬好多時只係重新監管嘅第一步：用其他手段，或者喺另一個層級（例如歐共體）。'],
+  ['② 預算綁唔住','成員國習慣用收稅使錢諗國家權力，冇意識到監管唔受傳統預算約束。'],
+  ['③ 民主赤字','批評歐盟機構冇直接民主正當性，同樣適用於國家層面嘅法院同獨立機構：民主赤字關乎所有規管型國家。']],deep:'11-7',src:'筆記 11 §七'},
+ {type:'review',h:'快速溫習',ids:[338,339,346,350,356,362]}
+],take:['私有化唔係國家退場，而係由生產者變球證。','監管＝持續而集中嘅控制；規範理論仍然係尺。','四個解釋：預算、跨國企業、可信度、政策企業家。','兩難靠一組控制同行政程序法；監管結算所處理協調。']};
+
+const P1L3={id:'l12',note:'12',icon:'3',name:'歐盟用乜工具立規則',sub:'筆記 12 · 約 5 分鐘',screens:[
+ {type:'story',h:'去布魯塞爾講課',html:`<div class="scene"><div class="big">🏛️</div><p>報告出咗街，有人請你去布魯塞爾講一課：「歐盟實際上用乜工具立規則？新工具會唔會取代舊工具？」</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'規例同指令',lead:'兩樣都有約束力、都普遍適用於所有成員國。佢哋最大分別係？',
+  opts:['指令將「形式同方法」留畀成員國自己轉化入國內法','規例冇約束力'],ans:0,hint:'邊個要「轉化」？',
+  ex:'兩者係歐盟規管治理嘅招牌。規模好大：想入盟要吸收 17,455 份現行法律文件；化學品規例 REACH 有 849 頁。',deep:'12-1',src:'筆記 12 §一'},
+ {type:'mcq',h:'有幾硬？',lead:'歐洲法院點樣確立歐盟規管工具嘅效力？',
+  opts:['喺成員國有直接效力，凌駕國內法，連憲法都包括','只係建議'],ans:0,hint:'首要性。',
+  ex:'直接效力同凌駕國內法（包括憲法）。冇「有約束力、可執行措施」呢個政治選擇，歐盟好難行到咁遠。',deep:'12-1',src:'筆記 12 §一'},
+ {type:'mcq',h:'回應「唔夠民主」',lead:'每次大修條約，都有一個不變嘅主題。係乜？',
+  opts:['加強歐洲議會喺規管制度入面嘅權力','削減委員會人手'],ans:0,hint:'邊個係直選？',
+  ex:'委員會壟斷提案權；大部分措施要部長理事會同歐洲議會都通過；每次修約都加強議會，回應民主批評。',deep:'12-1',src:'筆記 12 §一'},
+ {type:'mcq',h:'一刀切嘅問題',lead:'27 國社經條件差異好大。有人話提升福利嘅規例應該點？',
+  opts:['完全統一','因國而異'],ans:1,hint:'唔同國家有唔同優先次序。',
+  ex:'社經差異反映成唔同優先次序同政策偏好，所以提升福利嘅規例要因國而異，而唔係統一。另一邊亦有人嫌法例太多太重（「更好監管」）。',deep:'12-1',src:'筆記 12 §一'},
+ {type:'mcq',h:'邊個執行歐盟法？',lead:'「執行應該由委員會定理事會負責」嘅爭拗，產生咗乜？',
+  opts:['委員會程序（comitology）：委員會出執行措施，由各國代表組成嘅委員會監督','歐洲法院直接執行'],ans:0,hint:'一個妥協制度。',
+  ex:'成員國負責執行；需要統一條件時委員會可以出執行措施，但要受各國代表委員會監督。',deep:'12-2',src:'筆記 12 §二'},
+ {type:'mcq',h:'只係技術程序？',lead:'大約 300 個委員會，可以對規例最終嘅法律同政策效果起決定性作用。所以委員會程序係……',
+  opts:['純技術程序','觸及機構平衡核心嘅政治問題'],ans:1,hint:'邊個話事？',
+  ex:'批評：過程隱晦、極度複雜、缺乏問責（亦有人讚係「審議式超國家主義」）。兩次改革加強咗歐洲議會；里斯本條約改為「執行法令」。',deep:'12-2',src:'筆記 12 §二'},
+ {type:'mcq',h:'歐盟機構＝美式獨立監管機構？',lead:'歐盟每遇到新威脅，第一反應好似就係開多個機構。但佢哋大部分係咪美式獨立監管機構？',
+  opts:['係','唔係：好多只係幫委員會做行政工作，冇完整監管權'],ans:1,hint:'有冇自己嘅監管權？',
+  ex:'大部分唔符合美國獨立監管機構嘅標準；佢哋「以多樣性為特徵」。',deep:'12-3',src:'筆記 12 §三'},
+ {type:'sort',h:'邊啲先算「監管」機構？',lead:'標準：可唔可以作出對第三方有法律約束力嘅個別決定。',cats:['算監管機構','唔算'],items:[
+  ['歐洲航空安全局、歐洲化學品管理局：作出對第三方有約束力嘅個別決定',0,'呢個係稱佢哋做「監管」機構嘅主要理由。'],
+  ['執行機構：只可以執行計劃，唔可以訂一般監管措施',1,'冇酌情、冇監管權。'],
+  ['幫委員會做技術同行政工作嘅一般機構',1,'協助執行，冇完整監管權。']],deep:'12-3',src:'筆記 12 §三'},
+ {type:'mcq',h:'點解要開機構？',lead:'除咗專業協助，開歐盟機構有咩歐盟獨有嘅好處？',
+  opts:['可以設喺布魯塞爾以外，令歐盟睇落冇咁中央集權','可以收稅'],ans:0,hint:'物理上貼近成員國人民。',
+  ex:'仲有：委員會可以外判技術工作、專心核心工作；可以做各國機構之間嘅聯網。不過委員會明顯擔心自己嘅中心角色被奪去。',deep:'12-3',src:'筆記 12 §三'},
+ {type:'flips',h:'開放協調方法（OMC）四個元素',lead:'撳開睇。',items:[
+  ['① 定目標','定短中長期目標同指引。'],['② 基準比較','用量化同質化指標比較最佳做法。'],
+  ['③ 轉化','將目標轉化為國家同地區政策嘅具體指標。'],['④ 互相學習','用監察、評估同同儕審視。']],deep:'12-4',src:'筆記 12 §四'},
+ {type:'mcq',h:'成員國點解鍾意 OMC？',lead:'就業等範疇貼近國家主權。OMC 冇執法條文，代表……',
+  opts:['唔涉及匯集主權，可以抵擋權限蔓延','歐盟權力大增'],ans:0,hint:'軟法。',
+  ex:'對疑歐嘅公眾，亦可以話合作仍然停留喺政府間層面。',deep:'12-4',src:'筆記 12 §四'},
+ {type:'mcq',h:'委員會嘅私心',lead:'委員會傾向點樣描述新管治模式？',
+  opts:['傳統方法嘅變奏（佢壟斷提案權嗰套）','根本轉變'],ans:0,hint:'邊種講法對委員會有利？',
+  ex:'所以 2001 年白皮書雖然講開放、參與、問責、效能同一致，但仍然強調傳統工具。不過亦有人提醒唔好太快當新模式係煙幕。',deep:'12-4',src:'筆記 12 §四'},
+ {type:'mcq',h:'結論：新定舊？',lead:'硬規則同新管治模式，邊個必然較好？',
+  opts:['新模式','傳統規則','冇一種必然較好，視乎目標同脈絡'],ans:2,hint:'新舊並存。',
+  ex:'冇證據顯示傳統制度過時；新機構同新模式係成熟嘅標誌。關鍵係面對正當性、問責同效能。',deep:'12-5',src:'筆記 12 §五'},
+ {type:'review',h:'快速溫習',ids:[364,369,371,375,381,383]}
+],take:['規例同指令：有約束力、直接效力、凌駕國內法。','委員會程序：執行嘅妥協，亦係機構平衡嘅政治問題。','歐盟機構大多唔係美式監管機構；有約束力個別決定先算。','OMC 軟、唔匯集主權；新舊並存。']};
+
+const P1L4={id:'l14',note:'14',icon:'4',name:'有冇一個歐洲規管模式',sub:'筆記 14 · 約 5 分鐘',screens:[
+ {type:'story',h:'最後一條問題',html:`<div class="scene"><div class="big">🧩</div><p>講完課，有聽眾問：「規管型國家係咪歐洲獨有？到底有冇一個『歐洲模式』？」你要答埋呢條，先寫得完報告。</p>${SCENE_TAG}</div>`},
+ {type:'sort',h:'邊個特徵先係普遍嘅？',lead:'有人列出規管型國家三個特徵。逐個篩。',cats:['普遍特徵','唔普遍'],items:[
+  ['將以前國有嘅活動私有化',1,'典型英國、有限嘅現象。'],
+  ['有準立法權、半自主嘅獨立監管機構',0,'篩完之後，剩低呢樣先係普遍特徵。'],
+  ['受監管範疇入面嘅關係變得正式化、合約化',1,'係公營部門改革同新公共管理嘅產物，主要喺英國。']],deep:'14-1',src:'筆記 14 §一'},
+ {type:'mcq',h:'規管型國家係咪歐洲現象？',lead:'呢篇嘅主論點係？',
+  opts:['係，歐洲發明咗佢','唔係；歐洲獨特在用放寬、尤其重新監管去提升全球競爭力'],ans:1,hint:'要拆開全球同歐洲嘅成因。',
+  ex:'現有講法將全球同歐洲嘅成因混埋；要分開處理。',deep:'14-1',src:'筆記 14 §一'},
+ {type:'mcq',h:'獨立監管機構點解出現？',lead:'三個常見理由：承諾要可信、限制將來決策者、限制否決者。放入全球化框架，可以歸入乜？',
+  opts:['向全球投資者提供可信度同法律確定性','令政府大啲'],ans:0,hint:'國家要保持競爭力。',
+  ex:'技術官僚式機構比越嚟越反覆嘅決策者提供更多法律確定性。',deep:'14-2',src:'筆記 14 §二'},
+ {type:'mcq',h:'會唔會永遠存在？',lead:'國家嘅轉變深遠得多。獨立監管機構會點？',
+  opts:['一定會永遠存在','好可能只係過渡現象'],ans:1,hint:'暫時嘅答案。',
+  ex:'至少喺國家層面，可能只係暫時嘅答案；歐洲嘅情況會顯示呢點。',deep:'14-2',src:'筆記 14 §二'},
+ {type:'mcq',h:'開放市場之後點解要監管？',lead:'電訊、能源等網絡產業開放之後，點解仲要監管？',
+  opts:['基建市場唔完美、要協調標準、仲有公共服務目標','因為政府想收稅'],ans:0,hint:'三個理由。',
+  ex:'開放市場本身就帶嚟監管需要；市場唔會提供冇錢賺嘅公共服務。',deep:'14-3',src:'筆記 14 §三'},
+ {type:'mcq',h:'民主控制流失＝監管造成？',lead:'全球化之下，民主控制流失同監管出現同時發生。兩者有冇因果關係？',
+  opts:['有：監管搶走民主控制','冇：兩者都係全球化嘅後果'],ans:1,hint:'同時發生唔等於因果。',
+  ex:'更精確嘅定義：規管型國家＝國家放棄制定政策同提供服務、角色縮減，按定義係全球現象。',deep:'14-3',src:'筆記 14 §三'},
+ {type:'mcq',h:'「監管歐洲」係乜？',lead:'單靠每個歐洲國家自己，冇能力面對全球化。交權畀歐洲、設歐洲監管機構，可以點樣解讀？',
+  opts:['歐洲對全球化嘅制度回應','國家放棄主權'],ans:0,hint:'同一個反應，喺超國家層面。',
+  ex:'推動嘅係各方嘅策略行為，連埋文獻通常忽略嘅跨國企業。整合未完，所以仲太早講有一個歐洲模式。',deep:'14-4',src:'筆記 14 §四'},
+ {type:'flips',h:'雙重授權：一步一步',lead:'撳開睇。',items:[
+  ['① 國家層面','成員國將監管權交畀國家獨立監管機構。'],
+  ['② 國際層面','成員國同時將監管權交畀歐盟委員會。'],
+  ['③ 結果','委員會負責協調各國監管者 → 出現歐洲監管者網絡。']],deep:'14-5',src:'筆記 14 §五'},
+ {type:'mcq',h:'委員會其實想要乜？',lead:'委員會最終想要乜？點解接受咗監管者網絡？',
+  opts:['想要全面嘅歐洲行業監管者，但得唔到成員國支持，退而求其次','佢一開始就最鍾意網絡'],ans:0,hint:'好似大學總部想設全校考試局（筆記嘅例子）。',
+  ex:'背後動力係權力同妥協，唔係效率。',deep:'14-5',src:'筆記 14 §五'},
+ {type:'mcq',h:'網絡係唔係終點？',lead:'監管者網絡係唔係一個穩定模式？',
+  opts:['係，已經穩定','唔係，只係中途一步，尤其要計埋跨國企業'],ans:1,hint:'跨國企業會四圍游說。',
+  ex:'網絡只係中途一步，絕對唔係穩定模式。',deep:'14-5',src:'筆記 14 §五'},
+ {type:'match',h:'委員會可以用嘅工具',lead:'配對。',pairs:[
+  ['指令','由成員國轉化入國內法'],['委員會程序','各國代表委員會監督委員會嘅執行措施'],
+  ['歐盟機構','專門機構，部分可作有約束力嘅個別決定'],['元監管','例如監管者網絡']],deep:'14-5|12-2|12-3',src:'筆記 14 §五；12 §一–三'},
+ {type:'flips',h:'歐洲模式嘅三個面向',lead:'撳開睇。',items:[
+  ['🔄 指令、網絡、機構','佢哋之間嘅動態：會唔會由網絡走向歐盟機構？'],
+  ['⚖️ 監管 vs 政治機構','監管機構同歐洲議會、部長理事會、委員會、各國政治之間嘅動態；委員會揀用邊種方案。'],
+  ['🏢 跨國企業','想要單一市場同有利條件，四圍游說；委員會同部分政府亦需要佢哋推進整合。']],deep:'14-6',src:'筆記 14 §六'},
+ {type:'mcq',h:'所以，有冇歐洲模式？',lead:'最後嘅答案係？',
+  opts:['冇','有：各方之間嘅制度動態本身，就係前所未有嘅歐洲模式'],ans:1,hint:'未穩定，但已經獨一無二。',
+  ex:'模式未穩定、結果未明，但呢種動態本身已經構成一個獨一無二嘅歐洲規管治理模式。（佢冇直接討論正當性同效能。）',deep:'14-6',src:'筆記 14 §六'},
+ {type:'review',h:'快速溫習',ids:[407,408,410,415,418,420]}
+],take:['規管型國家唔係歐洲獨有；普遍特徵係獨立監管機構。','獨立機構向全球投資者提供可信度，可能只係過渡。','監管歐洲＝歐洲對全球化嘅制度回應。','雙重授權→監管者網絡，係中途一步；特色係制度動態。']};
+const LESSONS=[P1L1,P1L2,P1L3,P1L4];
+
+const LNAME={};LESSONS.forEach((l,k)=>{LNAME[l.note]=`第 ${k+1} 課：${l.name}`;});window.__S.LNAME=LNAME;
+
+
+/* ---------- home ---------- */
+const GROUPS={"0": "一、國家點解轉", "1": "二、歐洲層面點樣冒起"};
+function home(){
+  const st=S();
+  const open=k=>k===0||st.done[LESSONS[k-1].id];
+  const allDone=LESSONS.every(l=>st.done[l.id]);
+  const nodes=LESSONS.map((l,k)=>{const d=st.done[l.id],o=open(k);
+    return (GROUPS[k]?`<div class="grp">${GROUPS[k]}</div>`:'')+`<div class="node ${d?'done':o?'open':'locked'}"><button class="dot" data-l="${k}" ${o?'':'disabled'} aria-label="${l.name}">${d?'✓':o?l.icon:'🔒'}</button><div class="nm">${l.name}</div><div class="sub">${l.sub}</div></div>`;}).join('');
+  app.innerHTML=`<div class="home">
+   <div class="stats"><a href="../" class="brand" style="text-decoration:none;color:inherit" aria-label="返去課程目錄">⌂ 規管型國家 · 1</a><span class="pills"><span class="pill" title="連續學習日數">🔥 ${st.streak}</span><span class="pill" title="經驗值">⭐ ${st.xp}</span><button class="pill" id="menu" aria-label="選單">☰</button></span></div>
+   <div class="course"><span class="eyebrow">Regulatory Law · 規管型國家 · Part 1 / 3 · 4 課</span><h1>規管型國家點樣冒起</h1>
+    <p class="muted">規管型國家：國家唔再主要靠收稅、使錢、國有化去管經濟，而係靠立規則、交畀獨立監管機構去執行。Part 1 跟總覽頁閱讀次序第 1 至 4 版：歐洲點解轉、歐共體點解越管越多、歐盟用乜工具立規則、有冇一個歐洲模式。一個故事：你係一個新入職嘅政策研究員，要寫一份報告。Part 2 講獨立同授權；Part 3 講問責、價值、南方同英國。</p>
+    <p class="muted" style="font-size:14px;margin-top:8px"><b>用法：</b>玩一課 → 好奇就撳「📖 想深入啲」→ 課尾溫卡 → 有空喺選單睇圖解同進度地圖。</p>
+    ${Object.keys(st.done).some(k=>st.done[k])?`<button class="review-btn" id="rev">🔁 溫習已學嘅卡</button>`:''}
+    ${allDone?`<p class="okline" style="margin-top:10px">🎉 Part 1 四課全部完成！之後可以去 Part 2。去「進度地圖」睇吓仲有邊節未掌握。</p>`:''}</div>
+   <div class="path" id="path">${nodes}</div></div>`;
+  app.querySelectorAll('.dot[data-l]').forEach(b=>b.onclick=()=>play(+b.dataset.l));
+  const r=$('#rev'); if(r) r.onclick=reviewAll;
+  $('#menu').onclick=menu;
+}
+function menu(){
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="選單"><div class="grab"></div><h3>選單</h3>
+   <div class="opts">${[['notes','📖 讀懂版：25 節逐節講解'],['cards','🃏 快速卡：91 張，全部原子命題'],['visuals','🗺️ 圖解：5 幅'],['map','📊 進度地圖：邊節掌握咗']].map(([h,t])=>`<a class="opt" href="#${h}" style="text-decoration:none;color:inherit">${t}</a>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d); d.onclick=e=>{if(e.target===d||e.target.closest('a')) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+/* ---------- player ---------- */
+function play(li){
+  const L=LESSONS[li]; let i=0, xp=0, first=0, total=0;
+  function shell(inner,ready,ctaText){
+    const sc=L.screens[i];
+    app.innerHTML=`<div class="top"><button class="x" id="quit" aria-label="離開">✕</button><div class="bar"><i style="width:${i/L.screens.length*100}%"></i></div><span class="xp">⭐ ${xp}</span></div>
+     <div class="screen" id="sc">${inner}</div>
+     <div class="foot">${sc.deep?`<button class="deep" id="deep">📖 想深入啲</button>`:''}<button class="cta ${ready?'go':''}" id="cta" ${ready?'':'disabled'}>${ctaText||'繼續'}</button></div>`;
+    $('#quit').onclick=()=>{location.hash='';home();};
+    if(sc.deep) $('#deep').onclick=()=>drawer(sc.deep);
+    $('#cta').onclick=()=>{i++; i>=L.screens.length?finish():render();};
+  }
+  const ready=()=>{const c=$('#cta');c.disabled=false;c.classList.add('go');};
+  function render(){
+    const sc=L.screens[i]; const head=`<h2>${sc.h}</h2>${sc.lead?`<p class="lead">${sc.lead}</p>`:''}`;
+    if(sc.type==='story'){shell(head+sc.html,true,'開始');return;}
+    if(sc.type==='mcq'){
+      total++; let tries=0;
+      shell(head+`<div class="opts">${sc.opts.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><div id="fb"></div>`,false);
+      app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(b.disabled) return; tries++;
+        if(j===sc.ans){b.classList.add('right'); if(tries===1){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+          app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+          $('#fb').innerHTML=`<div class="fb ok"><b class="t">${tries===1?'啱！':'啱咗！'}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}
+        else{b.classList.add('wrong');b.disabled=true;
+          if(tries===1) $('#fb').innerHTML=`<div class="fb hint"><b class="t">再諗一諗</b><p>💡 ${sc.hint}</p></div>`;
+          else{const r=app.querySelector(`.opt[data-j="${sc.ans}"]`);r.classList.add('right');app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+            $('#fb').innerHTML=`<div class="fb no"><b class="t">答案係：${sc.opts[sc.ans]}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}}
+      }); return;}
+    if(sc.type==='widget'){
+      total++;
+      shell(head+`<div id="w"></div><div id="aft"></div>`,false);
+      W[sc.w]($('#w'),ok=>{ if(ok){first++;xp+=10;$('.xp').textContent='⭐ '+xp;} if(sc.after) $('#aft').innerHTML=`<div class="fb ok"><p>${sc.after}</p></div>`; ready();});
+      return;}
+    if(sc.type==='flips'){
+      shell(head+`<div class="flips">${sc.items.map((it,j)=>`<button class="flip" data-j="${j}"><span class="h">${it[0]}</span><span class="b">撳一下睇</span></button>`).join('')}</div>${sc.src?`<span class="src">出處：${sc.src}</span>`:''}`,false);
+      const seen=new Set();
+      app.querySelectorAll('.flip').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;b.classList.add('open');b.querySelector('.b').innerHTML=sc.items[j][1];seen.add(j);if(seen.size===sc.items.length) ready();});
+      return;}
+    if(sc.type==='match'){
+      total++; let errs=0, sel=null, matched=0;
+      const R=sc.pairs.map((p,j)=>({t:p[1],j})).sort(()=>Math.random()-.5);
+      shell(head+`<div class="match"><div class="col">${sc.pairs.map((p,j)=>`<button class="mt" data-l="${j}">${p[0]}</button>`).join('')}</div><div class="col">${R.map(r=>`<button class="mt" data-r="${r.j}">${r.t}</button>`).join('')}</div></div><div id="fb"></div>`,false);
+      app.querySelectorAll('.mt[data-l]').forEach(b=>b.onclick=()=>{if(b.classList.contains('done'))return;app.querySelectorAll('.mt[data-l]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=+b.dataset.l;});
+      app.querySelectorAll('.mt[data-r]').forEach(b=>b.onclick=()=>{if(sel===null||b.classList.contains('done'))return;
+        if(+b.dataset.r===sel){b.classList.add('done');const l=app.querySelector(`.mt[data-l="${sel}"]`);l.classList.remove('sel');l.classList.add('done');sel=null;matched++;
+          if(matched===sc.pairs.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+            $('#fb').innerHTML=`<div class="fb ok"><b class="t">全部配啱！</b><span class="src">出處：${sc.src}</span></div>`;ready();}}
+        else{errs++;b.classList.add('err');setTimeout(()=>b.classList.remove('err'),320);}});
+      return;}
+    if(sc.type==='sort'){
+      total++; let errs=0, ok=0;
+      shell(head+`<div class="sortl">${sc.items.map((it,j)=>`<div class="si" data-j="${j}"><div class="st">${it[0]}</div><div class="sc">${sc.cats.map((c,ci)=>`<button class="sb" data-c="${ci}">${c}</button>`).join('')}</div><div class="sw2"></div></div>`).join('')}</div><span class="src">出處：${sc.src}</span>`,false);
+      app.querySelectorAll('.si').forEach(row=>{const j=+row.dataset.j, it=sc.items[j]; let tries=0;
+        row.querySelectorAll('.sb').forEach(b=>b.onclick=()=>{ if(row.classList.contains('done')) return; tries++;
+          if(+b.dataset.c===it[1]){row.classList.add('done');b.classList.add('right');row.querySelector('.sw2').innerHTML=`<span class="okline">✓ ${it[2]}</span>`;ok++;
+            if(ok===sc.items.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp; ready(); }}
+          else{errs++;b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),350);
+            if(tries>=2){row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 答案係「${sc.cats[it[1]]}」：${it[2]}</span>`;}
+            else row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 再諗吓：睇返上面嘅分類標準。</span>`;}});});
+      return;}
+    if(sc.type==='review'){
+      let k=0, flipped=false;
+      const draw=()=>{const c=CARDS[sc.ids[k]];
+        shell(head+`<p class="muted" style="font-size:14px">第 ${k+1} / ${sc.ids.length} 張 · 撳卡反轉。卡背係筆記原文，人名唔使記。</p>
+         <button class="rcard" id="rc">${!flipped?`<span class="q">${c.f}</span><span class="muted" style="font-size:14px">諗好答案，撳一下</span>`
+          :`<span style="font-weight:700">${c.b}</span><blockquote>“${c.q}”</blockquote><span class="src">筆記 ${c.n} §${c.s} · ${c.loc}</span>`}</button>`,
+         flipped&&k===sc.ids.length-1, flipped&&k===sc.ids.length-1?'完成':'繼續');
+        $('#rc').onclick=()=>{ if(!flipped){flipped=true;draw();if(k<sc.ids.length-1){const c2=$('#cta');c2.disabled=false;c2.classList.add('go');c2.onclick=()=>{k++;flipped=false;draw();};}} };
+      }; draw(); return;}
+  }
+  function finish(){
+    const st=S(); const bonus=20; st.xp+=xp+bonus; st.done[L.id]=true; bumpStreak(st); saveAll(st);
+    app.innerHTML=`<div class="done-screen"><div><div class="trophy">🏆</div><h2 style="font-size:26px;margin:6px 0">完成「${L.name}」</h2>
+      <div class="stat3"><div>⭐ XP<b>+${xp+bonus}</b></div><div>🎯 一次答啱<b>${first}/${total}</b></div><div>🔥 連續<b>${st.streak} 日</b></div></div>
+      <div class="take" style="margin:16px auto"><b>帶走呢幾句</b><ul>${L.take.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      ${li+1<LESSONS.length&&L.id!=='rev'?`<button class="cta go" id="nextL" style="width:100%;max-width:520px;margin-bottom:10px">下一課：${LESSONS[li+1].name} →</button>`:''}
+      <button class="cta" id="back" style="width:100%;max-width:520px">返去路線圖</button></div></div>`;
+    confetti(); $('#back').onclick=()=>{location.hash='';home();}; const nl=$('#nextL'); if(nl) nl.onclick=()=>play(li+1);
+  }
+  render();
+}
+function drawer(k){
+  const ks=k.split('|').filter(x=>noteBody(x)); if(!ks.length) return;
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="深入講解"><div class="grab"></div>${ks.map(x=>{const n=noteBody(x);return `<span class="eyebrow">筆記 ${x.replace('-',' §')} · 讀懂版</span><h3>${n.t}</h3><div class="nb" style="margin-bottom:14px">${n.b}</div>`;}).join('')}
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+function reviewAll(){
+  const st=S(); const ids=LESSONS.filter(l=>st.done[l.id]).flatMap(l=>l.screens.find(s=>s.type==='review').ids);
+  const fake={id:'rev',name:'溫習',screens:[{type:'review',h:'溫習已學嘅卡',ids:ids.sort(()=>Math.random()-.5)}],take:['隔幾日再嚟溫一次，記得更牢。']};
+  LESSONS.push(fake); play(LESSONS.length-1); LESSONS.pop();
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=document.createElement('canvas'); c.className='confetti'; document.body.appendChild(c);
+  const x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const cols=['#4B4FD9','#1F9D62','#E5A800','#D2423A'];
+  const ps=Array.from({length:90},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.4,v:2+Math.random()*3,r:Math.random()*6.28,s:5+Math.random()*5,c:cols[Math.floor(Math.random()*4)]}));
+  let t=0; (function fr(){x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore();});
+    if(++t<150) requestAnimationFrame(fr); else c.remove();})();
+}
+function sub(title,fn,arg){
+  app.innerHTML=`<div class="top"><button class="x" id="bk" aria-label="返回">←</button><b style="flex:1">${title}</b></div><div class="home pg" id="pg"></div>`;
+  $('#bk').onclick=()=>{location.hash='';};
+  const P=makePages($('#pg')); P[fn](arg);
+}
+function route(){
+  const h=location.hash.replace('#',''); const base=h.split('-')[0], arg=h.slice(base.length+1);
+  if(base==='notes') sub('讀懂版','notesPage',arg||null);
+  else if(base==='cards') sub('快速卡','cardsPage',arg||'');
+  else if(base==='visuals') sub('圖解','visuals');
+  else if(base==='map') sub('進度地圖','mapPage');
+  else if(base==='lesson'){const k=LESSONS.findIndex(l=>l.note===arg); if(k>=0){const st=S(); const ok=k===0||st.done[LESSONS[k-1].id]; ok?play(k):home();} else home();}
+  else home();
+}
+window.addEventListener('hashchange',route);
+window.__RL={NOTES,CARDS_DATA,LESSONS};
+route();
+})();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{}));}</script>
+</body>
+</html>
