@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="監管實驗室">
+<meta name="theme-color" content="#141A26">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;-webkit-text-size-adjust:100%}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>業界同持份者 Part 2</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: mobile-first full-screen lesson player — one idea per screen, Continue pinned to the bottom; a course path is home. */
+:root{
+  --bg:#F2F4F8; --card:#FFFFFF; --ink:#141A26; --muted:#5D6779; --line:#D9DEE8; --soft:#E9ECF3;
+  --accent:#4B4FD9; --accent-ink:#FFFFFF; --accent-soft:#E6E7FB;
+  --good:#1F9D62; --good-soft:#DFF4EA; --bad:#D2423A; --bad-soft:#FBE6E4; --warn:#B7790A;
+  --cs:#4B4FD9; --cc:#E5A800; --aa:#D2423A;
+  --f:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{overflow:hidden;height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+.muted{color:var(--muted)} .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mine{display:inline-block;font-size:12px;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 6px;margin-left:4px;vertical-align:middle}
+
+/* ---------- home / path ---------- */
+.home{flex:1;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.stats{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{font-weight:900;font-size:22px;letter-spacing:.02em}
+.pills{display:flex;gap:8px}
+.pill{display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px}
+.course{background:var(--card);border-radius:22px;padding:18px;border:1px solid var(--line);margin-bottom:22px}
+.course h1{font-size:24px;line-height:1.3;margin:4px 0 6px;font-weight:900;text-wrap:balance}
+.course p{margin:0}
+.eyebrow{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0 20px}
+.path svg.line{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:220px}
+.node:nth-child(odd){transform:translateX(-60px)} .node:nth-child(even){transform:translateX(60px)}
+.dot{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:900;background:var(--soft);color:var(--muted);border:3px solid var(--line);box-shadow:0 6px 0 var(--line)}
+.node.open .dot{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 6px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.node.done .dot{background:var(--good);color:#fff;border-color:var(--good);box-shadow:0 6px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.node.open .dot{animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.node .nm{font-weight:700;text-align:center;font-size:15.5px;line-height:1.35}
+.node .sub{font-size:13px;color:var(--muted);text-align:center}
+.node.locked{opacity:.55}
+.review-btn{width:100%;margin-top:6px;background:var(--card);border:1.5px dashed var(--accent);color:var(--accent);border-radius:16px;padding:14px;font-weight:700}
+
+/* ---------- lesson player ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+.x{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:var(--muted)}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:999px;transition:width .35s}
+.xp{font-weight:900;font-size:15px;color:var(--warn);min-width:52px;text-align:right}
+.screen{flex:1;overflow-y:auto;padding:10px max(18px,env(safe-area-inset-right,0px)) 24px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.screen h2{font-size:23px;line-height:1.35;margin:4px 0 0;font-weight:900;text-wrap:balance}
+.screen p{margin:0}
+.lead{font-size:17.5px}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:8px}
+.big{font-size:44px;line-height:1}
+.opts{display:grid;gap:10px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;font-weight:700;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt.sel{border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft);box-shadow:0 4px 0 var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 4px 0 var(--bad);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opt[disabled]{cursor:default}
+.fb{border-radius:16px;padding:14px 16px;display:grid;gap:6px;animation:in .2s ease}
+.fb.ok{background:var(--good-soft)} .fb.no{background:var(--bad-soft)} .fb.hint{background:var(--accent-soft)}
+.fb b.t{font-size:17px}
+.src{font-size:12.5px;color:var(--muted)}
+.foot{padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;border-top:1px solid var(--line);background:var(--bg)}
+.cta{flex:1;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:15px;font-weight:900;font-size:17px;box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.cta:disabled{background:var(--soft);color:var(--muted);box-shadow:0 5px 0 var(--line);cursor:default}
+.cta.go{background:var(--good);color:#fff;box-shadow:0 5px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.deep{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:0 14px;font-weight:700;font-size:14px;color:var(--muted);box-shadow:0 5px 0 var(--line)}
+/* drawer */
+.sheet{position:fixed;inset:0;background:rgba(10,14,22,.45);display:flex;align-items:flex-end;z-index:20;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet .in{background:var(--card);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:78%;overflow-y:auto;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px)}}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h3{margin:0 0 8px;font-size:19px}
+.sheet .nb{display:grid;gap:8px;font-size:15.5px}.sheet ul{margin:0;padding-left:20px;display:grid;gap:6px}
+/* widgets */
+.wid{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
+input[type=range]{width:100%;accent-color:var(--accent);height:30px}
+.lbl{display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.barrow{display:grid;grid-template-columns:76px 1fr 54px;gap:8px;align-items:center;font-size:14.5px}
+.barrow .track{height:22px;background:var(--soft);border-radius:8px;overflow:hidden}
+.barrow .track i{display:block;height:100%;border-radius:8px;transition:width .2s}
+.chart{width:100%;height:auto;display:block}
+.task{font-weight:700;color:var(--accent);font-size:15px;display:flex;gap:8px;align-items:center}
+.task.ok{color:var(--good)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{background:var(--soft);border-radius:12px;padding:8px;text-align:center;font-size:12.5px;color:var(--muted);font-weight:700}
+.nums b{display:block;font-family:var(--mono);font-size:19px;color:var(--ink)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.tog{display:flex;background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.tog button{flex:1;padding:10px;border-radius:11px;font-weight:700;font-size:15px;color:var(--muted)}
+.tog button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.flips{display:grid;gap:10px}
+.flip{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;box-shadow:0 4px 0 var(--line);display:grid;gap:4px}
+.flip .h{font-weight:900}.flip .b{color:var(--muted);font-size:15px}
+.flip.open{border-color:var(--accent)}
+.flip.open .b{color:var(--ink)}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:grid;gap:10px;align-content:start}
+.mt{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;font-weight:700;font-size:15px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.mt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.mt.done{border-color:var(--good);background:var(--good-soft);opacity:.8}
+.mt.err{animation:shake .3s;border-color:var(--bad)}
+.rcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;min-height:210px;display:grid;align-content:center;gap:10px;box-shadow:0 5px 0 var(--line);text-align:left}
+.rcard .q{font-size:21px;font-weight:900;line-height:1.4}
+.rcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+/* complete */
+.done-screen{flex:1;display:grid;place-items:center;text-align:center;padding:24px;gap:10px}
+.done-screen .trophy{font-size:72px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.stat3{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat3 div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 16px;font-weight:700}
+.stat3 b{display:block;font-size:24px}
+.take{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;display:grid;gap:6px;max-width:520px}
+.take ul{margin:0;padding-left:20px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+/* sort screen */
+.sortl{display:grid;gap:12px}
+.si{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:8px}
+.si.done{border-color:var(--good)}
+.si .st{font-weight:700}
+.si .sc{display:flex;flex-wrap:wrap;gap:8px}
+.sb{border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:700;font-size:14.5px;background:var(--bg);min-height:44px}
+.sb.right{border-color:var(--good);background:var(--good-soft)}
+.sb.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s}
+.si.done .sb:not(.right){opacity:.4}
+.okline{color:var(--good);font-weight:700;font-size:14.5px}
+.hintline{color:var(--accent);font-weight:700;font-size:14.5px}
+.grp{z-index:1;font-weight:900;font-size:14px;color:var(--muted);letter-spacing:.06em;background:var(--bg);padding:2px 10px;border-radius:8px}
+button.pill{cursor:pointer}
+/* sub pages (reading notes, cards, visuals, map) */
+.pg{--surface:var(--card);--surface2:var(--soft);--area-cs:var(--cs);--area-c:var(--cc);--area-a:var(--aa);--f-display:var(--f);--r:16px}
+.pg h2{font-size:22px;line-height:1.35;margin:4px 0;font-weight:900;text-wrap:balance}
+.pg h3{font-size:18px;margin:0;line-height:1.35}
+.pg p{margin:0}
+.pg .lvhead{display:grid;gap:8px;margin-bottom:14px}
+.pg .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.pg .stack{display:flex;flex-direction:column;gap:12px}
+.pg .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pg .tabs{display:flex;flex-wrap:wrap;gap:6px}
+.pg .tab{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 11px;font-size:13.5px;font-weight:700;min-height:36px}
+.pg .tab.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.pg .chip{display:inline-block;font-size:13px;font-weight:700;text-decoration:none;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:3px 10px;background:var(--card)}
+.pg .chip.ok{color:var(--good);border-color:var(--good)}
+.pg .links{gap:8px;margin-top:6px}
+.pg .nbody{display:grid;gap:8px;font-size:16px}
+.pg .nbody ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.pg .readchk{font-size:14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.pg .readchk input{width:22px;height:22px}
+.pg .tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);background:var(--soft)}
+.pg .btn{border:1.5px solid var(--ink);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:700;min-height:40px}
+.pg .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pg .btn.ghost{border-color:var(--line)}
+.pg .btn.sm{padding:5px 12px;font-size:13.5px;min-height:36px}
+.pg .progress{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.pg .progress i{display:block;height:100%;background:var(--good)}
+.pg .fcard{min-height:240px;border:2px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);padding:22px 18px;display:grid;align-items:center;cursor:pointer;margin-top:10px}
+.pg .fcard.flip{border-color:var(--accent)}
+.pg .fcard.done{cursor:default;text-align:center}
+.pg .ff,.pg .fcard .fb{display:grid;gap:12px;background:none;padding:0;animation:none;border-radius:0}
+.pg .fq{font-size:21px;font-weight:900;line-height:1.4}
+.pg .fa{font-size:16.5px;font-weight:600}
+.pg .fcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+.pg .vis{width:100%;height:auto;display:block;font-family:var(--f)}
+.pg .viswrap{overflow-x:auto;margin-top:8px}
+.pg .viswrap .vis{min-width:560px}
+.pg .fo{font-size:12.5px;line-height:1.45;color:var(--ink);display:grid;gap:4px}
+.pg .fo p{margin:0}.pg .fo.c{text-align:center}
+.pg .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.pg table.map{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+.pg table.map th{text-align:left;font-size:12px;color:var(--muted);padding:10px 12px;border-bottom:1.5px solid var(--line)}
+.pg table.map td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.pg table.map td.c{text-align:center}
+.pg table.map tr.nh td{background:var(--soft)}
+.pg table.map a{color:var(--ink)}
+.pg .okb{font-size:12px;font-weight:700;color:var(--good);border:1.5px solid var(--good);border-radius:5px;padding:0 6px}
+.pg .mono{font-family:var(--mono)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px">
+ <form id="gf" style="display:grid;gap:12px;max-width:320px;width:100%;text-align:center">
+  <div style="font-size:30px;font-weight:900">業界參與 · 2</div>
+  <label for="gp" class="muted">輸入密碼</label>
+  <input id="gp" type="password" inputmode="numeric" autocomplete="current-password" style="font-size:22px;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)">
+  <button class="cta go" type="submit">入去</button>
+  <p id="ge" style="color:var(--bad);min-height:1.4em"></p>
+ </form></div>
+<script>(function(){const H='d83036ffb5b49a153bc391fd12b4a10df06bbb200f39fed97c331b03b6833ce7',K='reglab-ok',g=document.getElementById('gate');
+ try{if(localStorage.getItem(K)===H){g.remove();return;}}catch(e){}
+ document.getElementById('gf').addEventListener('submit',async e=>{e.preventDefault();
+  const v=document.getElementById('gp').value.trim();
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const x=[...new Uint8Array(b)].map(n=>n.toString(16).padStart(2,'0')).join('');
+  if(x===H){try{localStorage.setItem(K,H)}catch(e){} g.remove();} else document.getElementById('ge').textContent='密碼唔啱，再試一次';});
+})();</script>
+<div id="app"></div>
+
+<script>
+const CARDS_DATA=[{"id": 0, "n": "06", "s": 1, "t": "evaluation", "f": "Lall 點樣形容國際金融規則？", "b": "Lall 認為國際金融規則係全球治理入面分配鬥爭最激烈嘅範疇之一", "q": "Rules governing the international financial system are the subject of some of the most intense distributional battles waged in any area of global governance.", "loc": "Lall2015 p.125"}, {"id": 1, "n": "06", "s": 1, "t": "cause", "f": "政府點解將金融監管權授予跨國網絡同私營機構？", "b": "Lall 指出政府將金融監管權授予跨國網絡同私營機構，部分原因係缺乏應付複雜監管所需嘅技術同資源", "q": "the lack of sufficient technical expertise and material resources to deal with increasingly complex regulatory challenges", "loc": "Lall2015 p.125"}, {"id": 2, "n": "06", "s": 1, "t": "conceptual", "f": "新馬克思主義點解釋資本點樣換取監管讓步？", "b": "Perry 同 Nölke、Underhill 同 Zhang 嘅新馬克思主義講法認為資本持有人靠「結構性權力」換取監管讓步", "q": "capital holders extract regulatory concessions by exploiting their “structural power”", "loc": "**Perry and Nölke; Underhill and Zhang**, in Lall2015 p.126"}, {"id": 3, "n": "06", "s": 1, "t": "conceptual", "f": "歷史制度主義話乜嘢決定輸贏？", "b": "Farrell 同 Newman 等歷史制度主義學者認為規則制定過程中事件同行動嘅時機同次序決定輸贏", "q": "the timing and sequencing of events and actions in this process plays a crucial role in determining winners and losers", "loc": "**Farrell and Newman; Fioretos; Posner**, in Lall2015 p.127"}, {"id": 4, "n": "06", "s": 2, "t": "fact", "f": "全球金融規則通常分邊幾個階段制定？", "b": "Lall 指出全球金融規則制定通常分議程設定、規劃、討論文件、諮詢同通過幾個階段", "q": "typically including an agenda-setting stage, a planning or preparatory stage, a discussion paper stage, a consultation stage, and an approval stage", "loc": "Lall2015 p.128"}, {"id": 5, "n": "06", "s": 2, "t": "definition", "f": "「非正式社交網絡」（ISN）係乜？", "b": "Lall 將非正式社交網絡界定為核心規則制定者同少數業界人士之間重複、持久、交換資訊同專業知識嘅社交關係", "q": "ISNs can be defined as patterns of repeated, enduring social relations among core formal rulemakers and (some small subset of) industry actors involving the exchange of information, expertise, and other material and nonmaterial resources.", "loc": "Lall2015 p.128"}, {"id": 6, "n": "06", "s": 2, "t": "cause", "f": "入到非正式社交網絡有咩好處？", "b": "Lall 認為非正式社交網絡畀成員及早得到高質素嘅議程資訊，喺其他人知道之前參與新標準", "q": "ISNs provide stakeholders with timely and high-quality information about the international regulatory agenda, which enables them to contribute to new standardization initiatives before others even become aware of them", "loc": "Lall2015 p.128"}, {"id": 7, "n": "06", "s": 2, "t": "cause", "f": "網絡成員除咗改人哋嘅方案，仲可以點？", "b": "Lall 認為網絡成員可以提出新方案去設定監管議程，而唔止影響現有方案內容", "q": "they are able to set the regulatory agenda by putting forward new proposals, rather than merely influencing the content of existing ones", "loc": "Lall2015 p.128"}, {"id": 8, "n": "06", "s": 2, "t": "cause", "f": "點解放棄現有監管方案嘅成本極高？", "b": "Lall 認為起草技術標準嘅前期投入巨大，令放棄現有監管方案嘅成本極高", "q": "The sheer size of this initial investment in terms of financial resources, organizational capacity, and time renders the cost of abandoning an existing regulatory proposal prohibitively high.", "loc": "Lall2015 p.129"}, {"id": 9, "n": "06", "s": 2, "t": "fact", "f": "非國家監管機構要唔要向各國公民問責？", "b": "Lall 指出非國家監管機構唔使正式向其管轄國家嘅公民問責", "q": "Nonstate regulatory bodies, on the other hand, have no formal accountability to the citizens of countries under their jurisdiction.", "loc": "Lall2015 p.129"}, {"id": 10, "n": "06", "s": 2, "t": "evaluation", "f": "冇時間優勢，結構性權力有冇用？", "b": "Lall 認為冇非正式網絡帶嚟嘅時間優勢，結構性權力等資源都冇乜作用", "q": "Without the temporal advantage provided by membership in ISNs, it suggests, such resources will count for little.", "loc": "Lall2015 p.129"}, {"id": 11, "n": "06", "s": 3, "t": "fact", "f": "銀行點樣睇資本充足標準？", "b": "Lall 指出銀行將資本充足標準視為一種「監管稅」", "q": "banks view capital adequacy standards as a form of “regulatory taxation.”", "loc": "Lall2015 p.130"}, {"id": 12, "n": "06", "s": 3, "t": "evaluation", "f": "Lall 話大型跨國銀行對 Basel II 同 III 做咗乜？", "b": "Lall 認為大型跨國銀行成功有系統咁削弱 Basel II 同 Basel III，盡量減少所需資本", "q": "large international banks succeeded in systematically weakening the provisions of Basel II and Basel III to minimize their required levels of capital", "loc": "Lall2015 p.130"}, {"id": 13, "n": "06", "s": 3, "t": "fact", "f": "Basel II：用內部評級法同標準方法嘅銀行資本各點變？", "b": "巴塞爾委員會嘅影響研究顯示用內部評級法嘅銀行資本最多減 26.7%，用標準方法嘅銀行反而加 1.7%", "q": "A-IRB banks would experience a capital reduction of up to 26.7 percent, while banks adopting the standardized approach would see a 1.7 percent increase", "loc": "**BCBS**, in Lall2015 p.131"}, {"id": 14, "n": "06", "s": 3, "t": "evaluation", "f": "Basel II 係咪幫某個國家嘅銀行？", "b": "Lall 認為 Basel II 唔理國籍咁促進大型跨國銀行嘅利益，同現實主義嘅預期唔符", "q": "it promoted the interests of large international banks irrespective of their national origin", "loc": "Lall2015 p.131"}, {"id": 15, "n": "06", "s": 3, "t": "cause", "f": "IIF 點樣喺其他人入局前將內部評級放上議程？", "b": "Lall 認為接觸到巴塞爾委員會嘅非正式網絡，令國際金融協會喺其他持份者入局前已將內部評級放上 Basel II 議程", "q": "Access to the BCBS’s ISN enabled the IIF to place internal ratings on the agenda for Basel II well before other stakeholders became involved in negotiations.", "loc": "Lall2015 p.131"}, {"id": 16, "n": "06", "s": 3, "t": "cause", "f": "Basel III 期間大銀行嘅先行者優勢主要嚟自乜？", "b": "Lall 認為 Basel III 期間，同巴塞爾委員會之間嘅技術人員互換係大銀行先行者優勢嘅主要來源", "q": "informal social links with BCBS deriving from the exchange of personnel with high levels of technical expertise were a key source of first-mover advantage", "loc": "Lall2015 p.133"}, {"id": 17, "n": "06", "s": 3, "t": "fact", "f": "Basel III 期間對內部評級嘅反對有冇用？", "b": "Lall 指出 Basel III 期間對繼續用內部評級嘅反對來得太遲，冇發揮作用", "q": "Opposition to the continued use of internal ratings came too late to count.", "loc": "Lall2015 p.133"}, {"id": 18, "n": "06", "s": 3, "t": "fact", "f": "系統重要性銀行附加資本最後定喺幾多？", "b": "Lall 指出巴塞爾委員會 2011 年 6 月將系統重要性銀行附加資本定喺 1.5% 至 3%", "q": "in June 2011 the BCBS set it within a range of just 1.5 to three percent", "loc": "Lall2015 p.134"}, {"id": 19, "n": "06", "s": 4, "t": "evaluation", "f": "英美會計師行點樣影響全球會計準則？", "b": "Lall 認為英美會計師行一直成功令全球會計準則反映佢哋本國重「公平值」嘅做法", "q": "Auditing firms in Anglo-Saxon countries have consistently succeeded in ensuring that global standards reflect the emphasis of their domestic accounting systems on measuring transactions at “fair value”", "loc": "Lall2015 p.134"}, {"id": 20, "n": "06", "s": 4, "t": "fact", "f": "國際會計準則委員會十二個主席有幾多個嚟自六大？", "b": "Lall 指出國際會計準則委員會十二個主席入面有八個係「六大」會計師行嘅合夥人", "q": "No fewer than eight of the IASC’s 12 chairmen were partners in one of the Big Six.", "loc": "Lall2015 p.135"}, {"id": 21, "n": "06", "s": 4, "t": "cause", "f": "借調到 IASB 嘅會計師行員工有咩問題？", "b": "Lall 認為借調到國際會計準則理事會嘅會計師行員工名義上獨立，但有強烈誘因推動僱主嘅偏好", "q": "Although nominally independent, secondees have strong incentives to promote their employers’ preferences in IASB working groups and steering committees.", "loc": "Lall2015 p.135"}, {"id": 22, "n": "06", "s": 4, "t": "fact", "f": "四大點樣提早知道新準則項目？", "b": "一位 Deloitte 合夥人向 Lall 表示，四大通常透過同理事會成員私下傾偈提早知道新準則項目", "q": "we usually learn about new standardization projects in advance through private discussions with board members and staff", "loc": "**Deloitte partner**, in Lall2015 p.140"}, {"id": 23, "n": "06", "s": 4, "t": "evaluation", "f": "Bolkestein 承認咗乜？", "b": "歐盟委員 Bolkestein 承認歐洲銀行就金融工具準則參與討論得太遲", "q": "The banks [in Europe] . . . engaged in discussion on the issue far too late", "loc": "**Bolkestein**, in Lall2015 p.136"}, {"id": 24, "n": "06", "s": 5, "t": "action", "f": "Lall 第一個設計原則係乜？", "b": "Lall 建議跨國監管機構同金融業保持清楚距離，防止官員同被監管利益之間嘅非正式聯繫過強", "q": "Regimes should maintain a clear distance from the finance industry to prevent informal social links between officials and regulated interests from becoming too strong.", "loc": "Lall2015 p.138"}, {"id": 25, "n": "06", "s": 5, "t": "action", "f": "Lall 點樣處理借調同臨時員工？", "b": "Lall 建議跨國監管機構限制由私營界別聘請嘅借調、實習同臨時員工數目", "q": "Regimes should also limit the number of secondees, interns, and temporary staff they hire from the private sector.", "loc": "Lall2015 p.139"}, {"id": 26, "n": "06", "s": 5, "t": "action", "f": "Lall 建議點樣處理議程資訊不對稱？", "b": "Lall 建議跨國監管機構喺監管過程每個階段減少議程資訊不對稱", "q": "Regimes should minimize information asymmetries regarding the regulatory agenda at each stage of the regulatory process.", "loc": "Lall2015 p.139"}, {"id": 27, "n": "06", "s": 5, "t": "action", "f": "關鍵監管職能應唔應該下放畀持份者？", "b": "Lall 建議跨國監管機構避免將關鍵監管職能下放畀持份者", "q": "Regimes should avoid delegating crucial regulatory functions to stakeholders.", "loc": "Lall2015 p.139"}, {"id": 28, "n": "06", "s": 5, "t": "action", "f": "點樣抵銷早入局帶嚟嘅優勢？", "b": "Lall 建議用嚴格監督機制抵銷早入局帶嚟嘅優勢", "q": "To mitigate the advantage gained by early entry into the regulatory space, regimes should be subject to robust oversight mechanisms.", "loc": "Lall2015 p.139"}, {"id": 29, "n": "07", "s": 1, "t": "evaluation", "f": "現有研究點樣假設金融監管嘅參與者？", "b": "Pagliari 同 Young 指出現有研究通常假設金融監管嘅參與者多元性低或者唔重要", "q": "Actor plurality is usually assumed to be low or inconsequential.", "loc": "PagliariYoung2014 p.575"}, {"id": 30, "n": "07", "s": 1, "t": "evaluation", "f": "大部分描述點樣畫金融監管？", "b": "Pagliari 同 Young 認為大部分描述將金融監管畫成由少數無所不能嘅金融業團體隨意影響嘅封閉領域", "q": "most depictions represent the financial regulatory domain as a very non-plural place, dominated by a few all-powerful financial industry groups influencing regulation they are subject to at will", "loc": "PagliariYoung2014 p.576"}, {"id": 31, "n": "07", "s": 1, "t": "conceptual", "f": "俘虜文獻話受監管嘅金融業團體點樣？", "b": "Baker 等俘虜文獻認為受監管嘅金融業團體以消費者同公眾為代價制定政策而唔係接受政策", "q": "the financial industry groups that were to be regulated routinely make policy, rather than take policy at the expense of consumers and the general public", "loc": "**Baker; Ocampo; Tsingou**, in PagliariYoung2014 p.577"}, {"id": 32, "n": "07", "s": 1, "t": "cause", "f": "點解被監管資源係信貸會加強多元團體動員？", "b": "Pagliari 同 Young 認為被監管嘅資源係信貸，呢個特點加強咗多元團體動員嘅誘因", "q": "In the case of financial regulatory policies, the incentives for a plurality of groups to mobilize are further enhanced by the highly unique features of the resource that is being regulated, namely credit.", "loc": "PagliariYoung2014 p.579"}, {"id": 33, "n": "07", "s": 1, "t": "cause", "f": "點解依賴金融服務嘅企業較少受集體行動問題困擾？", "b": "Pagliari 同 Young 認為依賴金融服務嘅企業比一般公眾較少受集體行動問題困擾", "q": "which are less likely to be victims of collective action problems than the general public", "loc": "PagliariYoung2014 p.580"}, {"id": 34, "n": "07", "s": 2, "t": "fact", "f": "Pagliari 同 Young 編碼咗幾多諮詢同回應？", "b": "Pagliari 同 Young 編碼咗 562 個政策諮詢、63 個管治機構嘅 20,235 份回應", "q": "In total, we collected and coded 20,235 responses to 562 different policy consultations across finance and these other sectors, covering a total of 63 different governance bodies", "loc": "PagliariYoung2014 p.581"}, {"id": 35, "n": "07", "s": 2, "t": "fact", "f": "金融業諮詢同其他行業比，商界主導程度點？", "b": "Pagliari 同 Young 發現金融業諮詢嘅回應者比其他行業更由商界主導", "q": "respondents to financial sector consultations tend to be more dominated by business groups than other sectors", "loc": "PagliariYoung2014 p.582"}, {"id": 36, "n": "07", "s": 2, "t": "fact", "f": "金融諮詢嘅商界回應者有幾多唔係被監管目標？", "b": "Pagliari 同 Young 發現金融諮詢嘅商界回應者差唔多一半唔係被監管嘅目標團體", "q": "nearly half of all business respondents are non-target groups from inside and outside finance", "loc": "PagliariYoung2014 p.582"}, {"id": 37, "n": "07", "s": 2, "t": "fact", "f": "回應金融諮詢嘅「局外人」同其他行業比點？", "b": "Pagliari 同 Young 發現回應金融業諮詢嘅「局外人」比任何其他行業都多", "q": "More ‘outsiders’ – or groups not belonging to the economic sector being regulated – mobilize in response to financial sector consultations than any other sector.", "loc": "PagliariYoung2014 p.583"}, {"id": 38, "n": "07", "s": 2, "t": "evaluation", "f": "商界主導係咪等於缺乏多元性？", "b": "Pagliari 同 Young 認為商界主導唔應該被誤解為缺乏多元性", "q": "this dominance of business stakeholders should not be mistaken for lack of plurality", "loc": "PagliariYoung2014 p.583"}, {"id": 39, "n": "07", "s": 3, "t": "conceptual", "f": "芝加哥學派點睇徹底嘅監管俘虜？", "b": "Peltzman 同 Becker 等芝加哥學派嘅監管經濟理論承認徹底嘅監管俘虜唔太可能", "q": "economic theories of regulation even within the Chicago School tradition in which he was working, have recognized that outright regulatory capture was unlikely", "loc": "**Peltzman; Becker**, in PagliariYoung2014 p.583"}, {"id": 40, "n": "07", "s": 3, "t": "cause", "f": "Pagliari 同 Young 嘅主張係乜？", "b": "Pagliari 同 Young 主張參與者多元性影響被監管金融業團體喺政策過程中攞到想要嘢嘅能力", "q": "We propose that actor plurality matters in financial regulatory politics because it affects the ability of the regulated financial industry group to get what it wants in the policymaking process.", "loc": "PagliariYoung2014 p.584"}, {"id": 41, "n": "07", "s": 3, "t": "fact", "f": "被監管金融團體點樣處理「跟尾」團體？", "b": "Mahoney 指出最直接被監管嘅金融團體經常資助「跟尾」團體參與", "q": "the financial groups most directly targeted by a regulation will often subsidize the participation of ‘tagalong’ groups", "loc": "**Mahoney**, in PagliariYoung2014 p.585"}, {"id": 42, "n": "07", "s": 3, "t": "cause", "f": "聯盟點樣擴大遊說力度？", "b": "Hula 同 Hojnacki 認為聯盟以低成本集合遊說資源，擴大遊說力度", "q": "coalitions provide a low-cost way for groups to expand their lobbying efforts by pooling advocacy resources", "loc": "**Hula; Hojnacki**, in PagliariYoung2014 p.585"}, {"id": 43, "n": "07", "s": 3, "t": "cause", "f": "「奇怪拍檔聯盟」有咩作用？", "b": "Pagliari 同 Young 認為金融團體招攬到「奇怪拍檔聯盟」時，向決策者發出嘅廣泛支持訊號更強", "q": "This signal is even stronger when financial groups are able to recruit ‘strange bedfellow coalitions’", "loc": "**Mahoney**, in PagliariYoung2014 p.586"}, {"id": 44, "n": "07", "s": 3, "t": "cause", "f": "幾時被監管金融業嘅預期影響力最大？", "b": "Pagliari 同 Young 認為非目標團體偏好一致而且有動員時，被監管金融業嘅預期影響力最大", "q": "the predicted influence of a targeted financial industry group over the policymaking process is at its greatest in those situations where non-target groups’ preferences converge with those of the target group, and when these non-target groups also mobilized around the issue", "loc": "PagliariYoung2014 p.587"}, {"id": 45, "n": "07", "s": 3, "t": "cause", "f": "「靜默政治」時期非目標團體動員點樣？", "b": "Culpepper 認為喺「靜默政治」時期，非目標團體較難動員", "q": "the mobilization of non-target groups has been described as more difficult during periods of ‘quiet politics’", "loc": "**Culpepper**, in PagliariYoung2014 p.588"}, {"id": 46, "n": "07", "s": 4, "t": "evaluation", "f": "個案分析係嚴格驗證定說明機制？", "b": "Pagliari 同 Young 承認佢哋嘅個案分析係說明機制，而唔係獨立嘅實證檢驗", "q": "our analysis constitutes more of an illustration of the mechanism at work than a discrete empirical ‘test’", "loc": "PagliariYoung2014 p.589"}, {"id": 47, "n": "07", "s": 4, "t": "fact", "f": "Basel II 期間動員嘅團體係咪全部係銀行？", "b": "Pagliari 同 Young 指出 Basel II 期間動員嘅團體好多根本唔係銀行", "q": "a significant number of groups which mobilized were not banks at all", "loc": "PagliariYoung2014 p.590"}, {"id": 48, "n": "07", "s": 4, "t": "fact", "f": "「中小企一攬子」係乜？", "b": "Pagliari 同 Young 指出巴塞爾委員會 2002 年 7 月被迫採納「中小企一攬子」，容許銀行對中小企貸款預留較少資本", "q": "the Basel Committee was effectively compelled to adopt in July 2002 an ‘SME package’ that allowed banks to set aside less regulatory capital against loans to SMEs compared with loans to large corporations", "loc": "PagliariYoung2014 p.591"}, {"id": 49, "n": "07", "s": 4, "t": "cause", "f": "德國銀行協會自己動員足唔足夠？", "b": "Pagliari 同 Young 認為德國銀行協會動員係令監管者回心轉意嘅必要但唔充分條件", "q": "the mobilization of German banking associations was a necessary but insufficient condition to achieve a policy reversal", "loc": "PagliariYoung2014 p.592"}, {"id": 50, "n": "07", "s": 4, "t": "cause", "f": "按揭保險商點樣削弱銀行嘅技術論點？", "b": "Pagliari 同 Young 認為按揭保險商提供更深入、更長時間嘅數據，削弱咗銀行技術論點嘅可信度", "q": "The fact that the data provided by this insurance group had both greater depth and greater time coverage than the ones provided by the banking industry undermined the credibility of the bankers’ technical claims.", "loc": "PagliariYoung2014 p.593"}, {"id": 51, "n": "07", "s": 4, "t": "cause", "f": "同一行業內偏好相反嘅非目標團體動員有咩影響？", "b": "Pagliari 同 Young 認為同一金融業內偏好相反嘅非目標團體動員，削弱咗被監管團體嘅潛在影響力", "q": "the mobilization of a non-target group with divergent … preferences within the same financial industry weakened the potential influence of the group directly targeted by the regulation in question", "loc": "PagliariYoung2014 p.593"}, {"id": 52, "n": "07", "s": 4, "t": "fact", "f": "金融海嘯後衍生工具監管嘅動員團體有咩特點？", "b": "Pagliari 同 Young 指出金融海嘯後衍生工具監管嘅動員團體空前多元，影響咗銀行左右規管嘅能力", "q": "the capacity of these institutions to influence the shaping of the regulation was affected by the unprecedented plurality of the groups mobilizing around derivatives regulation", "loc": "PagliariYoung2014 p.594"}, {"id": 53, "n": "07", "s": 4, "t": "fact", "f": "銀行點樣處理自己同企業客戶嘅利益？", "b": "Pagliari 同 Young 指出銀行明確將自己利益同企業客戶嘅利益綁埋", "q": "banks explicitly sought to align their interests with those of their corporate customers", "loc": "PagliariYoung2014 p.596"}, {"id": 54, "n": "07", "s": 4, "t": "fact", "f": "大銀行喺衍生工具監管中點樣得益？", "b": "Pagliari 同 Young 指出大銀行因企業終端用家嘅動員而得益", "q": "the major banks were nonetheless able to benefit by the mobilization of corporate end-users", "loc": "PagliariYoung2014 p.597"}, {"id": 55, "n": "07", "s": 5, "t": "evaluation", "f": "金融業團體係咪商界入面另一個普通利益團體？", "b": "Pagliari 同 Young 認為金融業團體唔係商界入面另一個普通嘅特殊利益團體", "q": "financial industry groups are not just another special interest group within the business community", "loc": "PagliariYoung2014 p.599"}, {"id": 56, "n": "07", "s": 5, "t": "evaluation", "f": "金融監管政策制定實際上幾多元？", "b": "Pagliari 同 Young 認為金融監管政策制定比現有國際政治經濟學文獻講嘅多元得多", "q": "financial regulatory policymaking is a much more plural place than existing IPE literature has specified", "loc": "PagliariYoung2014 p.599"}, {"id": 57, "n": "07", "s": 5, "t": "cause", "f": "非目標團體動員對金融業遊說力量有咩影響？", "b": "Pagliari 同 Young 認為非目標團體動員可以加速金融業遊說力量，亦可以變成弱點", "q": "While the mobilization of non-target groups can represent an accelerant to financial industry groups’ lobbying power, in other cases, actor plurality can turn into an Achilles’ heel.", "loc": "PagliariYoung2014 p.600"}, {"id": 58, "n": "07", "s": 5, "t": "evaluation", "f": "強調參與者多元性糾正咗文獻嘅乜嘢傾向？", "b": "Pagliari 同 Young 認為強調參與者多元性糾正咗文獻將金融業影響力視為一貫同有系統嘅傾向", "q": "the emphasis on actor plurality offered here does provide a corrective to the tendency of existing literature to regard financial industry influence over regulatory policymaking as consistent and systematic", "loc": "PagliariYoung2014 p.600"}, {"id": 59, "n": "08", "s": 1, "t": "evaluation", "f": "大部分論述點樣描繪商界同監管者嘅關係？", "b": "Owen 指出大部分關於商界同監管者嘅論述都描繪對立關係", "q": "Most accounts of businesses and regulators depict adversarial relationships.", "loc": "Owen2021 p.226"}, {"id": 60, "n": "08", "s": 1, "t": "evaluation", "f": "跨學科主流敘事集中講商界做乜？", "b": "Owen 指出跨學科嘅主流敘事集中講商界點樣阻擋、規避、顛覆或騎劫監管", "q": "Across multiple disciplines, the efforts of business to block, avoid, subvert, or hijack regulation dominate the narratives.", "loc": "Owen2021 p.226"}, {"id": 61, "n": "08", "s": 1, "t": "definition", "f": "「監管中介」係乜？", "b": "Abbott、Levi-Faur 同 Snidal 將監管中介界定為夾喺傳統監管者同傳統被監管對象之間嘅實體", "q": "entities that occupy spaces between traditional regulators and the traditional targets of regulation", "loc": "**Abbott, Levi-Faur and Snidal**, in Owen2021 p.228"}, {"id": 62, "n": "08", "s": 1, "t": "cause", "f": "監管中介幾時可能變成被監管者嘅代理？", "b": "Owen 指出監管中介可能變成本應被監管實體嘅代理，尤其當中介由該實體付錢", "q": "Intermediaries can become agents of the entities they are supposed to help regulate, particularly if they are paid by those same entities.", "loc": "Owen2021 p.229"}, {"id": 63, "n": "08", "s": 1, "t": "evaluation", "f": "Owen 發現牟利監管中介可以點？", "b": "Owen 認為研究結果顯示牟利監管中介可以加強監管治理", "q": "these findings illustrate how for-profit regulatory intermediaries can work to bolster regulatory governance", "loc": "Owen2021 p.226"}, {"id": 64, "n": "08", "s": 2, "t": "evaluation", "f": "Owen 有冇量化顧問對監管嘅影響？", "b": "Owen 承認佢搵唔到可量化嘅指標去量度環境顧問對監管系統嘅影響", "q": "I was unable to identify a quantifiable measure of consultants’ effects on regulatory systems", "loc": "Owen2021 p.231"}, {"id": 65, "n": "08", "s": 2, "t": "fact", "f": "一位顧問話乜嘢係環境顧問業嘅命脈？", "b": "一位受訪環境顧問話監管、尤其係複雜監管，係環境顧問業嘅命脈", "q": "regulation—particularly complex regulation—is the lifeblood of the environmental consulting industry.", "loc": "**environmental consultant**, in Owen2021 p.230"}, {"id": 66, "n": "08", "s": 3, "t": "cause", "f": "Wagner 話被監管企業同監管者之間有咩資訊問題？", "b": "Wagner 指出被監管企業經常隱瞞監管者需要嘅資訊，就算提供，監管者都有理由懷疑可信度", "q": "Regulated businesses often withhold information that regulators need, or if they do convey information, regulators may wonder, with good reason, whether that information can be trusted", "loc": "**Wagner**, in Owen2021 p.232"}, {"id": 67, "n": "08", "s": 3, "t": "fact", "f": "環境顧問嘅書面意見同其他商界團體有咩唔同？", "b": "Owen 發現環境顧問嘅書面意見冇美國商會或者全國製造商協會等商界團體嗰種反監管言論", "q": "devoid of the antiregulatory broadsides often provided by other business advocacy groups such as the Chamber of Commerce or the National Association of Manufacturers", "loc": "Owen2021 p.232"}, {"id": 68, "n": "08", "s": 3, "t": "fact", "f": "監管者幾時唔願意改監管計劃？", "b": "Owen 發現監管者話未諮詢過顧問就唔願意改變佢哋嘅監管計劃", "q": "regulators said they would be reluctant to change their programs without first consulting the consultants", "loc": "Owen2021 p.227"}, {"id": 69, "n": "08", "s": 3, "t": "evaluation", "f": "顧問同監管者互相尊重有咩潛在壞處？", "b": "Owen 承認顧問同監管者之間互相尊重有潛在壞處，可能代表顧問俘虜咗監管者", "q": "This level of mutual respect between consultants and regulators has a potential downside: it might suggest that the consultants have captured the regulators.", "loc": "Owen2021 p.233"}, {"id": 70, "n": "08", "s": 3, "t": "cause", "f": "點解加州環評冇單一監管者可以被俘虜？", "b": "Owen 認為加州環境質素法嘅分散執法結構令到冇單一監管者可以被俘虜", "q": "where CEQA’s decentralized enforcement structure means there is no single regulator to capture", "loc": "Owen2021 p.233"}, {"id": 71, "n": "08", "s": 3, "t": "cause", "f": "點解顧問唔願做「僱傭槍手」？", "b": "一位加州顧問話佢只有信譽，如果做「僱傭槍手」會傳開", "q": "all I’ve got is my reputation. And so if I’m just a hired gun, that kind of thing gets around.", "loc": "**California consultant**, in Owen2021 p.234"}, {"id": 72, "n": "08", "s": 3, "t": "cause", "f": "麻省顧問點解做事謹慎？", "b": "Owen 發現多位麻省顧問話驚被審計係做事謹慎嘅強大動力", "q": "multiple consultants told me that fear of an audit is a powerful motivation to do careful work", "loc": "Owen2021 p.234"}, {"id": 73, "n": "08", "s": 4, "t": "definition", "f": "企業「真信徒」係乜？", "b": "Gunningham、Kagan 同 Thornton 將企業「真信徒」界定為管理層以環境保護為核心價值嘅公司", "q": "the company whose management embraces environmental protection as a core value", "loc": "**Gunningham, Kagan and Thornton**, in Owen2021 p.234"}, {"id": 74, "n": "08", "s": 4, "t": "fact", "f": "喺環境顧問之中，「真信」常唔常見？", "b": "Owen 發現喺受訪環境顧問之中，「真信」係反覆出現嘅主題", "q": "among the environmental consultants I interviewed, true belief was a recurring theme", "loc": "Owen2021 p.234"}, {"id": 75, "n": "08", "s": 4, "t": "evaluation", "f": "環境顧問守護公共價值係咪純粹利他？", "b": "Owen 指出環境顧問守護公共價值嘅角色唔係純粹利他，顧問亦冇扮", "q": "This guardian of public values role was not purely altruistic, and consultants did not pretend otherwise.", "loc": "Owen2021 p.227"}, {"id": 76, "n": "08", "s": 4, "t": "evaluation", "f": "環境顧問嘅環保主義係咩性質？", "b": "Owen 認為環境顧問嘅環保主義係親商嘅", "q": "the consultants’ environmentalism is business-friendly", "loc": "Owen2021 p.236"}, {"id": 77, "n": "08", "s": 4, "t": "fact", "f": "麻省顧問喺 LSP 計劃擔當乜角色？", "b": "Owen 指出麻省顧問喺設計、建立同維持持牌場地專業人員計劃上一直擔當不可或缺嘅角色", "q": "consultants played, and continue to play, integral parts in designing, building, and maintaining a regulatory program", "loc": "Owen2021 p.237"}, {"id": 78, "n": "08", "s": 4, "t": "evaluation", "f": "環境顧問點樣處理有爭議嘅法律要求？", "b": "Owen 認為環境顧問靜靜地充當促成者，將有爭議嘅法律要求變成被接受監管制度入面可行嘅一部分", "q": "they served, somewhat quietly, as facilitators trying to turn controversial legal requirements into a workable part of an accepted regulatory regime", "loc": "Owen2021 p.238"}, {"id": 79, "n": "08", "s": 5, "t": "cause", "f": "環境顧問支持監管嘅第一個根本原因係乜？", "b": "Owen 認為環境顧問支持監管嘅第一個根本原因係商業模式綁住強而有力嘅政府監管", "q": "One of those root causes is a business model tied to the existence of robust government regulation.", "loc": "Owen2021 p.238"}, {"id": 80, "n": "08", "s": 5, "t": "cause", "f": "第二個根本原因係乜？", "b": "Owen 認為第二個根本原因係需要同監管者維持建設性關係", "q": "A second root cause is a need to maintain constructive relationships with regulators.", "loc": "Owen2021 p.238"}, {"id": 81, "n": "08", "s": 5, "t": "cause", "f": "第三個根本原因係乜？", "b": "Owen 認為第三個根本原因係文化上認同創設監管制度嘅法律所表達嘅價值", "q": "A third root cause is a cultural commitment to the same values expressed by the laws creating a regulatory regime.", "loc": "Owen2021 p.238"}, {"id": 82, "n": "08", "s": 5, "t": "evaluation", "f": "現有文獻點樣睇私人影響？", "b": "Owen 指出現有文獻一般將私人影響視為阻礙監管制度成功嘅逆風", "q": "the existing literature generally treats this private influence as a headwind blowing against the success of the regulatory regime", "loc": "Owen2021 p.239"}, {"id": 83, "n": "08", "s": 5, "t": "cause", "f": "監管計劃好可能催生乜？", "b": "Owen 認為監管計劃好可能催生利潤模式同監管交織嘅企業", "q": "a regulatory program is likely to spur the creation of businesses whose profit models are intertwined with regulation", "loc": "Owen2021 p.239"}, {"id": 84, "n": "08", "s": 5, "t": "action", "f": "Owen 建議政策制定者點做？", "b": "Owen 建議政策制定者可以設計監管系統，利用私營企業嘅誘因同文化推動環保、公共衞生等公共價值", "q": "policymakers may design regulatory systems that use the incentives and the culture of private businesses to advance environmental protection, public health, administrative efficiency, or other public values", "loc": "Owen2021 p.239"}, {"id": 85, "n": "08", "s": 5, "t": "conceptual", "f": "「俘虜」同「合作」呢啲標籤反映乜？", "b": "Owen 認為「俘虜」同「合作」呢啲標籤反映貼標籤者嘅政策偏好，唔亞於反映所描述嘅關係", "q": "labels such as “capture” and “cooperation” may demonstrate as much about the policy preferences of the labeler as they do about the relationships being labeled", "loc": "Owen2021 p.227"}, {"id": 86, "n": "09", "s": 1, "t": "evaluation", "f": "2004 年改革喺歐盟競爭政策史上有幾重要？", "b": "Wigger 同 Nölke 認為 2004 年反壟斷改革係歐盟競爭政策史上最重要嘅改變", "q": "The 2004 antitrust reform is the most important change in the history of EU competition policy.", "loc": "WiggerNolke2007 p.487"}, {"id": 87, "n": "09", "s": 1, "t": "evaluation", "f": "2004 年改革喺邊兩方面係重大轉變？", "b": "Wigger 同 Nölke 認為 2004 年改革喺執法方式（轉向私人執法）同內容（轉向英美模式）兩方面都係重大轉變", "q": "It amounts to a major shift in both the mode of regulation (towards private enforcement) and the substance (towards the Anglo-Saxon model).", "loc": "WiggerNolke2007 p.487"}, {"id": 88, "n": "09", "s": 1, "t": "conceptual", "f": "德國秩序自由主義背後嘅精神係乜？", "b": "Albert 同 Streeck 認為德國秩序自由主義背後嘅精神係資本主義需要有組織、經濟權力需要受控", "q": "Underlying the spirit of German ordo-liberal ideas is the perception that capitalism needs to be organized and economic power controlled", "loc": "**Albert; Streeck**, in WiggerNolke2007 p.491"}, {"id": 89, "n": "09", "s": 1, "t": "fact", "f": "傳統歐盟模式下委員會擔當乜角色？", "b": "Wigger 同 Nölke 指出傳統歐盟模式下委員會集調查、檢控、法官、陪審團同行刑於一身", "q": "The Commission has the authority to act as an investigator, prosecutor, judge, jury and executioner altogether.", "loc": "WiggerNolke2007 p.495"}, {"id": 90, "n": "09", "s": 1, "t": "fact", "f": "改革前歐洲幾多競爭案由公營機構執法？", "b": "Kemper 嘅數據顯示改革前歐洲 95% 競爭案由公營機構執法", "q": "public authorities enforced 95 per cent of the competition cases", "loc": "**Kemper**, in WiggerNolke2007 p.495"}, {"id": 91, "n": "09", "s": 1, "t": "fact", "f": "美國幾多正式反壟斷訴訟由私人提出？", "b": "Kemper 同 Wils 嘅數據顯示美國超過九成正式反壟斷訴訟由私人訴訟人提出", "q": "more than 90 per cent of all formal US antitrust actions were brought to the courts by private litigators", "loc": "**Kemper; Wils**, in WiggerNolke2007 p.494"}, {"id": 92, "n": "09", "s": 2, "t": "fact", "f": "舊申報制度嘅邏輯係乜？", "b": "Wigger 同 Nölke 指出舊申報制度嘅邏輯係未准許嘅就係禁止", "q": "The logic of this system was that everything not permitted was forbidden.", "loc": "WiggerNolke2007 p.496"}, {"id": 93, "n": "09", "s": 2, "t": "fact", "f": "改革後反壟斷執法嘅主要負擔轉咗去邊？", "b": "Wigger 同 Nölke 指出改革後反壟斷執法嘅主要負擔已經轉移到私營界別", "q": "The main burden of antitrust enforcement has now shifted to the private sector", "loc": "WiggerNolke2007 p.488"}, {"id": 94, "n": "09", "s": 2, "t": "fact", "f": "改革後企業同消費者要做乜？", "b": "Wigger 同 Nölke 指出改革後企業唔止要自我監察，仲要透過訴訟監察競爭對手、分銷商同供應商，消費者亦然", "q": "Companies are not only expected to ‘police’ themselves, but also their competitors, distributors and suppliers by bringing antitrust infringements to the courts – so are consumers.", "loc": "WiggerNolke2007 p.497"}, {"id": 95, "n": "09", "s": 2, "t": "fact", "f": "改革頭兩年幾多國家法院判決由私人原告提出？", "b": "Wigger 同 Nölke 計算出第 1/2003 號規例實施頭兩年，51% 國家法院判決由私人原告提出", "q": "Already in the first two years a majority of 51 per cent of all national court judgements was initiated by private plaintiffs", "loc": "WiggerNolke2007 p.497"}, {"id": 96, "n": "09", "s": 2, "t": "fact", "f": "Kroes 點睇競爭規則嘅執法？", "b": "歐盟競爭專員 Kroes 認為競爭規則嘅全面執法仍未完成，法院用得唔夠", "q": "the comprehensive enforcement of the competition rules is not yet complete – not enough use is made of the courts", "loc": "**Kroes**, in WiggerNolke2007 p.497"}, {"id": 97, "n": "09", "s": 2, "t": "evaluation", "f": "改革喺內容上點樣轉向？", "b": "Wigger 同 Nölke 認為改革唔止將執法由公營轉私營，亦將內容由秩序自由主義轉向芝加哥學派", "q": "not only contains a shift in the mode of regulation (from public to private enforcement), but also in the substance of regulation (from ordo-liberalism to the Chicago School)", "loc": "WiggerNolke2007 p.498"}, {"id": 98, "n": "09", "s": 2, "t": "evaluation", "f": "Rill 點評歐盟改革？", "b": "前美國司法部副部長 Rill 認為歐盟改革已經盡量接近美國模式，只係冇成套照抄", "q": "as close at it could get to the US-style without copying the whole caboodle", "loc": "**Rill**, in WiggerNolke2007 p.499"}, {"id": 99, "n": "09", "s": 3, "t": "evaluation", "f": "雙重轉向對萊茵資本主義有咩威脅？", "b": "Wigger 同 Nölke 認為反壟斷原則同執法雙重轉向英美模式，威脅歐盟內萊茵資本主義嘅根基", "q": "the double shift towards the Anglo-Saxon model of antitrust policy principles and enforcement threatens to undermine the very basis of the Rhenish variety of capitalism within the EU", "loc": "WiggerNolke2007 p.499"}, {"id": 100, "n": "09", "s": 3, "t": "conceptual", "f": "根據制度互補性，混合模式穩唔穩定？", "b": "Wigger 同 Nölke 認為根據制度互補性邏輯，混合模式本質上唔穩定，甚至行唔通", "q": "Following the logic of institutional complementarities, however, hybrid models are inherently unstable, if not unviable.", "loc": "WiggerNolke2007 p.500"}, {"id": 101, "n": "09", "s": 3, "t": "fact", "f": "企業擔心新制度帶嚟乜？", "b": "國際商會指出企業擔心新制度帶嚟更大法律不確定性同可觀嘅交易成本", "q": "corporate actors fear that the new regime leads to a situation of increased legal insecurity and significant transaction costs", "loc": "**ICC**, in WiggerNolke2007 p.500"}, {"id": 102, "n": "09", "s": 3, "t": "evaluation", "f": "早期判例可能要有啲乜？", "b": "Wigger 同 Nölke 認為喺法律情況釐清之前，早期判例可能要有啲犧牲品", "q": "Early jurisprudence may require its share of victims until the legal situation is clarified.", "loc": "WiggerNolke2007 p.501"}, {"id": 103, "n": "09", "s": 4, "t": "cause", "f": "邊三類行動者喺改革得益最多？", "b": "Wigger 同 Nölke 認為委員會、律師業同股東利益係近期改革得益最多嘅三類行動者", "q": "three types of … actors that benefit most substantially from recent measures, namely the Commission, the legal profession and shareholder interests", "loc": "WiggerNolke2007 p.501"}, {"id": 104, "n": "09", "s": 4, "t": "cause", "f": "改革點樣幫委員會？", "b": "Wigger 同 Nölke 認為改革旨在令委員會加強對各國競爭政策嘅掌控", "q": "the reform was intended to allow the Commission to strengthen its grasp on national competition policy", "loc": "WiggerNolke2007 p.502"}, {"id": 105, "n": "09", "s": 4, "t": "evaluation", "f": "律師、會計師等自由專業點樣經常被睇？", "b": "Wigger 同 Nölke 認為律師、會計師等自由專業經常被低估為政治行動者", "q": "The liberal professions such as lawyers, accountants, tax consultants or notaries are frequently underrated as political actors.", "loc": "WiggerNolke2007 p.503"}, {"id": 106, "n": "09", "s": 4, "t": "fact", "f": "律師喺改革籌備階段做咗乜？", "b": "Wigger 同 Nölke 指出律師喺改革籌備階段係有影響力嘅常客，向委員會官員提交長篇報告，大力推動統一規則同私人訴訟", "q": "As regular and influential guests at the preparatory stages of the reform, they displayed their expertise in the form of lengthy advisory reports to Commission officials and pushed strongly for harmonized rules and enhanced private litigation possibilities in competition cases.", "loc": "WiggerNolke2007 p.504"}, {"id": 107, "n": "09", "s": 4, "t": "cause", "f": "美國律師行點解遊說？", "b": "Wigger 同 Nölke 認為尋租嘅美國律師行遊說各司法管轄區建立法律前提，將法律服務市場擴展到歐洲", "q": "rent-seeking US law companies increasingly lobby for the necessary legal prerequisites at the respective jurisdictions in order to expand the lucrative market for legal services into Europe", "loc": "WiggerNolke2007 p.504"}, {"id": 108, "n": "09", "s": 4, "t": "evaluation", "f": "改革係咪全球化效率壓力或者美國壓力逼成？", "b": "Wigger 同 Nölke 認為歐盟反壟斷改革唔能夠歸因於全球化嘅效率壓力，亦唔係美國政治壓力逼成", "q": "Current changes in EU antitrust regulation cannot be ascribed to the efficiency pressures of economic globalization. Nor have political pressures from the US coerced the EU into these reforms.", "loc": "WiggerNolke2007 p.506"}, {"id": 109, "n": "09", "s": 4, "t": "cause", "f": "直接攻擊國家監管同結盟，邊個成功？", "b": "Wigger 同 Nölke 認為直接攻擊國家監管會受政治阻撓，但同專業組織同股東結盟最終成功", "q": "While a direct assault on the vestiges of national regulation would have been politically obstructed, the alliance with professional organizations and shareholder interests finally proved successful.", "loc": "WiggerNolke2007 p.506"}, {"id": 110, "n": "09", "s": 4, "t": "cause", "f": "點解私營化監管難以從政治上攻擊？", "b": "Wigger 同 Nölke 認為私營化監管因為睇落專業同技術而難以從政治上攻擊", "q": "Because of its presumably professional and technical character, so-called ‘privatized’ regulation is difficult to attack on political grounds.", "loc": "WiggerNolke2007 p.506"}, {"id": 111, "n": "09", "s": 4, "t": "cause", "f": "非政治形象點樣阻止受損團體動員？", "b": "Wigger 同 Nölke 認為非政治形象收埋咗新監管嘅廣泛後果，阻止受損團體動員", "q": "the use of an apolitical image serves to hide the wider consequences of the new regulation, thereby preventing the mobilization of negatively affected groups", "loc": "WiggerNolke2007 p.506"}, {"id": 112, "n": "09", "s": 5, "t": "evaluation", "f": "會計準則對唔同資本主義模式係咪中立？", "b": "Perry 同 Nölke 認為會計準則對唔同資本主義模式並唔中立", "q": "accounting standards are not neutral towards different models of capitalism", "loc": "**Perry and Nölke**, in WiggerNolke2007 p.506"}, {"id": 113, "n": "09", "s": 5, "t": "cause", "f": "歐盟商業監管私營化係點樣推進？", "b": "Wigger 同 Nölke 認為歐盟商業監管某啲方面嘅私營化，係透過刻意去政治化、以專業為基礎嘅利益組合推進", "q": "The privatization of certain facets of EU business regulation has gained ground through a deliberately depoliticized, professions-based interest constellation", "loc": "WiggerNolke2007 p.508"}, {"id": 114, "n": "09", "s": 5, "t": "evaluation", "f": "私人行動者角色加強對萊茵制度有咩影響？", "b": "Wigger 同 Nölke 認為私人行動者喺歐盟監管角色加強，增加萊茵制度「從後門」被侵蝕嘅機會", "q": "the enhanced role of private actors in EU regulation increases the chances for the erosion of these institutions – ‘through the back door’", "loc": "WiggerNolke2007 p.508"}];
+
+const NOTES_META={"06": {"t": "時機就係影響力（Lall）", "q": "全球金融規則邊個贏、點解贏？", "read": "問題同三種解釋；技術精英網絡理論；Basel II 同 III；國際會計準則；四個設計原則。"}, "07": {"t": "槓桿利益（Pagliari 同 Young）", "q": "金融業點樣借聯盟放大（或者削弱）影響力？", "read": "金融監管係咪封閉；諮詢數據；聯盟三個機制同 2×2；Basel II 同衍生工具個案；結論。"}, "08": {"t": "環境顧問做中介（Owen）", "q": "牟利中介可唔可以加強監管？", "read": "商界一定係對手？研究設計；可信嘅促成者；公共價值嘅守護者；原因同設計啟示。"}, "09": {"t": "歐盟反壟斷私人執法（Wigger 同 Nölke）", "q": "2004 年改革點樣侵蝕萊茵資本主義？", "read": "萊茵定英美；雙重轉向；對萊茵資本主義嘅影響；邊個推動；會計同銀行監管。"}};
+const NOTE_ORDER=["06", "07", "08", "09"];
+const NOTES=[
+{k:"06-1",t:"問題：全球金融規則邊個贏、點解贏",lv:[],vis:[],b:`<p>Lall 開宗明義：國際金融規則係全球治理入面分配鬥爭最激烈嘅範疇之一。點解要將規則搬去跨國層面？因為政府自己欠缺應付複雜監管問題嘅技術同資源——於是授權畀政策網絡同私營組織。</p>
+ <p>以往有三種解釋。現實主義話最大金融市場嘅國家（美國）話事。新馬克思主義話資本靠「結構性權力」（威脅撤資）同新自由主義意識形態。歷史制度主義就話時機同次序決定輸贏。Lall 接受第三種嘅核心洞見，但話要加入金融本身嘅技術性去解釋點解有人先行、點解先行者會贏。</p>`},
+{k:"06-2",t:"技術精英網絡理論：先行者同「越遲越難改」",lv:[],vis:["v-lall"],b:`<p>全球金融規則分幾個階段制定。有啲持份者喺議程設定已經入局，有啲到諮詢先出現。</p>
+ <p><b>第一個機制：入到非正式社交網絡（ISN）就先行。</b> Lall 將 ISN 界定為核心規則制定者同少數業界人士之間重複、持久、交換資訊同專業知識嘅社交關係。只有同官員有私交、正式談判以外經常接觸嘅少數人先算成員。點解監管者會同佢哋行埋？因為金融太技術，專家知識集中喺大金融機構嘅高層，有啲人比官員仲專業。入咗網絡就早知議程；仲會被委以起草、借調、可行性研究等工作，甚至可以自己提出新方案，而唔係淨係改人哋嘅。</p>
+ <p><b>第二個機制：遞增回報令早期方案越嚟越難改。</b> 技術草稿要大量研究同起草，放棄成本好高。而且非國家監管機構唔使向各國公民問責，後期冇國家會用公共利益否決。Lall 話冇呢種時間優勢，單靠結構性權力或者意識形態都冇乜用。呢個「早入局」機制後來被 Townley、Guidi 同 Tavares 搬去 ICN，見 ICN › NGA 四個機制。</p>`},
+{k:"06-3",t:"Basel II 同 Basel III：大銀行兩次搶先",lv:[],vis:["v-lall"],b:`<p>銀行將資本要求當成一種「監管稅」，因為資本比借錢貴，降低少少比例已經慳數以十億計。Lall 嘅結論係大型跨國銀行有系統咁削弱 Basel II 同 Basel III。</p>
+ <p>Basel II 容許大銀行用自己嘅內部評級模型。巴塞爾委員會自己嘅影響研究顯示：用內部模型嘅銀行資本最多減 26.7%，用標準方法嘅反而加 1.7%。點解？唔係邊個國家話事——佢係唔理國籍咁幫大型跨國銀行，而係國際金融協會（IIF）同委員會主席之間有私交：前主席 Cooke 係 IIF 創辦人之一，McDonough 同 IIF 總裁係老朋友。IIF 因此喺其他人入局之前已經將內部評級放上議程。到 2001 年第二稿出街，細銀行同發展中國家先反對，但已經太遲。</p>
+ <p>金融海嘯之後，大家都話 Basel II 失敗，但歷史重演：大銀行再次控制巴塞爾程序。今次靠人員互換：例如前美林監管政策主管加入委員會，前委員會成員又去 IIF 主持工作小組。IIF 估計加 2% 資本會令產出跌 3.1%，委員會自己估只係 0.38%，但監管者仍然冇大幅加資本。小型信用合作社反對內部評級，但同樣太遲。系統重要性銀行附加資本最後定喺 1.5% 至 3%，雖然聯儲局經濟學家建議最高 7%。旋轉門同監管俘虜嘅關係見 監管俘虜。</p>`},
+{k:"06-4",t:"國際會計準則：英美會計師行嘅公平值",lv:[],vis:["v-lall"],b:`<p>第二個個案係國際會計準則理事會（IASB）。英美會計制度重「公平值」（即現價），歐陸傳統用歷史成本。Lall 話英美會計師行一直成功令全球準則跟佢哋——咁佢哋可以擴張到歐陸市場，歐陸企業就要付轉換成本。</p>
+ <p>點做到？前身國際會計準則委員會十二個主席入面有八個係「六大」會計師行合夥人。IASB 十四個創會成員有八個曾受僱於六大。會計師行仲透過「實踐研究員」借調制度提供技術人員；Lall 話借調者名義上獨立，但有好強誘因推動僱主嘅偏好。一位四大合夥人話佢哋通常喺 IASB 公佈之前已經透過私下傾偈知道新項目。</p>
+ <p>結果三份準則（金融工具 IFRS 9、以股份為基礎支付 IFRS 2、業務合併 IFRS 3）都跟英美會計師行嘅偏好。法國總統希拉克親自寫信反對都改唔到；歐盟委員自己承認歐洲銀行參與得太遲。以股份為基礎支付嘅草案亦一樣。Wigger 同 Nölke 用資本主義多樣性嘅角度講同一件事，見 Wigger 同 Nölke › 會計同銀行監管。</p>`},
+{k:"06-5",t:"四個設計原則",lv:[],vis:["v-lall"],b:`<p>Lall 嘅補救對應投影片問題「點樣減少規則制定偏幫業界」，而且同 Zingales 嘅旋轉門建議一致（見 Zingales › 出路）：</p>
+ <ol>
+ <li>同業界保持距離，限制旋轉門；亦要限制借調。</li>
+ <li>每個階段都減少議程資訊不對稱，例如廣泛諮詢、公開新項目。（Lall 提議全球層面嘅「協商式規則制定」；但 Coglianese 嘅美國實證話呢個程序表現麻麻，見 協商式規則制定（Coglianese）。）</li>
+ <li>唔好將關鍵監管職能交畀持份者。</li>
+ <li>用嚴格監督抵銷早入局優勢。</li>
+ </ol>`},
+{k:"07-1",t:"問題：金融監管真係咁封閉？",lv:[],vis:[],b:`<p>作者指出現有研究通常假設參與者唔多元、或者多元唔重要。大部分描述將金融監管畫成幾個無所不能嘅金融業團體隨意影響自己受嘅規管。俘虜文獻嘅講法係受監管嘅業界「制定」政策而唔係「接受」政策。監管者面對技術複雜嘅金融，容易變成知識專家嘅「俘虜」。</p>
+ <p>作者話有理由擴闊視野：信貸係經濟嘅中心，所以金融規管會影響好多其他行業。企業用家、交易對手、依賴信貸嘅商界，比一般公眾更唔受集體行動問題困擾。（集體行動問題見 監管俘虜 › 集中對分散。）</p>`},
+{k:"07-2",t:"諮詢數據：商界多，但唔止目標業界",lv:[],vis:["v-py"],b:`<p>作者收集咗 1996 至 2012 年加拿大、德國、英國、美國、歐盟、巴塞爾委員會同 IOSCO 等嘅諮詢回應，再拎農業、能源、電訊、醫療嘅諮詢做對照。</p>
+ <p>結果一：金融諮詢比其他行業更由商界主導（電訊除外）。Table 1 顯示金融諮詢商界佔 89.07%，NGO 只係 5.76%，工會 1.24%，消費者保障 0.95%。呢點同 Yackee 同 Yackee 嘅 57% 同 Alemanno 對歐盟諮詢嘅批評 一致。</p>
+ <p>結果二：將商界拆開睇，差唔多一半唔係被監管嘅目標。作者將回應者分做「目標」、同一行業嘅「同居者」（例如銀行規管下嘅保險公司）同「局外人」（例如製造業）。金融諮詢嘅局外人比例係所有行業最高。所以商界主導唔等於冇多元性。</p>`},
+{k:"07-3",t:"點解多元性重要：聯盟嘅三個機制同 2×2 矩陣",lv:[],vis:["v-py"],b:`<p>其實連芝加哥學派都承認徹底俘虜唔太可能，因為有消費者同其他壓力團體競爭（見 Peltzman 嗰節）。作者嘅主張係：多元性影響被監管金融業攞唔攞到想要嘅嘢。</p>
+ <p>被監管嘅金融機構通常做「聯盟領袖」，甚至會資助「跟尾」團體參與。聯盟有三個好處：(1) 集合資源，低成本擴大遊說，例如中小企協會嘅會員數目、大企業嘅就業；(2) 開新嘅接觸渠道，尤其當決策場地由監管機構轉去國會；(3) 發訊號：證明支持廣泛，尤其係「奇怪拍檔聯盟」。</p>
+ <p>但關係唔係直線：非目標團體亦可以企喺對面，成為「抗衡團體」或者「商界衝突」。Figure 1 嘅 2×2 矩陣：非目標團體有冇動員 × 偏好有冇一致。目標團體影響力最大係 D 格（偏好一致而且有動員）；最小係 B 格（偏好相反而且有動員）。動員難易受管治層級（國際層面較難）、議題關注度（「靜默政治」時較難）同國家金融體系影響。</p>`},
+{k:"07-4",t:"個案：Basel II 同衍生工具",lv:[],vis:["v-py"],b:`<p>作者強調呢啲個案係說明機制，唔係嚴格驗證。</p>
+ <p><b>德國銀行同中小企（C → D）。</b> Basel II 嘅文獻多數話銀行俘虜咗巴塞爾委員會，但其實好多動員嘅團體根本唔係銀行。德國銀行先自己反對新風險權重會影響 Mittelstand（中小企）貸款，監管者唔理（C 格）。之後德國工業聯會、手工業總會、工商總會加入，遊說國會，搞到成件事政治化；施羅德總理公開威脅喺歐盟層面否決。結果巴塞爾委員會 2002 年 7 月被迫加入「中小企一攬子」，貸款畀中小企可以預留較少資本（D 格）。所以銀行自己動員係必要但唔足夠。</p>
+ <p><b>美國銀行同按揭保險商（B）。</b> 美國大銀行反對 Basel II 對住宅按揭嘅保守做法，但美國按揭保險公司協會（MICA）用更深入、更長時間嘅數據話銀行低估風險。同一行業入面立場相反嘅非目標團體削弱咗銀行。</p>
+ <p><b>金融海嘯後嘅場外衍生工具（D 同 B）。</b> 海嘯前大銀行成功令場外衍生工具避開監管；海嘯後二十國集團要求集中結算。今次參與者空前多元。美國商會組織「衍生工具終端用家聯盟」（福特、GE、IBM、蘋果、波音等），要求豁免企業用家。反對嘅只有少數，例如 Americans for Financial Reform 話豁免會開出可以飛噴射機穿過嘅漏洞。銀行明確將自己利益同企業客戶綁埋；國會議員 Barney Frank 話銀行將終端用家當「人質」。結果《多德－弗蘭克法》同歐盟草案都豁免非金融企業，大銀行亦因此得益。但商品衍生工具方面，農業團體同 NGO 企喺對面，限倉措施照樣推行（B 格）。</p>`},
+{k:"07-5",t:"結論：加速器定阿基里斯腳跟",lv:[],vis:["v-py"],b:`<p>作者同意 Lindblom：金融業唔係商界入面「另一個普通利益團體」；但分別唔止在資源、制度同規模，而在金融喺經濟中嘅位置帶嚟嘅複雜關係網。佢哋證明金融監管比文獻講嘅多元得多。多元性可以係加速器，亦可以係弱點。所以唔應該當金融業影響力係一貫、有系統嘅。</p>
+ <p>同 Lall 對照：兩篇都講 Basel II，Lall 強調少數內部人早入局，Pagliari 同 Young 強調外圍聯盟同抗衡團體。對監管者嘅啟示：想抵消業界影響，可以靠鼓勵立場唔同嘅非目標團體參與（例如 MICA 嘅數據），呢點同 Yackee 同 Yackee「其他人多啲交意見可以減低商界影響」嘅建議一致。</p>`},
+{k:"08-1",t:"問題：商界一定係監管嘅對手？",lv:[],vis:["v-owen"],b:`<p>Owen 開頭就話：大部分講商界同監管者嘅論述都係對立關係。跨學科嘅主流敘事都係商界點樣阻擋、規避、顛覆或者騎劫監管；講商界角色時總係層層不信任。</p>
+ <p>環境顧問係「監管中介」（regulatory intermediaries）——夾喺傳統監管者同被監管對象中間嘅實體。文獻對牟利中介特別有戒心：佢哋可能變成本應被監管者嘅代理，尤其當佢哋由被監管者付錢（例如信用評級機構，見 信用評級機構嘅問責）。私有化文獻亦擔心公共職能外判會流失公共價值。Owen 嘅主張剛好相反：牟利中介都可以加強監管治理。</p>`},
+{k:"08-2",t:"研究設計：麻省廢物清理同加州環評",lv:[],vis:[],b:`<p>兩個個案：(1) 麻省 1993 年將污染場地清理大幅交畀「持牌場地專業人員」（LSP），即私營顧問決定點樣調查、點樣清理、幾時算乾淨；(2) 加州《環境質素法》（CEQA）要求公營機構研究同披露項目嘅環境影響，實際上大部分工作由私營顧問做。方法係半結構、匿名嘅訪問（顧問、律師、監管者、客戶、環保人士，約 57 人，Table 1），加上行業協會向監管者提交嘅所有文件。Owen 本人 1990 年代做過麻省環境顧問，2000 年代喺加州代表原告打 CEQA 官司。佢承認冇辦法量化顧問對監管嘅影響——所以結論建基於有經驗參與者嘅看法同文件紀錄。</p>
+ <p>一個顧問嘅說法點出呢門生意嘅本質：監管、尤其係複雜嘅監管，係環境顧問業嘅命脈。</p>`},
+{k:"08-3",t:"可信嘅促成者",lv:[],vis:["v-owen"],b:`<p>監管靠資訊交換，但對立同資訊不對稱會破壞呢個過程：被監管企業經常隱瞞資訊，就算畀咗，監管者都有理由懷疑。（同 Coen 講嘅資訊依賴 同一個問題。）環境顧問填補呢個空隙：佢哋嘅意見好技術、務實，冇其他商界團體嗰種反監管言論。</p>
+ <p>監管者好重視：一位麻省監管者話冇顧問意見就改唔到規例；所以監管者話未問過顧問唔會改計劃。Owen 自己提出風險：咁互相尊重可能代表顧問俘虜咗監管者。但受訪環保人士唔覺得麻省廢物清理局被俘虜；加州因為執法分散，根本冇單一監管者可以俘虜。（同 Coen 講英國「單一監管者」帶嚟嘅信譽遊戲對照。）</p>
+ <p>點解顧問會做中立經紀？信譽係佢哋嘅「經營許可」——一個顧問話佢只有信譽，做「僱傭槍手」會傳開。麻省顧問仲有牌照可以被審計同吊銷。</p>`},
+{k:"08-4",t:"公共價值嘅守護者",lv:[],vis:["v-owen"],b:`<p>Gunningham、Kagan 同 Thornton 講過企業「真信徒」——管理層真心以環保為核心價值嘅公司——但喺被監管企業之中好罕見。Owen 發現喺環境顧問之中，「真信」係反覆出現嘅主題。好多人入行係因為信環保目標；加州環境專業人員協會甚至話自己服務 CEQA 背後嘅原則。</p>
+ <p>但佢哋唔係純粹利他，自己都唔扮。佢哋嘅環保主義係親商嘅——一個顧問直認公司生意部分靠 CEQA。</p>
+ <p>兩個例子：麻省 LSP 計劃——顧問參與設計細節、起草規例、坐牌照委員會，對同行好嚴；加州將氣候變化納入 CEQA——顧問寫白皮書同指引，令溫室氣體分析成為接受咗嘅一部分。兩次佢哋都唔係最激進嘅倡議者——而係靜靜地將有爭議嘅法律要求變成可行嘅制度。</p>`},
+{k:"08-5",t:"點解會咁，同對監管設計嘅啟示",lv:[],vis:["v-owen"],b:`<p>Owen 搵到三個根本原因，而且可能喺其他領域重現：(1) 商業模式綁住強而有力嘅政府監管；(2) 要同監管者維持建設性關係；(3) 文化上認同法律背後嘅價值。</p>
+ <p>對學術：文獻一般當私人影響係「逆風」，要留意有時係順風。對政策：監管計劃會催生靠監管賺錢嘅企業，佢哋會塑造計劃；設計者除咗防範，亦可以利用佢哋嘅誘因同文化去推動公共價值。</p>
+ <p>Owen 亦提醒：「俘虜」定「合作」呢啲標籤，好多時反映貼標籤嗰個人嘅政策偏好。同 Townley 等人講 ICN 入面律師行做中介嘅負面評價對照，見 ICN › NGA 四個機制；元監管同中介嘅制度設計見 Part 8 Hybrid Instruments and Experimental Regulations。</p>`},
+{k:"09-1",t:"萊茵定英美：反壟斷嘅兩種傳統",lv:[],vis:["v-wn"],b:`<p>作者一開頭就下結論：2004 年改革係歐盟競爭政策史上最重要嘅改變——喺執法方式同內容兩方面都大轉向。佢哋話今次私人角色已經超越傳統遊說，令商界喺歐盟監管中有主導地位。</p>
+ <p>兩種傳統（Table 1，p.492）：</p>
+ <ul>
+ <li><b>萊茵模式</b>：德國秩序自由主義（ordo-liberalism，弗萊堡學派），認為資本主義要有組織、經濟權力要受控；多目標、長期效率、保護中小企；大陸法傳統、由公營機構事前審批。歐盟委員會一身兼任調查、檢控、法官、陪審團同行刑。改革前歐洲 95% 競爭案由公營機構執法。</li>
+ <li><b>英美模式</b>：芝加哥學派，單一目標（消費者福利）、短期效率、用新古典價格理論建模；普通法傳統、法院主導、事後私人訴訟。美國超過九成正式反壟斷訴訟由私人提出。</li>
+ </ul>
+ <p>（消費者福利同多目標之爭，見 監管應該追乜目標。）</p>`},
+{k:"09-2",t:"2004 年改革：執法方式同內容雙重轉向",lv:[],vis:["v-wn"],b:`<p>舊制度下，企業可以將協議申報畀委員會，批咗就唔怕被告；邏輯係未准許嘅就係禁止。第 1/2003 號規例取消申報，執法嘅主要負擔轉咗去私營界別。企業唔止要自己守規，仲要「監察」競爭對手、分銷商同供應商。效果好快：頭兩年 51% 國家法院判決由私人原告提出。專員 Kroes 仲話用法院用得唔夠。</p>
+ <p>內容方面，由秩序自由主義轉向芝加哥學派：合併測試改寫成接近美國嘅「重大妨礙有效競爭」、更多經濟分析、設首席競爭經濟學家。前美國司法部副部長 Rill 話歐盟改到「差唔多同美國一樣，只係冇成套照抄」。（Townley 第 2 章講同一改革點樣喺統一同多元之間平衡，見 Townley 第 2 章；Wilks 話係委員會「非凡嘅政變」，見 Wilks。）</p>`},
+{k:"09-3",t:"對萊茵資本主義嘅影響",lv:[],vis:[],b:`<p>作者承認未有硬數據，只能根據資本主義多樣性理論作有根據嘅推測。佢哋話雙重轉向威脅萊茵資本主義嘅基礎：私人訴訟帶嚟波動，長期投資同企業合作風險變大，中小企保護同技術擴散被犧牲。但又唔會變成完整嘅英美模式（勞工市場等唔同），而根據制度互補性，混合模式本身唔穩定。歐洲商界本身都擔心法律唔確定同交易成本增加——而早期判例「要有啲犧牲品」。諷刺嘅係，美國本身都批評自己嘅訴訟文化。</p>`},
+{k:"09-4",t:"邊個推動：委員會、律師業同股東",lv:[],vis:["v-wn"],b:`<p>作者質疑官方嘅「效率」說法，指出三類行動者得益最多。</p>
+ <p><b>委員會</b>：表面係「分權」，其實係加強對各國競爭政策嘅控制——透過歐洲競爭網絡（ECN）同介入權。德國秩序自由派官員擔心變成委員會嘅「半自主附庸」；Wilks 叫佢做「非凡嘅政變」。</p>
+ <p><b>律師業</b>：專業人士成日被低估為政治行動者。佢哋喺改革準備階段係常客，交長篇報告，大力推動私人訴訟。私人執法係佢哋嘅「麵包同牛油」；美國律師行亦遊說將法律服務市場擴展到歐洲。（同 ICN 入面律師行做 NGA 一齊讀，見 ICN › NGA。）</p>
+ <p><b>股東</b>：股東權益組織「跟風」上車——想引入集體訴訟。</p>
+ <p>作者結論：改革唔係因為全球化效率壓力，亦唔係美國逼。直接攻擊國家監管會遇阻，同專業組織同股東結盟就成功。關鍵係「去政治化」：私營化嘅監管因為睇落專業技術而難以從政治上攻擊，而且呢種非政治形象收埋咗後果，令受損團體冇動員。</p>`},
+{k:"09-5",t:"唔止競爭法：會計同銀行監管",lv:[],vis:[],b:`<p>同樣模式喺其他領域出現。會計方面，2005 年起歐盟上市公司要用 IASB 嘅國際財務報告準則；佢哋強調會計準則對唔同資本主義模式唔中立——德國保守、債權人導向嘅會計讓位畀投資者導向嘅英美準則，推手同樣係股東、四大同會計師組織（Lall 從另一角度講同一件事，見 Lall › 國際會計準則）。銀行監管方面，Basel II 令信貸評級機構變得重要，對依賴借貸嘅德國中小企不利（Pagliari 同 Young 講德國銀行同中小企點樣爭取到「中小企一攬子」，見 Pagliari 同 Young › Basel II）。</p>
+ <p>總結：歐盟商業監管某啲方面嘅私營化，係透過刻意去政治化、以專業為基礎嘅利益組合推進——而以公共規例形式引入英美標準（例如收購指令）就只能妥協。所以萊茵制度係「從後門」被侵蝕。對 KEATS 第 4 題（資本主義多樣性）嘅答案：業界參與唔止影響個別規則，仲可以改變整個國家模式；同 Coen 講英德監管差異一齊讀，見 Coen › 德國。</p>`}
+];
+const CARDS={};CARDS_DATA.forEach(c=>{CARDS[c.id]=c;});
+function makePages(app){
+const {store,$,LNAME}=window.__S;
+/* ===================== VISUALS ===================== */
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" ${o.a?`text-anchor="${o.a}"`:''} font-weight="${o.w||400}" fill="${o.f||'var(--ink)'}">${t}</text>`;
+const box=(x,y,w,h,fill='var(--surface2)',stroke='var(--line)')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const arrow=(x1,y1,x2,y2,c='var(--muted)')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" marker-end="url(#ah)"/>`;
+const DEFS=`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+const VIS=[ {id:'v-lall',t:'Lall：時機就係影響力',n:'06 §二–五',svg:()=>`<svg viewBox="0 0 680 320" class="vis">${DEFS}
+  ${[['議程設定'],['規劃'],['討論文件'],['諮詢'],['通過']].map(([a],k)=>`${box(6+k*135,30,125,46,k===0?'var(--accent-soft)':'var(--soft)')}${svgT(68+k*135,58,a,{a:'middle',w:700,s:13})}${k<4?arrow(132+k*135,53,140+k*135,53):''}`).join('')}
+  ${svgT(68,100,'↑ 非正式社交網絡成員',{a:'middle',s:11,f:'var(--accent)',w:700})}${svgT(68,116,'喺度入局',{a:'middle',s:11,f:'var(--accent)'})}
+  ${svgT(608,100,'↑ 其他人多數',{a:'middle',s:11,f:'var(--aa)',w:700})}${svgT(608,116,'到呢度先出現',{a:'middle',s:11,f:'var(--aa)'})}
+  ${svgT(340,150,'遞增回報：技術草稿投入大，越遲越難改；非國家機構唔使向公民問責',{a:'middle',s:12})}
+  ${box(10,170,320,80,'var(--soft)')}${svgT(170,196,'Basel II：IIF 早入局',{a:'middle',w:700,s:13})}${svgT(170,220,'內部評級：資本最多減 26.7%',{a:'middle',s:12})}${svgT(170,238,'標準方法：反而加 1.7%',{a:'middle',s:12})}
+  ${box(350,170,320,80,'var(--soft)')}${svgT(510,196,'會計準則：英美會計師行',{a:'middle',w:700,s:13})}${svgT(510,220,'12 個主席有 8 個嚟自六大',{a:'middle',s:12})}${svgT(510,238,'借調；公平值勝歷史成本',{a:'middle',s:12})}
+  ${svgT(340,276,'四個設計原則：保持距離、限制旋轉門同借調 · 每個階段減少議程資訊不對稱',{a:'middle',s:12})}
+  ${svgT(340,298,'唔好下放關鍵職能 · 用嚴格監督抵銷早入局',{a:'middle',s:12})}</svg>`},
+ {id:'v-py',t:'Pagliari 同 Young：非目標團體嘅 2×2',n:'07 §二–四',svg:()=>`<svg viewBox="0 0 680 340" class="vis">
+  ${svgT(220,24,'非目標團體偏好',{a:'middle',w:700})}${svgT(150,46,'相反',{a:'middle',s:12})}${svgT(290,46,'一致',{a:'middle',s:12})}
+  ${svgT(30,110,'冇動員',{a:'middle',s:12})}${svgT(30,190,'有動員',{a:'middle',s:12})}
+  ${box(80,60,140,90,'var(--soft)')}${svgT(150,100,'A',{a:'middle',w:900,s:18})}${svgT(150,124,'筆記冇講',{a:'middle',s:11,f:'var(--muted)'})}
+  ${box(220,60,140,90,'var(--soft)')}${svgT(290,100,'C',{a:'middle',w:900,s:18})}${svgT(290,124,'德國銀行獨自反對',{a:'middle',s:11})}
+  ${box(80,150,140,90,'var(--bad-soft)')}${svgT(150,186,'B：影響最小',{a:'middle',w:900,s:13})}${svgT(150,210,'按揭保險商；',{a:'middle',s:11})}${svgT(150,226,'商品衍生工具',{a:'middle',s:11})}
+  ${box(220,150,140,90,'var(--good-soft)')}${svgT(290,186,'D：影響最大',{a:'middle',w:900,s:13})}${svgT(290,210,'中小企一攬子；',{a:'middle',s:11})}${svgT(290,226,'終端用家豁免',{a:'middle',s:11})}
+  ${svgT(220,262,'（A、C 格嘅排法係我按筆記講嘅 D、B 推嘅）',{a:'middle',s:11,f:'var(--warn)'})}
+  ${svgT(520,40,'金融諮詢回應者',{a:'middle',w:700})}
+  ${[['商界',89.07],['NGO',5.76],['工會',1.24],['消費者保障',0.95]].map(([a,v],k)=>`${svgT(400,74+k*30,a,{s:12})}<rect x="480" y="${62+k*30}" width="${Math.max(v*1.6,2)}" height="16" rx="3" fill="${k?'var(--accent)':'var(--aa)'}"/>${svgT(486+Math.max(v*1.6,2),75+k*30,v+'%',{s:11})}`).join('')}
+  ${svgT(520,200,'商界差唔多一半唔係目標',{a:'middle',s:12})}${svgT(520,220,'（同居者＋局外人）',{a:'middle',s:12})}
+  ${svgT(340,300,'聯盟三個好處：集合資源 · 開新渠道 · 發廣泛支持訊號（奇怪拍檔聯盟）',{a:'middle',s:12})}
+  ${svgT(340,322,'多元性可以係加速器，亦可以係阿基里斯腳跟',{a:'middle',s:12,w:700})}</svg>`},
+ {id:'v-owen',t:'Owen：環境顧問點解幫監管',n:'08 §三–五',svg:()=>`<svg viewBox="0 0 680 290" class="vis">${DEFS}
+  ${box(10,20,200,60,'var(--soft)')}${svgT(110,55,'被監管企業',{a:'middle',w:700})}
+  ${box(240,20,200,60,'var(--accent-soft)','var(--accent)')}${svgT(340,46,'環境顧問',{a:'middle',w:700})}${svgT(340,66,'監管中介',{a:'middle',s:12})}
+  ${box(470,20,200,60,'var(--soft)')}${svgT(570,55,'監管者',{a:'middle',w:700})}
+  ${arrow(212,50,238,50)}${arrow(442,50,468,50)}
+  ${box(10,100,320,90,'var(--card)')}${svgT(170,126,'可信嘅促成者',{a:'middle',w:700})}${svgT(170,150,'技術、務實、冇反監管言論',{a:'middle',s:12})}${svgT(170,172,'信譽＝經營許可；麻省有牌可以吊',{a:'middle',s:12})}
+  ${box(350,100,320,90,'var(--card)')}${svgT(510,126,'公共價值嘅守護者',{a:'middle',w:700})}${svgT(510,150,'「真信徒」；但親商、唔扮利他',{a:'middle',s:12})}${svgT(510,172,'麻省 LSP；加州將氣候納入 CEQA',{a:'middle',s:12})}
+  ${svgT(340,218,'三個根本原因：生意綁住強監管 · 要同監管者維持關係 · 認同法律背後嘅價值',{a:'middle',s:12,w:700})}
+  ${svgT(340,244,'私人影響有時係「順風」唔係「逆風」；設計者可以利用佢哋嘅誘因同文化',{a:'middle',s:12})}
+  ${svgT(340,268,'「俘虜」定「合作」：標籤反映貼標籤者嘅偏好',{a:'middle',s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-wn',t:'Wigger 同 Nölke：萊茵模式 vs 英美模式',n:'09 §一–四',svg:()=>`<svg viewBox="0 0 680 320" class="vis">
+  ${svgT(120,30,'',{})}${svgT(300,30,'萊茵（秩序自由主義）',{a:'middle',w:700})}${svgT(540,30,'英美（芝加哥學派）',{a:'middle',w:700})}
+  ${[['目標','多目標、長期、保護中小企','單一：消費者福利、短期效率'],['法律傳統','大陸法、事前審批','普通法、法院主導'],['執法','公營：改革前 95%','私人：美國超過九成'],['2004 年改革後','申報取消；頭兩年 51% 判決私人提出','歐盟「差唔多同美國一樣」']].map(([a,b,c],k)=>`${svgT(10,70+k*44,a,{w:700,s:12})}${box(170,52+k*44,260,34,'var(--soft)')}${svgT(300,74+k*44,b,{a:'middle',s:11})}${box(440,52+k*44,230,34,'var(--accent-soft)')}${svgT(555,74+k*44,c,{a:'middle',s:11})}`).join('')}
+  ${box(10,236,660,70,'var(--card)')}${svgT(340,260,'邊個得益：委員會（ECN、介入權）· 律師業（麵包同牛油）· 股東（集體訴訟）',{a:'middle',s:12})}
+  ${svgT(340,284,'點樣成功：去政治化、專業同技術形象 → 受損團體冇動員 → 萊茵制度「從後門」被侵蝕',{a:'middle',s:12,w:700})}</svg>`}
+];
+function visuals(){
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">圖解 · ${VIS.length} 幅</span><h2>一幅圖睇一個概念</h2>
+   <p class="muted">每幅圖都對應筆記嘅某幾節。讀「讀懂版」或者玩完關卡之後，用嚟一眼溫返。</p></div>
+   <div class="stack">${VIS.map(v=>`<section class="panel vispanel" id="${v.id}"><div class="row" style="justify-content:space-between"><h3>${v.t}</h3><span class="tag">筆記 ${v.n}</span></div><div class="viswrap">${v.svg()}</div></section>`).join('')}</div>`;
+}
+
+/* ===================== READING NOTES ===================== */
+const LVNAME={swipe:'L1 算唔算監管',lobby:'L2 游說集團',families:'L3 四大家族',price:'L4 一個價兩筆數',judge:'L5 判案小法官',agency:'L6 合定拆',develop:'L7 因地制宜'};
+const cardsIn=(n,s)=>CARDS_DATA.filter(c=>c.n===n&&c.s===s);
+function notesPage(note){
+  note=note||NOTE_ORDER[0];
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  const m=NOTES_META[note];
+  const secs=NOTES.filter(x=>x.k.startsWith(note+'-'));
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">讀懂版 · 逐節淺白講解</span>
+    <div class="tabs">${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div></div>
+   <div class="panel stack"><h2>${note} ${m.t}</h2><p><b>呢篇問：</b>${m.q}</p><p class="muted">${m.read}</p></div>
+   <div class="stack" style="margin-top:14px">${secs.map(x=>{const n=+x.k.split('-')[1];const cs=cardsIn(note,n);const kn=cs.filter(c=>known[c.id]).length;
+     return `<section class="panel notesec" id="${x.k}">
+      <div class="row" style="justify-content:space-between"><h3>§${n} ${x.t}</h3>
+        <label class="readchk"><input type="checkbox" id="rd-${x.k}" data-k="${x.k}" ${read[x.k]?'checked':''}> 已讀</label></div>
+      <div class="nbody">${x.b}</div>
+      <div class="row links"><a class="chip" href="#lesson-${note}">▶ ${LNAME[note]}</a>
+        ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">◩ 圖：${VIS.find(z=>z.id===v).t}</a>`).join('')}
+        <a class="chip" href="#cards-${note}-${n}">▣ 呢節 ${cs.length} 張卡（識咗 ${kn}）</a></div></section>`}).join('')}</div>`;
+  app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash='notes-'+b.dataset.n;});
+  app.querySelectorAll('.readchk input').forEach(c=>c.onchange=()=>{const o=store.get().read||{};o[c.dataset.k]=c.checked;store.set('read',o);});
+  bindVisLinks();
+}
+function bindVisLinks(){app.querySelectorAll('[data-vis]').forEach(a=>a.onclick=e=>{e.preventDefault();const id=a.dataset.vis;location.hash='visuals';setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({block:'start'});},60);});}
+
+/* ===================== FLASHCARDS ===================== */
+const TYPE_ZH={action:'行動',fact:'事實',definition:'定義',conceptual:'概念',cause:'因果',evaluation:'評價',normative:'主張'};
+function cardsPage(arg){
+  const [note,sec]=(arg||'').split('-');
+  const pool=CARDS_DATA.filter(c=>(!note||c.n===note)&&(!sec||c.s===+sec));
+  let mode='unknown', order=[], idx=0, flipped=false;
+  function build(){
+    const known=store.get().known||{};
+    order=pool.filter(c=>mode==='all'||!known[c.id]).map(c=>c.id);
+    idx=0; flipped=false;
+  }
+  function shuffle(){for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;flipped=false;render();}
+  function render(){
+    const known=store.get().known||{};
+    const kn=pool.filter(c=>known[c.id]).length;
+    const scope=note?`${note} ${NOTES_META[note].t}${sec?` · §${sec} ${NOTES.find(x=>x.k===note+'-'+sec).t}`:''}`:'全部筆記';
+    let card='';
+    if(!order.length){ card=`<div class="fcard done"><div><h3>呢副卡你已經全部識晒 🎉</h3><p class="muted">轉「全部卡」可以再溫一次。</p></div></div>`; }
+    else{
+      const c=CARDS[order[idx]];
+      card=`<div class="fcard ${flipped?'flip':''}" id="fc" tabindex="0" role="button" aria-label="撳一下反卡">
+        ${!flipped?`<div class="ff"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fq">${c.f}</div><span class="muted" style="font-size:13px">撳一下（或者按空白鍵）睇答案</span></div>`
+        :`<div class="fb"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fa">${c.b}</div><blockquote>“${c.q}”</blockquote><span class="src">原文出處：${c.loc}</span></div>`}
+      </div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn ghost" id="bad">✗ 未識，等陣再嚟</button><button class="btn primary" id="good">✓ 識咗</button></div>`;
+    }
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">快速卡 · ${scope}</span>
+      <div class="tabs"><button class="tab ${!note?'on':''}" data-n="">全部</button>${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div>
+      <div class="row" style="justify-content:space-between"><span class="muted">呢副 ${pool.length} 張 · 識咗 ${kn} · 呢輪剩 ${order.length?order.length-idx:0}</span>
+      <div class="row"><button class="btn ghost sm" id="mode">${mode==='all'?'只溫未識':'全部卡'}</button><button class="btn ghost sm" id="shuf">洗牌</button><button class="btn ghost sm" id="reset">清除「識咗」</button></div></div>
+      <div class="progress"><i style="width:${pool.length?kn/pool.length*100:0}%"></i></div></div>
+      ${card}
+      <p class="muted" style="margin-top:14px;font-size:13.5px">卡面係我寫嘅問題；卡背係筆記入面嘅原子命題（中文）同原文英文引文，一字不改。卡背會出現人名，你唔使記，專心睇論點就得。</p>`;
+    app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash=b.dataset.n?'cards-'+b.dataset.n:'cards';});
+    $('#mode').onclick=()=>{mode=mode==='all'?'unknown':'all';build();render();};
+    $('#shuf').onclick=shuffle;
+    $('#reset').onclick=()=>{const k=store.get().known||{};pool.forEach(c=>delete k[c.id]);store.set('known',k);build();render();};
+    const fc=$('#fc'); if(fc){ fc.onclick=()=>{flipped=!flipped;render();$('#fc')&&$('#fc').focus();}; fc.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();fc.click();}}; }
+    const g=$('#good'), b=$('#bad');
+    if(g) g.onclick=()=>{const k=store.get().known||{};k[order[idx]]=true;store.set('known',k);next(true);};
+    if(b) b.onclick=()=>next(false);
+  }
+  function next(ok){ if(!ok){ order.push(order[idx]); } idx++; flipped=false; if(idx>=order.length){ build(); } render(); }
+  build(); render();
+}
+
+/* ===================== PROGRESS MAP ===================== */
+function mapPage(){
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  let tot=0, done=0;
+  const rows=NOTE_ORDER.map(n=>{
+    const secs=NOTES.filter(x=>x.k.startsWith(n+'-'));
+    return `<tr class="nh"><td colspan="5"><b>${n} ${NOTES_META[n].t}</b></td></tr>`+secs.map(x=>{
+      const s=+x.k.split('-')[1], cs=cardsIn(n,s), kn=cs.filter(c=>known[c.id]).length;
+      const lvDone=!!(st.done&&st.done['l'+n]);
+      const ok=read[x.k]&&kn===cs.length&&lvDone; tot++; if(ok) done++;
+      return `<tr><td><a href="#notes-${n}" data-sec="${x.k}">§${s} ${x.t}</a></td>
+        <td class="c">${read[x.k]?'✓':'—'}</td>
+        <td class="c mono">${kn}/${cs.length}</td>
+        <td><a class="chip ${lvDone?'ok':''}" href="#lesson-${n}">${LNAME[n]}${lvDone?' ✓':''}</a>
+          ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">圖</a>`).join(' ')}</td>
+        <td class="c">${ok?'<span class="okb">掌握</span>':''}</td></tr>`}).join('');
+  }).join('');
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">進度地圖 · 筆記每一節都喺度</span><h2>${done} / ${tot} 節已經全部做完</h2>
+    <p class="muted">一節要「讀懂版已讀」＋「嗰節嘅卡全部識咗」＋「嗰篇嘅課完成」，先算掌握。撳節名會跳去嗰節嘅讀懂版。</p>
+    <div class="progress"><i style="width:${done/tot*100}%"></i></div></div>
+    <div class="tablewrap"><table class="map"><thead><tr><th>節</th><th>讀懂版</th><th>卡</th><th>課／圖</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  app.querySelectorAll('[data-sec]').forEach(a=>a.onclick=e=>{e.preventDefault();const k=a.dataset.sec;location.hash='notes-'+k.split('-')[0];setTimeout(()=>{const el=document.getElementById(k);if(el)el.scrollIntoView({block:'start'});},60);});
+  bindVisLinks();
+}
+
+return {visuals,notesPage,cardsPage,mapPage};
+}
+(() => {
+const $=(s,el=document)=>el.querySelector(s);
+const app=$('#app');
+const MINE='<span class="mine">例子係我作嘅</span>';
+const MYNUM='<span class="mine">數字係我設嘅</span>';
+const KEY='reglab-11p2';
+const store={get(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}},
+  set(k,v){const o=this.get();o[k]=v;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}};
+const saveAll=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
+window.__S={store,$};
+const S=()=>Object.assign({xp:0,done:{},streak:0,last:null},store.get());
+function bumpStreak(st){const d=new Date();const today=d.toISOString().slice(0,10);
+  if(st.last===today) return; const y=new Date(d-864e5).toISOString().slice(0,10);
+  st.streak=(st.last===y)?st.streak+1:1; st.last=today;}
+const noteBody=k=>{const n=NOTES.find(x=>x.k===k);return n?{t:n.t,b:n.b}:null;};
+
+/* ---------- shared chart ---------- */
+function chart(P,MC,opt={}){
+  const W=340,H=250,L=34,B=26,T=8,R=8,x=q=>L+(q/100)*(W-L-R),y=p=>H-B-(p/100)*(H-B-T);
+  P=Math.max(P,MC); const Q=100-P;
+  const show=opt.show||['cs','c','a'];
+  let g='';
+  [0,20,40,60,80,100].forEach(t=>{g+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-5}" y="${y(t)+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`;});
+  if(show.includes('cs')) g+=`<polygon points="${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--cs)" fill-opacity="${opt.dim==='cs'?.15:.5}"/>`;
+  if(show.includes('c')&&P>MC) g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="${opt.cColor||'var(--cc)'}" fill-opacity=".65"/>`;
+  if(show.includes('a')&&P>MC) g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(100-MC)},${y(MC)}" fill="var(--aa)" fill-opacity=".8"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+13}" text-anchor="end" font-size="11" fill="var(--ink)">成本 ${MC}</text>`;
+  if(opt.old) g+=`<line x1="${x(0)}" y1="${y(opt.old)}" x2="${x(100)}" y2="${y(opt.old)}" stroke="var(--muted)" stroke-dasharray="2 4"/><text x="${x(100)}" y="${y(opt.old)-4}" text-anchor="end" font-size="10" fill="var(--muted)">合併前成本 ${opt.old}</text>`;
+  g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${x(Q)}" cy="${y(P)}" r="6" fill="var(--accent)"/>`;
+  g+=`<text x="${x(Q)+8}" y="${y(P)-6}" font-size="12" font-weight="700" fill="var(--accent)">售價 ${P}</text>`;
+  if(show.includes('cs')&&Q>10) g+=`<text x="${x(Q*.2)}" y="${y((100+P)/2)+16}" font-size="13" font-weight="900" fill="var(--ink)">CS</text>`;
+  if(show.includes('c')&&P-MC>7) g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+5}" text-anchor="middle" font-size="14" font-weight="900" fill="var(--ink)">C</text>`;
+  if(show.includes('a')&&P-MC>12) g+=`<text x="${x(Q+(100-MC-Q)/3)}" y="${y(MC+(P-MC)/3)+5}" text-anchor="middle" font-size="13" font-weight="900" fill="var(--ink)">A</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="需求線、成本線同售價">${g}</svg>`;
+}
+const calc=(P,MC)=>{P=Math.max(P,MC);const Q=100-P;return{Q,CS:.5*Q*(100-P),C:(P-MC)*Q,A:.5*(P-MC)**2,TW:.5*Q*(100-P)+(P-MC)*Q};};
+const f=n=>Math.round(n).toLocaleString('en');
+
+/* ---------- widgets ---------- */
+const W={ timing(el,done){
+  const S=['議程設定','規劃','討論文件','諮詢','通過']; const I=[95,75,50,25,5]; let v=0; const tried=new Set(); let asked=false;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>一條新嘅全球銀行資本規則，喺唔同階段入局，可以改到幾多？</p><p class="muted" style="font-size:13px">「越早參與影響越大」出自筆記；棒嘅長度係示意。${MYNUM}</p></div>
+   <div class="lbl"><span>你喺邊個階段入局</span><span class="mono" id="sn"></span></div>
+   <input type="range" id="st" min="0" max="4" step="1" value="0" aria-label="入局階段">
+   <div class="barrow"><span>改到<br>幾多</span><span class="track"><i id="ib" style="background:var(--accent)"></i></span><span class="mono" id="iv"></span></div>
+   <p id="sx" style="min-height:50px"></p>
+   <div class="task" id="tk">🎯 搵出 Basel II 期間細銀行同發展中國家大約喺邊個階段先反對</div><div id="qq"></div></div>`;
+  const up=()=>{$('#sn',el).textContent=S[v];$('#ib',el).style.width=I[v]+'%';$('#iv',el).textContent='';
+   $('#sx',el).innerHTML=v===0?'IIF 同委員會主席有私交，喺其他人入局之前已經將內部評級放上議程。':v===3?'2001 年第二稿出街，細銀行同發展中國家先反對，但已經太遲。':'技術草稿越寫越多，放棄成本越嚟越高（遞增回報）。';
+   tried.add(v);
+   if(v===3&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 諮詢階段先出現：太遲。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">Lall 嘅補救入面，邊一項直接對付呢個問題？</p><div class="opts"><button class="opt" data-o="a">每個階段減少議程資訊不對稱（例如公開新項目、廣泛諮詢）</button><button class="opt" data-o="b">完全唔畀業界參與</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const r=b.dataset.o==='a';b.classList.add(r?'right':'wrong');
+     $('#fb',el).innerHTML=r?`<div class="fb ok"><b class="t">啱！</b><p>另外三項：同業界保持距離、限制旋轉門同借調；唔好將關鍵職能交畀持份者；用嚴格監督抵銷早入局優勢。Lall 提議嘅全球「協商式規則制定」，Coglianese 嘅美國實證話未必兌現。</p><span class="src">出處：筆記 06 §五</span></div>`:`<div class="fb hint"><p>💡 Lall 冇話唔畀參與；問題係資訊同時機唔平等。</p></div>`; if(r) done(true);});}};
+  $('#st',el).oninput=e=>{v=+e.target.value;up();};up();
+ },
+ matrix(el,done){
+  let mob='no', pref='same'; const seen=new Set(); let asked=false;
+  const T={'yes-same':['D：影響最大','非目標團體偏好一致又有動員。例：德國中小企協會加入 → 「中小企一攬子」；衍生工具終端用家聯盟 → 豁免企業用家。','出處：筆記 07 §三–四'],
+           'yes-opp':['B：影響最小','非目標團體偏好相反又有動員。例：美國按揭保險商用更長時間嘅數據話銀行低估風險；商品衍生工具嘅農業團體同 NGO。','出處：筆記 07 §三–四'],
+           'no-same':['C','筆記嘅例子：德國銀行自己反對新風險權重，監管者唔理。','出處：筆記 07 §四（格嘅位置係我推嘅）'],
+           'no-opp':['A','筆記冇講呢格嘅例子。','（格嘅位置係我推嘅）']};
+  el.innerHTML=`<div class="wid"><p style="font-weight:700;margin:6px 0">非目標團體有冇動員？</p><div class="tog" id="t1"><button data-v="no" class="on">冇</button><button data-v="yes">有</button></div>
+   <p style="font-weight:700;margin:6px 0">佢哋嘅偏好同被監管金融業……</p><div class="tog" id="t2"><button data-v="same" class="on">一致</button><button data-v="opp">相反</button></div>
+   <div id="out" style="margin:12px 0;padding:12px;border-radius:14px;background:var(--card);border:2px solid var(--line);min-height:110px"></div>
+   <div class="task" id="tk">🎯 搵出金融業影響力最大同最小嘅兩格</div><div id="qq"></div></div>`;
+  const up=()=>{const k=mob+'-'+pref, t=T[k];
+   el.querySelectorAll('#t1 button').forEach(b=>b.classList.toggle('on',b.dataset.v===mob));el.querySelectorAll('#t2 button').forEach(b=>b.classList.toggle('on',b.dataset.v===pref));
+   $('#out',el).innerHTML=`<b style="font-size:18px">${t[0]}</b><p style="margin:6px 0 0">${t[1]}</p><span class="src">${t[2]}</span>`;
+   if(mob==='yes') seen.add(k);
+   if(seen.size===2&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 有動員時，偏好一致係加速器，偏好相反係弱點。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">德國銀行喺 Basel II 自己動員，係咪足夠？</p><div class="opts"><button class="opt" data-o="a">必要但唔足夠：要中小企團體加入、搞到政治化</button><button class="opt" data-o="b">已經足夠</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const r=b.dataset.o==='a';b.classList.add(r?'right':'wrong');
+     $('#fb',el).innerHTML=r?`<div class="fb ok"><b class="t">啱！</b><p>德國工業聯會、手工業總會、工商總會加入，遊說國會，施羅德威脅喺歐盟層面否決；2002 年 7 月巴塞爾委員會被迫加入「中小企一攬子」。</p><span class="src">出處：筆記 07 §四</span></div>`:`<div class="fb hint"><p>💡 銀行自己反對時，監管者有冇理？</p></div>`; if(r) done(true);});}};
+  el.querySelectorAll('#t1 button').forEach(b=>b.onclick=()=>{mob=b.dataset.v;up();});
+  el.querySelectorAll('#t2 button').forEach(b=>b.onclick=()=>{pref=b.dataset.v;up();});up();
+ }
+};
+
+/* ---------- lessons ---------- */
+/* ===== Folder 11 · Part 2 lessons (Week 6 further: notes 06–09) ===== */
+const SCENE_TAG='<p class="muted" style="font-size:14px">情境係我作嘅（海島國係虛構），概念全部出自筆記。</p>';
+const D1={id:'l06',note:'06',icon:'1',name:'時機就係影響力',sub:'筆記 06 · 約 6 分鐘',screens:[
+ {type:'story',h:'海島國去巴塞爾',html:`<div class="scene"><div class="big">🏦</div><p>海島國金融管理局派你去觀察一個全球銀行資本規則嘅制定過程。你發現有幾間大銀行嘅人同委員會官員好熟，早知議程；你哋收到草稿時，好多嘢已經定咗。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'點解交出去？',lead:'政府點解將金融監管權授予跨國網絡同私營組織？',
+  opts:['政府欠缺應付複雜監管問題嘅技術同資源','法律規定'],ans:0,hint:'金融好技術。',
+  ex:'國際金融規則係全球治理入面分配鬥爭最激烈嘅範疇之一。',deep:'06-1',src:'筆記 06 §一'},
+ {type:'match',h:'三種解釋',lead:'配對。',pairs:[['現實主義','最大金融市場嘅國家（美國）話事'],['新馬克思主義','資本靠結構性權力（威脅撤資）同意識形態'],['歷史制度主義','時機同次序決定輸贏']],deep:'06-1',src:'筆記 06 §一'},
+ {type:'mcq',h:'非正式社交網絡',lead:'Lall 講嘅「非正式社交網絡」係……',
+  opts:['核心規則制定者同少數業界人士之間重複、持久、交換資訊同專業嘅社交關係','任何交過諮詢意見嘅人'],ans:0,hint:'要有私交、正式談判以外經常接觸。',
+  ex:'入咗網絡就早知議程，仲會被委以起草、借調、可行性研究，甚至自己提新方案。',deep:'06-2',src:'筆記 06 §二'},
+ {type:'widget',h:'幾時入局？',lead:'拉動滑桿。',w:'timing',deep:'06-2|06-3|06-5'},
+ {type:'mcq',h:'Basel II 幫邊個？',lead:'Basel II 嘅內部評級法令用嘅銀行資本最多減 26.7%。佢係咪幫某個國家？',
+  opts:['唔係：唔理國籍咁幫大型跨國銀行','係：幫美國銀行'],ans:0,hint:'同現實主義預期唔符。',
+  ex:'IIF 同委員會主席有私交（前主席 Cooke 係 IIF 創辦人之一）。Basel III 靠人員互換再搶先；系統重要性附加資本定喺 1.5% 至 3%，雖然聯儲局經濟學家建議最高 7%。',deep:'06-3',src:'筆記 06 §三'},
+ {type:'mcq',h:'會計準則',lead:'英美重「公平值」，歐陸用歷史成本。全球準則跟咗邊個？',
+  opts:['英美會計師行嘅偏好','歐陸嘅偏好'],ans:0,hint:'十二個主席有八個嚟自六大。',
+  ex:'借調者名義上獨立，但有強誘因推動僱主偏好。法國總統希拉克親自寫信反對都改唔到；歐盟委員 Bolkestein 承認歐洲銀行參與得太遲。',deep:'06-4',src:'筆記 06 §四'},
+ {type:'review',h:'快速溫習',ids:[5,6,8,12,15,21,26]}
+],take:['全球金融規則分階段制定；非正式社交網絡成員早入局。','遞增回報：越遲越難改。','Basel II、III 同會計準則：大銀行同英美會計師行搶先。','補救：保持距離、減少議程資訊不對稱、唔下放關鍵職能、嚴格監督。']};
+
+const D2={id:'l07',note:'07',icon:'2',name:'聯盟放大定削弱影響',sub:'筆記 07 · 約 6 分鐘',screens:[
+ {type:'story',h:'銀行帶埋客戶嚟',html:`<div class="scene"><div class="big">🧑‍🤝‍🧑</div><p>海島國收緊衍生工具規則。第一日，銀行公會嚟反對；第二日，一班航空公司同農產品出口商都嚟反對，話規則會加佢哋成本。銀行點解唔再孤軍作戰？</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'金融監管係咪封閉？',lead:'大部分描述將金融監管畫成……',
+  opts:['少數無所不能嘅金融業團體隨意影響嘅封閉領域','好多元'],ans:0,hint:'作者要挑戰呢個。',
+  ex:'但信貸係經濟中心，好多其他行業受影響；依賴信貸嘅企業比一般公眾少受集體行動問題困擾。',deep:'07-1',src:'筆記 07 §一'},
+ {type:'mcq',h:'諮詢數據',lead:'金融諮詢回應者入面，商界佔幾多？',
+  opts:['89.07%','57%'],ans:0,hint:'57% 係 Yackee 同 Yackee 嘅美國規則。',
+  ex:'NGO 5.76%、工會 1.24%、消費者保障 0.95%。但商界差唔多一半唔係被監管目標，而係「同居者」同「局外人」：商界主導唔等於冇多元性。',deep:'07-2',src:'筆記 07 §二'},
+ {type:'flips',h:'聯盟嘅三個好處',lead:'撳開睇。',items:[
+  ['📦 集合資源','低成本擴大遊說：中小企協會嘅會員數目、大企業嘅就業。'],
+  ['🚪 新渠道','尤其當決策場地由監管機構轉去國會。'],
+  ['📣 訊號','證明支持廣泛，尤其係「奇怪拍檔聯盟」。']],deep:'07-3',src:'筆記 07 §三'},
+ {type:'widget',h:'2×2 矩陣',lead:'轉吓兩個開關。',w:'matrix',deep:'07-3|07-4'},
+ {type:'mcq',h:'衍生工具',lead:'海嘯後衍生工具改革，美國商會組織「終端用家聯盟」要求豁免企業用家。結果邊個得益？',
+  opts:['大銀行都得益：銀行將自己利益同企業客戶綁埋','只有企業用家'],ans:0,hint:'Barney Frank 話銀行將終端用家當「人質」。',
+  ex:'《多德－弗蘭克法》同歐盟草案都豁免非金融企業。但商品衍生工具方面，農業團體同 NGO 企喺對面，限倉照樣推行（B 格）。',deep:'07-4',src:'筆記 07 §四'},
+ {type:'mcq',h:'對監管者嘅啟示',lead:'想抵消業界影響，可以點？',
+  opts:['鼓勵立場唔同嘅非目標團體參與（例如按揭保險商嘅數據）','只聽目標業界'],ans:0,hint:'同 Yackee 同 Yackee 嘅建議一致。',
+  ex:'多元性可以係加速器，亦可以係阿基里斯腳跟；唔應該當金融業影響力係一貫、有系統嘅。對照 Lall：佢強調少數內部人早入局。',deep:'07-5',src:'筆記 07 §五'},
+ {type:'review',h:'快速溫習',ids:[30,36,38,43,44,49,57]}
+],take:['金融諮詢 89% 係商界，但差唔多一半唔係被監管目標。','聯盟：集合資源、開新渠道、發訊號。','非目標團體一致又動員 → 影響最大；相反又動員 → 最小。','多元性係加速器亦係弱點。']};
+
+const D3={id:'l08',note:'08',icon:'3',name:'顧問幫手監管',sub:'筆記 08 · 約 5 分鐘',screens:[
+ {type:'story',h:'污染地點交畀顧問？',html:`<div class="scene"><div class="big">🧪</div><p>海島國環保署人手不足，有人建議學美國麻省：將污染場地清理交畀持牌私人顧問決定點查、點清、幾時算乾淨。有同事反對：「顧問收企業錢，梗係幫企業。」</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'監管中介',lead:'「監管中介」係……',
+  opts:['夾喺傳統監管者同被監管對象中間嘅實體','監管機構嘅分部'],ans:0,hint:'例如環境顧問、信評機構。',
+  ex:'文獻對牟利中介特別有戒心，尤其由被監管者付錢。Owen 嘅主張相反：牟利中介都可以加強監管治理。',deep:'08-1',src:'筆記 08 §一'},
+ {type:'mcq',h:'點樣研究？',lead:'Owen 用乜證據？',
+  opts:['約 57 人匿名訪問加行業協會文件；冇辦法量化影響','大型問卷統計'],ans:0,hint:'佢承認冇量化指標。',
+  ex:'個案：麻省持牌場地專業人員（LSP）同加州《環境質素法》（CEQA）。Owen 本人做過顧問同 CEQA 原告律師。',deep:'08-2',src:'筆記 08 §二'},
+ {type:'sort',h:'促成者定守護者？',lead:'分類。',cats:['可信嘅促成者','公共價值嘅守護者'],items:[
+  ['意見技術、務實，冇反監管言論',0,'填補對立同資訊不對稱嘅空隙。'],
+  ['信譽係經營許可；麻省有牌可以被審計同吊銷',0,'做「僱傭槍手」會傳開。'],
+  ['好多人入行係因為信環保目標（「真信徒」）',1,'喺被監管企業之中好罕見。'],
+  ['寫白皮書同指引，令溫室氣體分析成為 CEQA 一部分',1,'靜靜地將有爭議要求變成可行制度。']],deep:'08-3|08-4',src:'筆記 08 §三–四'},
+ {type:'mcq',h:'俘虜咗監管者？',lead:'監管者話未問過顧問唔會改計劃。Owen 點處理俘虜風險？',
+  opts:['承認有風險；但環保人士唔覺得麻省被俘虜，加州執法分散冇單一監管者可俘虜','否認有任何風險'],ans:0,hint:'同 Coen 講英國單一監管者對照。',
+  ex:'佢哋唔係純粹利他，自己都唔扮：環保主義係親商嘅。',deep:'08-3|08-4',src:'筆記 08 §三–四'},
+ {type:'mcq',h:'設計啟示',lead:'Owen 對政策制定者嘅建議係……',
+  opts:['除咗防範，亦可以利用靠監管賺錢企業嘅誘因同文化去推公共價值','禁止私人顧問'],ans:0,hint:'三個根本原因：生意、關係、價值。',
+  ex:'私人影響有時係「順風」。佢亦提醒：「俘虜」定「合作」呢啲標籤，好多時反映貼標籤者嘅政策偏好。',deep:'08-5',src:'筆記 08 §五'},
+ {type:'review',h:'快速溫習',ids:[61,63,66,71,76,79,84,85]}
+],take:['監管中介夾喺監管者同被監管者中間。','環境顧問：可信嘅促成者，亦係（親商嘅）公共價值守護者。','三個根本原因：生意綁住強監管、要維持關係、認同價值。','可以設計制度利用佢哋；標籤反映貼標籤者嘅偏好。']};
+
+const D4={id:'l09',note:'09',icon:'4',name:'歐盟反壟斷私人執法',sub:'筆記 09 · 約 6 分鐘',screens:[
+ {type:'story',h:'交畀法院同私人？',html:`<div class="scene"><div class="big">⚖️</div><p>海島國競爭局人手唔夠，有律師會建議：「取消申報，等企業自己告企業，好似美國咁。」你想起歐盟 2004 年做過一樣嘢，結果唔止改咗執法方式。</p>${SCENE_TAG}</div>`},
+ {type:'match',h:'兩種傳統',lead:'配對。',pairs:[['萊茵（秩序自由主義）','多目標、保護中小企、公營事前審批'],['英美（芝加哥學派）','消費者福利、短期效率、私人事後訴訟']],deep:'09-1',src:'筆記 09 §一'},
+ {type:'mcq',h:'執法有幾公營？',lead:'改革前歐洲競爭案由公營機構執法嘅比例係……',
+  opts:['95%','10%'],ans:0,hint:'美國超過九成由私人提出。',
+  ex:'傳統歐盟模式下委員會集調查、檢控、法官、陪審團同行刑於一身。',deep:'09-1',src:'筆記 09 §一'},
+ {type:'mcq',h:'雙重轉向',lead:'第 1/2003 號規例取消申報。頭兩年國家法院判決由私人原告提出嘅比例係……',
+  opts:['51%','5%'],ans:0,hint:'效果好快。',
+  ex:'企業唔止自己守規，仲要透過訴訟「監察」對手、分銷商同供應商。內容亦轉向芝加哥學派：合併測試、經濟分析、首席競爭經濟學家。',deep:'09-2',src:'筆記 09 §二'},
+ {type:'mcq',h:'對萊茵資本主義',lead:'作者推測雙重轉向會……',
+  opts:['威脅萊茵資本主義嘅基礎，混合模式又唔穩定','令歐洲變成完整英美模式'],ans:0,hint:'制度互補性。',
+  ex:'私人訴訟帶嚟波動，長期投資同合作風險變大。作者承認未有硬數據，係根據資本主義多樣性理論嘅推測。',deep:'09-3',src:'筆記 09 §三'},
+ {type:'sort',h:'邊個推動、得益？',lead:'配對角色。',cats:['委員會','律師業','股東'],items:[
+  ['透過 ECN 同介入權加強對各國嘅控制',0,'表面分權，Wilks 叫「非凡嘅政變」。'],
+  ['籌備階段常客，私人執法係麵包同牛油',1,'美國律師行亦遊說擴展市場。'],
+  ['想引入集體訴訟',2,'跟風上車。']],deep:'09-4',src:'筆記 09 §四'},
+ {type:'mcq',h:'點解成功？',lead:'直接攻擊國家監管會遇阻。改革點解成功？',
+  opts:['去政治化：私營化監管睇落專業技術，收埋後果，受損團體冇動員','因為美國逼'],ans:0,hint:'作者話唔係效率壓力亦唔係美國壓力。',
+  ex:'會計（IFRS）同銀行監管（Basel II）都見到同一模式；萊茵制度「從後門」被侵蝕。業界參與可以改變整個國家模式。',deep:'09-4|09-5',src:'筆記 09 §四–五'},
+ {type:'review',h:'快速溫習',ids:[87,90,93,95,99,103,110,114]}
+],take:['萊茵 vs 英美：目標、法律傳統、公營定私人執法。','2004 年改革：執法轉私人、內容轉芝加哥學派。','得益者：委員會、律師業、股東。','去政治化令萊茵制度「從後門」被侵蝕。']};
+
+const LESSONS=[D1,D2,D3,D4];
+
+
+const LNAME={};LESSONS.forEach((l,k)=>{LNAME[l.note]=`第 ${k+1} 課：${l.name}`;});window.__S.LNAME=LNAME;
+
+
+/* ---------- home ---------- */
+const GROUPS={"0": "一、金融業點樣影響全球規則", "2": "二、顧問同私人執法"};
+function home(){
+  const st=S();
+  const open=k=>k===0||st.done[LESSONS[k-1].id];
+  const allDone=LESSONS.every(l=>st.done[l.id]);
+  const nodes=LESSONS.map((l,k)=>{const d=st.done[l.id],o=open(k);
+    return (GROUPS[k]?`<div class="grp">${GROUPS[k]}</div>`:'')+`<div class="node ${d?'done':o?'open':'locked'}"><button class="dot" data-l="${k}" ${o?'':'disabled'} aria-label="${l.name}">${d?'✓':o?l.icon:'🔒'}</button><div class="nm">${l.name}</div><div class="sub">${l.sub}</div></div>`;}).join('');
+  app.innerHTML=`<div class="home">
+   <div class="stats"><a href="../" class="brand" style="text-decoration:none;color:inherit" aria-label="返去課程目錄">⌂ 業界參與 · 2</a><span class="pills"><span class="pill" title="連續學習日數">🔥 ${st.streak}</span><span class="pill" title="經驗值">⭐ ${st.xp}</span><button class="pill" id="menu" aria-label="選單">☰</button></span></div>
+   <div class="course"><span class="eyebrow">Regulatory Law · 業界同持份者參與規則制定 · Part 2 / 4 · 第 6 週 · 4 課</span><h1>金融業、顧問同私人執法</h1>
+    <p class="muted">跟 7FFLL582 第 6 週嘅延伸閱讀：全球金融規則入面時機就係影響力（Lall）、金融業點樣借聯盟放大或者削弱影響（Pagliari 同 Young）、環境顧問點樣做可信嘅監管中介（Owen）、歐盟反壟斷私人執法點樣侵蝕萊茵資本主義（Wigger 同 Nölke）。故事接住 Part 1：你喺海島國嘅金融、環保同競爭監管之間穿梭。Part 3 同 4（第 7 週）講市民參與。</p>
+    <p class="muted" style="font-size:14px;margin-top:8px"><b>用法：</b>玩一課 → 好奇就撳「📖 想深入啲」→ 課尾溫卡 → 有空喺選單睇圖解同進度地圖。</p>
+    ${Object.keys(st.done).some(k=>st.done[k])?`<button class="review-btn" id="rev">🔁 溫習已學嘅卡</button>`:''}
+    ${allDone?`<p class="okline" style="margin-top:10px">🎉 第 6 週 Part 2 四課全部完成！之後可以去 Part 3（第 7 週）。</p>`:''}</div>
+   <div class="path" id="path">${nodes}</div></div>`;
+  app.querySelectorAll('.dot[data-l]').forEach(b=>b.onclick=()=>play(+b.dataset.l));
+  const r=$('#rev'); if(r) r.onclick=reviewAll;
+  $('#menu').onclick=menu;
+}
+function menu(){
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="選單"><div class="grab"></div><h3>選單</h3>
+   <div class="opts">${[['notes','📖 讀懂版：20 節逐節講解'],['cards','🃏 快速卡：115 張，全部原子命題'],['visuals','🗺️ 圖解：4 幅'],['map','📊 進度地圖：邊節掌握咗']].map(([h,t])=>`<a class="opt" href="#${h}" style="text-decoration:none;color:inherit">${t}</a>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d); d.onclick=e=>{if(e.target===d||e.target.closest('a')) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+/* ---------- player ---------- */
+function play(li){
+  const L=LESSONS[li]; let i=0, xp=0, first=0, total=0;
+  function shell(inner,ready,ctaText){
+    const sc=L.screens[i];
+    app.innerHTML=`<div class="top"><button class="x" id="quit" aria-label="離開">✕</button><div class="bar"><i style="width:${i/L.screens.length*100}%"></i></div><span class="xp">⭐ ${xp}</span></div>
+     <div class="screen" id="sc">${inner}</div>
+     <div class="foot">${sc.deep?`<button class="deep" id="deep">📖 想深入啲</button>`:''}<button class="cta ${ready?'go':''}" id="cta" ${ready?'':'disabled'}>${ctaText||'繼續'}</button></div>`;
+    $('#quit').onclick=()=>{location.hash='';home();};
+    if(sc.deep) $('#deep').onclick=()=>drawer(sc.deep);
+    $('#cta').onclick=()=>{i++; i>=L.screens.length?finish():render();};
+  }
+  const ready=()=>{const c=$('#cta');c.disabled=false;c.classList.add('go');};
+  function render(){
+    const sc=L.screens[i]; const head=`<h2>${sc.h}</h2>${sc.lead?`<p class="lead">${sc.lead}</p>`:''}`;
+    if(sc.type==='story'){shell(head+sc.html,true,'開始');return;}
+    if(sc.type==='mcq'){
+      total++; let tries=0;
+      shell(head+`<div class="opts">${sc.opts.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><div id="fb"></div>`,false);
+      app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(b.disabled) return; tries++;
+        if(j===sc.ans){b.classList.add('right'); if(tries===1){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+          app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+          $('#fb').innerHTML=`<div class="fb ok"><b class="t">${tries===1?'啱！':'啱咗！'}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}
+        else{b.classList.add('wrong');b.disabled=true;
+          if(tries===1) $('#fb').innerHTML=`<div class="fb hint"><b class="t">再諗一諗</b><p>💡 ${sc.hint}</p></div>`;
+          else{const r=app.querySelector(`.opt[data-j="${sc.ans}"]`);r.classList.add('right');app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+            $('#fb').innerHTML=`<div class="fb no"><b class="t">答案係：${sc.opts[sc.ans]}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}}
+      }); return;}
+    if(sc.type==='widget'){
+      total++;
+      shell(head+`<div id="w"></div><div id="aft"></div>`,false);
+      W[sc.w]($('#w'),ok=>{ if(ok){first++;xp+=10;$('.xp').textContent='⭐ '+xp;} if(sc.after) $('#aft').innerHTML=`<div class="fb ok"><p>${sc.after}</p></div>`; ready();});
+      return;}
+    if(sc.type==='flips'){
+      shell(head+`<div class="flips">${sc.items.map((it,j)=>`<button class="flip" data-j="${j}"><span class="h">${it[0]}</span><span class="b">撳一下睇</span></button>`).join('')}</div>${sc.src?`<span class="src">出處：${sc.src}</span>`:''}`,false);
+      const seen=new Set();
+      app.querySelectorAll('.flip').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;b.classList.add('open');b.querySelector('.b').innerHTML=sc.items[j][1];seen.add(j);if(seen.size===sc.items.length) ready();});
+      return;}
+    if(sc.type==='match'){
+      total++; let errs=0, sel=null, matched=0;
+      const R=sc.pairs.map((p,j)=>({t:p[1],j})).sort(()=>Math.random()-.5);
+      shell(head+`<div class="match"><div class="col">${sc.pairs.map((p,j)=>`<button class="mt" data-l="${j}">${p[0]}</button>`).join('')}</div><div class="col">${R.map(r=>`<button class="mt" data-r="${r.j}">${r.t}</button>`).join('')}</div></div><div id="fb"></div>`,false);
+      app.querySelectorAll('.mt[data-l]').forEach(b=>b.onclick=()=>{if(b.classList.contains('done'))return;app.querySelectorAll('.mt[data-l]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=+b.dataset.l;});
+      app.querySelectorAll('.mt[data-r]').forEach(b=>b.onclick=()=>{if(sel===null||b.classList.contains('done'))return;
+        if(+b.dataset.r===sel){b.classList.add('done');const l=app.querySelector(`.mt[data-l="${sel}"]`);l.classList.remove('sel');l.classList.add('done');sel=null;matched++;
+          if(matched===sc.pairs.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+            $('#fb').innerHTML=`<div class="fb ok"><b class="t">全部配啱！</b><span class="src">出處：${sc.src}</span></div>`;ready();}}
+        else{errs++;b.classList.add('err');setTimeout(()=>b.classList.remove('err'),320);}});
+      return;}
+    if(sc.type==='sort'){
+      total++; let errs=0, ok=0;
+      shell(head+`<div class="sortl">${sc.items.map((it,j)=>`<div class="si" data-j="${j}"><div class="st">${it[0]}</div><div class="sc">${sc.cats.map((c,ci)=>`<button class="sb" data-c="${ci}">${c}</button>`).join('')}</div><div class="sw2"></div></div>`).join('')}</div><span class="src">出處：${sc.src}</span>`,false);
+      app.querySelectorAll('.si').forEach(row=>{const j=+row.dataset.j, it=sc.items[j]; let tries=0;
+        row.querySelectorAll('.sb').forEach(b=>b.onclick=()=>{ if(row.classList.contains('done')) return; tries++;
+          if(+b.dataset.c===it[1]){row.classList.add('done');b.classList.add('right');row.querySelector('.sw2').innerHTML=`<span class="okline">✓ ${it[2]}</span>`;ok++;
+            if(ok===sc.items.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp; ready(); }}
+          else{errs++;b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),350);
+            if(tries>=2){row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 答案係「${sc.cats[it[1]]}」：${it[2]}</span>`;}
+            else row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 再諗吓：睇返上面嘅分類標準。</span>`;}});});
+      return;}
+    if(sc.type==='review'){
+      let k=0, flipped=false;
+      const draw=()=>{const c=CARDS[sc.ids[k]];
+        shell(head+`<p class="muted" style="font-size:14px">第 ${k+1} / ${sc.ids.length} 張 · 撳卡反轉。卡背係筆記原文，人名唔使記。</p>
+         <button class="rcard" id="rc">${!flipped?`<span class="q">${c.f}</span><span class="muted" style="font-size:14px">諗好答案，撳一下</span>`
+          :`<span style="font-weight:700">${c.b}</span><blockquote>“${c.q}”</blockquote><span class="src">筆記 ${c.n} §${c.s} · ${c.loc}</span>`}</button>`,
+         flipped&&k===sc.ids.length-1, flipped&&k===sc.ids.length-1?'完成':'繼續');
+        $('#rc').onclick=()=>{ if(!flipped){flipped=true;draw();if(k<sc.ids.length-1){const c2=$('#cta');c2.disabled=false;c2.classList.add('go');c2.onclick=()=>{k++;flipped=false;draw();};}} };
+      }; draw(); return;}
+  }
+  function finish(){
+    const st=S(); const bonus=20; st.xp+=xp+bonus; st.done[L.id]=true; bumpStreak(st); saveAll(st);
+    app.innerHTML=`<div class="done-screen"><div><div class="trophy">🏆</div><h2 style="font-size:26px;margin:6px 0">完成「${L.name}」</h2>
+      <div class="stat3"><div>⭐ XP<b>+${xp+bonus}</b></div><div>🎯 一次答啱<b>${first}/${total}</b></div><div>🔥 連續<b>${st.streak} 日</b></div></div>
+      <div class="take" style="margin:16px auto"><b>帶走呢幾句</b><ul>${L.take.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      ${li+1<LESSONS.length&&L.id!=='rev'?`<button class="cta go" id="nextL" style="width:100%;max-width:520px;margin-bottom:10px">下一課：${LESSONS[li+1].name} →</button>`:''}
+      <button class="cta" id="back" style="width:100%;max-width:520px">返去路線圖</button></div></div>`;
+    confetti(); $('#back').onclick=()=>{location.hash='';home();}; const nl=$('#nextL'); if(nl) nl.onclick=()=>play(li+1);
+  }
+  render();
+}
+function drawer(k){
+  const ks=k.split('|').filter(x=>noteBody(x)); if(!ks.length) return;
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="深入講解"><div class="grab"></div>${ks.map(x=>{const n=noteBody(x);return `<span class="eyebrow">筆記 ${x.replace('-',' §')} · 讀懂版</span><h3>${n.t}</h3><div class="nb" style="margin-bottom:14px">${n.b}</div>`;}).join('')}
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+function reviewAll(){
+  const st=S(); const ids=LESSONS.filter(l=>st.done[l.id]).flatMap(l=>l.screens.find(s=>s.type==='review').ids);
+  const fake={id:'rev',name:'溫習',screens:[{type:'review',h:'溫習已學嘅卡',ids:ids.sort(()=>Math.random()-.5)}],take:['隔幾日再嚟溫一次，記得更牢。']};
+  LESSONS.push(fake); play(LESSONS.length-1); LESSONS.pop();
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=document.createElement('canvas'); c.className='confetti'; document.body.appendChild(c);
+  const x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const cols=['#4B4FD9','#1F9D62','#E5A800','#D2423A'];
+  const ps=Array.from({length:90},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.4,v:2+Math.random()*3,r:Math.random()*6.28,s:5+Math.random()*5,c:cols[Math.floor(Math.random()*4)]}));
+  let t=0; (function fr(){x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore();});
+    if(++t<150) requestAnimationFrame(fr); else c.remove();})();
+}
+function sub(title,fn,arg){
+  app.innerHTML=`<div class="top"><button class="x" id="bk" aria-label="返回">←</button><b style="flex:1">${title}</b></div><div class="home pg" id="pg"></div>`;
+  $('#bk').onclick=()=>{location.hash='';};
+  const P=makePages($('#pg')); P[fn](arg);
+}
+function route(){
+  const h=location.hash.replace('#',''); const base=h.split('-')[0], arg=h.slice(base.length+1);
+  if(base==='notes') sub('讀懂版','notesPage',arg||null);
+  else if(base==='cards') sub('快速卡','cardsPage',arg||'');
+  else if(base==='visuals') sub('圖解','visuals');
+  else if(base==='map') sub('進度地圖','mapPage');
+  else if(base==='lesson'){const k=LESSONS.findIndex(l=>l.note===arg); if(k>=0){const st=S(); const ok=k===0||st.done[LESSONS[k-1].id]; ok?play(k):home();} else home();}
+  else home();
+}
+window.addEventListener('hashchange',route);
+window.__RL={NOTES,CARDS_DATA,LESSONS};
+route();
+})();
+</script>
+<!--TERMS-->
+<script>const TERMS_DATA=[["反壟斷", "antitrust", "m"], ["利益團體", "interest groups", "n"], ["旋轉門", "revolving door", "m"], ["工作小組", "working group", "m"], ["制度互補性", "institutional complementarity", "n"], ["信用評級機構", "credit rating agencies (CRAs)", "n"], ["信評機構", "credit rating agencies", "m"], ["巴塞爾委員會", "Basel Committee (BCBS)", "n"], ["內部人", "insiders", "m"], ["信譽", "reputation", "m"], ["監察", "policing", "n"], ["資本主義多樣性", "varieties of capitalism", "n"], ["行業協會", "trade associations", "m"], ["協商式規則制定", "negotiated rulemaking", "m"], ["遊說", "lobbying", "m"], ["結構性權力", "structural power", "n"], ["歷史制度主義", "historical institutionalism", "m"], ["現實主義", "realism", "m"], ["非正式社交網絡", "informal social networks (ISN)", "m"], ["遞增回報", "increasing returns", "m"], ["先行者", "first movers", "m"], ["監管稅", "regulatory tax", "m"], ["內部評級", "internal ratings-based approach", "m"], ["標準方法", "standardised approach", "m"], ["國際金融協會", "Institute of International Finance (IIF)", "m"], ["系統重要性銀行", "systemically important banks", "m"], ["公平值", "fair value", "n"], ["歷史成本", "historical cost", "m"], ["國際會計準則理事會", "International Accounting Standards Board (IASB)", "n"], ["借調", "secondment", "m"], ["跟尾", "bandwagoning", "m"], ["奇怪拍檔聯盟", "strange bedfellow coalitions", "m"], ["靜默政治", "quiet politics", "n"], ["抗衡團體", "countervailing groups", "m"], ["集體行動問題", "collective action problems", "m"], ["終端用家", "end-users", "m"], ["場外衍生工具", "over-the-counter (OTC) derivatives", "m"], ["集中結算", "central clearing", "m"], ["限倉", "position limits", "m"], ["阿基里斯腳跟", "Achilles' heel", "m"], ["監管中介", "regulatory intermediaries", "n"], ["持牌場地專業人員", "Licensed Site Professionals (LSP)", "n"], ["真信徒", "true believers", "n"], ["中立經紀", "honest broker", "m"], ["僱傭槍手", "hired gun", "m"], ["秩序自由主義", "ordo-liberalism", "n"], ["芝加哥學派", "Chicago School", "m"], ["萊茵資本主義", "Rhenish capitalism", "m"], ["萊茵模式", "Rhenish model", "m"], ["英美模式", "Anglo-Saxon model", "m"], ["私人執法", "private enforcement", "m"], ["集體訴訟", "class actions", "m"], ["去政治化", "depoliticisation", "m"], ["申報", "notification", "m"], ["監管俘虜", "regulatory capture", "n"], ["消費者福利", "consumer welfare", "m"], ["壟斷", "monopoly", "n"], ["資訊不對稱", "information asymmetry", "m"], ["競爭法", "competition law", "m"], ["競爭政策", "competition policy", "m"], ["倡議", "advocacy", "n"], ["因地制宜", "context-specific design", "m"], ["監管機構", "regulatory agency", "m"], ["監管者", "regulator", "m"], ["規則制定", "rule-making", "n"], ["歐洲競爭網絡", "European Competition Network (ECN)", "n"], ["問責", "accountability", "n"], ["政策網絡", "policy networks", "n"], ["豁免", "exemption", "m"], ["分權", "decentralisation", "m"], ["授權", "delegation", "m"], ["私有化", "privatisation", "m"], ["統一", "uniformity", "m"], ["多元", "diversity", "n"], ["規例", "regulation", "n"], ["指令", "directive", "n"]];
+(function(){
+/* English key terms: first time a term shows up on a screen / card / panel, add （English） after it. TERMS is injected at build. */
+const T=TERMS_DATA.slice().sort((a,b)=>b[0].length-a[0].length);
+const MAP=new Map(T.map(t=>[t[0],t]));
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const RE=new RegExp(T.map(t=>esc(t[0])).join('|'),'g');
+const DONE=new Map(T.map(t=>[t[0],new RegExp(esc(t[0])+'\\s*[（(]\\s*[A-Za-z]')]));
+const SKIP='h1,h2,h3,.brand,.nm,.sub,.pill,.grp,.dot,svg,script,style,textarea,input,blockquote,.src,.en,.tag,.tabs,.mono,.eyebrow,code,#gate,.termsheet';
+const BOX='#sc,.sheet .in,.fcard,.panel,section,tr,.node,.lvhead,.course,.crs';
+function box(n){const e=n.nodeType===1?n:n.parentElement;return (e&&e.closest(BOX))||document.getElementById('app')||document.body;}
+function gloss(root){
+  if(!root) return;
+  if(root.nodeType===1&&root.closest&&root.closest(SKIP)) return;
+  const tw=document.createTreeWalker(root.nodeType===3?root.parentNode:root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+    if(root.nodeType===3&&n!==root) return NodeFilter.FILTER_REJECT;
+    const p=n.parentElement; if(!p||p.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+    RE.lastIndex=0; return RE.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+  const list=[]; let n; while((n=tw.nextNode())) list.push(n);
+  list.forEach(tn=>{
+    const c=box(tn); const v=tn.nodeValue; RE.lastIndex=0; let m, cut=[];
+    const seen=new Set();
+    while((m=RE.exec(v))){const k=m[0]; if(seen.has(k)) continue; seen.add(k);
+      const after=v.slice(m.index+k.length);
+      if(/^\s*[（(]\s*[A-Za-z]/.test(after)) continue;
+      if(DONE.get(k).test(c.textContent)) continue;
+      cut.push([m.index+k.length,MAP.get(k)]);}
+    if(!cut.length) return;
+    // only one gloss per term per box: re-check in order while inserting
+    let node=tn, offset=0;
+    cut.forEach(([pos,t])=>{
+      if(DONE.get(t[0]).test(c.textContent)) return;
+      const rest=node.splitText(pos-offset); offset=pos;
+      const s=document.createElement('span'); s.className='en'; s.lang='en'; s.textContent='（'+t[1]+'）';
+      rest.parentNode.insertBefore(s,rest); node=rest;});
+  });
+}
+function legend(vp){
+  if(vp.querySelector('.vterms')) return;
+  const svg=vp.querySelector('svg'); if(!svg) return;
+  const txt=svg.textContent; RE.lastIndex=0; const found=[]; const seen=new Set(); let m;
+  while((m=RE.exec(txt))){const t=MAP.get(m[0]); if(!seen.has(t[1])){seen.add(t[1]);found.push(t);}}
+  if(!found.length) return;
+  const p=document.createElement('p'); p.className='vterms muted';
+  p.innerHTML='<b>英文術語：</b>'+found.map(t=>`${t[0]}<span class="en" lang="en">（${t[1]}）</span>`).join(' · ');
+  vp.appendChild(p);
+}
+function sheet(){
+  const d=document.createElement('div'); d.className='sheet termsheet';
+  const rows=T.slice().sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}));
+  d.innerHTML=`<div class="in" role="dialog" aria-label="英文術語表"><div class="grab"></div><h3>🔤 英文術語表</h3>
+   <p class="muted" style="font-size:14px">呢個課程用到嘅術語，按英文排。做 research 時用英文搵。<b>†</b>＝筆記冇寫英文，英文係我加嘅標準譯法。</p>
+   <input id="tq" type="search" placeholder="搵中文或者英文" aria-label="搵術語" style="width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0 10px">
+   <div id="tl">${rows.map(t=>`<div class="trow"><span lang="en"><b>${t[1]}</b>${t[2]==='m'?' †':''}</span><span>${t[0].replace(/[「」]/g,'')}</span></div>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="tcl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; d.querySelector('#tcl').onclick=()=>d.remove();
+  d.querySelector('#tq').oninput=e=>{const q=e.target.value.trim().toLowerCase();d.querySelectorAll('.trow').forEach(r=>{r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none';});};
+}
+function menuHook(el){
+  const inn=el.querySelector('.in[aria-label="選單"]'); if(!inn||inn.querySelector('#tbtn')) return;
+  const opts=inn.querySelector('.opts'); if(!opts) return;
+  const b=document.createElement('button'); b.className='opt'; b.id='tbtn'; b.type='button'; b.textContent=`🔤 英文術語表：${T.length} 個`;
+  b.onclick=()=>{el.remove(); sheet();}; opts.appendChild(b);
+}
+function scan(node){
+  if(node.nodeType===1){
+    if(node.classList&&node.classList.contains('sheet')) menuHook(node);
+    (node.matches&&node.matches('.vispanel')?[node]:[...(node.querySelectorAll?node.querySelectorAll('.vispanel'):[])]).forEach(legend);
+  }
+  gloss(node);
+}
+const st=document.createElement('style');
+st.textContent='.en{font-size:.84em;font-weight:500;color:var(--muted);font-family:var(--f);letter-spacing:0}.opt .en,.cta .en{color:inherit;opacity:.75}.vterms{font-size:13px;margin:10px 2px 0;line-height:1.7}.trow{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:15px}.trow span:last-child{text-align:right;color:var(--muted)}';
+document.head.appendChild(st);
+const mo=new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1&&n.classList&&n.classList.contains('en'))return; scan(n);}));});
+mo.observe(document.body,{childList:true,subtree:true});
+scan(document.body);
+window.__TERMS=T;
+})();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{}));}</script>
+</body>
+</html>
