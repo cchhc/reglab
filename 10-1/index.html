@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="監管實驗室">
+<meta name="theme-color" content="#141A26">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;-webkit-text-size-adjust:100%}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>國際規則制定 Part 1</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: mobile-first full-screen lesson player — one idea per screen, Continue pinned to the bottom; a course path is home. */
+:root{
+  --bg:#F2F4F8; --card:#FFFFFF; --ink:#141A26; --muted:#5D6779; --line:#D9DEE8; --soft:#E9ECF3;
+  --accent:#4B4FD9; --accent-ink:#FFFFFF; --accent-soft:#E6E7FB;
+  --good:#1F9D62; --good-soft:#DFF4EA; --bad:#D2423A; --bad-soft:#FBE6E4; --warn:#B7790A;
+  --cs:#4B4FD9; --cc:#E5A800; --aa:#D2423A;
+  --f:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{overflow:hidden;height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+.muted{color:var(--muted)} .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mine{display:inline-block;font-size:12px;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 6px;margin-left:4px;vertical-align:middle}
+
+/* ---------- home / path ---------- */
+.home{flex:1;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.stats{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{font-weight:900;font-size:22px;letter-spacing:.02em}
+.pills{display:flex;gap:8px}
+.pill{display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px}
+.course{background:var(--card);border-radius:22px;padding:18px;border:1px solid var(--line);margin-bottom:22px}
+.course h1{font-size:24px;line-height:1.3;margin:4px 0 6px;font-weight:900;text-wrap:balance}
+.course p{margin:0}
+.eyebrow{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0 20px}
+.path svg.line{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:220px}
+.node:nth-child(odd){transform:translateX(-60px)} .node:nth-child(even){transform:translateX(60px)}
+.dot{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:900;background:var(--soft);color:var(--muted);border:3px solid var(--line);box-shadow:0 6px 0 var(--line)}
+.node.open .dot{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 6px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.node.done .dot{background:var(--good);color:#fff;border-color:var(--good);box-shadow:0 6px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.node.open .dot{animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.node .nm{font-weight:700;text-align:center;font-size:15.5px;line-height:1.35}
+.node .sub{font-size:13px;color:var(--muted);text-align:center}
+.node.locked{opacity:.55}
+.review-btn{width:100%;margin-top:6px;background:var(--card);border:1.5px dashed var(--accent);color:var(--accent);border-radius:16px;padding:14px;font-weight:700}
+
+/* ---------- lesson player ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+.x{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:var(--muted)}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:999px;transition:width .35s}
+.xp{font-weight:900;font-size:15px;color:var(--warn);min-width:52px;text-align:right}
+.screen{flex:1;overflow-y:auto;padding:10px max(18px,env(safe-area-inset-right,0px)) 24px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.screen h2{font-size:23px;line-height:1.35;margin:4px 0 0;font-weight:900;text-wrap:balance}
+.screen p{margin:0}
+.lead{font-size:17.5px}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:8px}
+.big{font-size:44px;line-height:1}
+.opts{display:grid;gap:10px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;font-weight:700;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt.sel{border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft);box-shadow:0 4px 0 var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 4px 0 var(--bad);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opt[disabled]{cursor:default}
+.fb{border-radius:16px;padding:14px 16px;display:grid;gap:6px;animation:in .2s ease}
+.fb.ok{background:var(--good-soft)} .fb.no{background:var(--bad-soft)} .fb.hint{background:var(--accent-soft)}
+.fb b.t{font-size:17px}
+.src{font-size:12.5px;color:var(--muted)}
+.foot{padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;border-top:1px solid var(--line);background:var(--bg)}
+.cta{flex:1;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:15px;font-weight:900;font-size:17px;box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.cta:disabled{background:var(--soft);color:var(--muted);box-shadow:0 5px 0 var(--line);cursor:default}
+.cta.go{background:var(--good);color:#fff;box-shadow:0 5px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.deep{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:0 14px;font-weight:700;font-size:14px;color:var(--muted);box-shadow:0 5px 0 var(--line)}
+/* drawer */
+.sheet{position:fixed;inset:0;background:rgba(10,14,22,.45);display:flex;align-items:flex-end;z-index:20;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet .in{background:var(--card);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:78%;overflow-y:auto;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px)}}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h3{margin:0 0 8px;font-size:19px}
+.sheet .nb{display:grid;gap:8px;font-size:15.5px}.sheet ul{margin:0;padding-left:20px;display:grid;gap:6px}
+/* widgets */
+.wid{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
+input[type=range]{width:100%;accent-color:var(--accent);height:30px}
+.lbl{display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.barrow{display:grid;grid-template-columns:76px 1fr 54px;gap:8px;align-items:center;font-size:14.5px}
+.barrow .track{height:22px;background:var(--soft);border-radius:8px;overflow:hidden}
+.barrow .track i{display:block;height:100%;border-radius:8px;transition:width .2s}
+.chart{width:100%;height:auto;display:block}
+.task{font-weight:700;color:var(--accent);font-size:15px;display:flex;gap:8px;align-items:center}
+.task.ok{color:var(--good)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{background:var(--soft);border-radius:12px;padding:8px;text-align:center;font-size:12.5px;color:var(--muted);font-weight:700}
+.nums b{display:block;font-family:var(--mono);font-size:19px;color:var(--ink)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.tog{display:flex;background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.tog button{flex:1;padding:10px;border-radius:11px;font-weight:700;font-size:15px;color:var(--muted)}
+.tog button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.flips{display:grid;gap:10px}
+.flip{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;box-shadow:0 4px 0 var(--line);display:grid;gap:4px}
+.flip .h{font-weight:900}.flip .b{color:var(--muted);font-size:15px}
+.flip.open{border-color:var(--accent)}
+.flip.open .b{color:var(--ink)}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:grid;gap:10px;align-content:start}
+.mt{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;font-weight:700;font-size:15px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.mt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.mt.done{border-color:var(--good);background:var(--good-soft);opacity:.8}
+.mt.err{animation:shake .3s;border-color:var(--bad)}
+.rcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;min-height:210px;display:grid;align-content:center;gap:10px;box-shadow:0 5px 0 var(--line);text-align:left}
+.rcard .q{font-size:21px;font-weight:900;line-height:1.4}
+.rcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+/* complete */
+.done-screen{flex:1;display:grid;place-items:center;text-align:center;padding:24px;gap:10px}
+.done-screen .trophy{font-size:72px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.stat3{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat3 div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 16px;font-weight:700}
+.stat3 b{display:block;font-size:24px}
+.take{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;display:grid;gap:6px;max-width:520px}
+.take ul{margin:0;padding-left:20px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+/* sort screen */
+.sortl{display:grid;gap:12px}
+.si{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:8px}
+.si.done{border-color:var(--good)}
+.si .st{font-weight:700}
+.si .sc{display:flex;flex-wrap:wrap;gap:8px}
+.sb{border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:700;font-size:14.5px;background:var(--bg);min-height:44px}
+.sb.right{border-color:var(--good);background:var(--good-soft)}
+.sb.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s}
+.si.done .sb:not(.right){opacity:.4}
+.okline{color:var(--good);font-weight:700;font-size:14.5px}
+.hintline{color:var(--accent);font-weight:700;font-size:14.5px}
+.grp{z-index:1;font-weight:900;font-size:14px;color:var(--muted);letter-spacing:.06em;background:var(--bg);padding:2px 10px;border-radius:8px}
+button.pill{cursor:pointer}
+/* sub pages (reading notes, cards, visuals, map) */
+.pg{--surface:var(--card);--surface2:var(--soft);--area-cs:var(--cs);--area-c:var(--cc);--area-a:var(--aa);--f-display:var(--f);--r:16px}
+.pg h2{font-size:22px;line-height:1.35;margin:4px 0;font-weight:900;text-wrap:balance}
+.pg h3{font-size:18px;margin:0;line-height:1.35}
+.pg p{margin:0}
+.pg .lvhead{display:grid;gap:8px;margin-bottom:14px}
+.pg .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.pg .stack{display:flex;flex-direction:column;gap:12px}
+.pg .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pg .tabs{display:flex;flex-wrap:wrap;gap:6px}
+.pg .tab{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 11px;font-size:13.5px;font-weight:700;min-height:36px}
+.pg .tab.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.pg .chip{display:inline-block;font-size:13px;font-weight:700;text-decoration:none;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:3px 10px;background:var(--card)}
+.pg .chip.ok{color:var(--good);border-color:var(--good)}
+.pg .links{gap:8px;margin-top:6px}
+.pg .nbody{display:grid;gap:8px;font-size:16px}
+.pg .nbody ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.pg .readchk{font-size:14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.pg .readchk input{width:22px;height:22px}
+.pg .tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);background:var(--soft)}
+.pg .btn{border:1.5px solid var(--ink);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:700;min-height:40px}
+.pg .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pg .btn.ghost{border-color:var(--line)}
+.pg .btn.sm{padding:5px 12px;font-size:13.5px;min-height:36px}
+.pg .progress{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.pg .progress i{display:block;height:100%;background:var(--good)}
+.pg .fcard{min-height:240px;border:2px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);padding:22px 18px;display:grid;align-items:center;cursor:pointer;margin-top:10px}
+.pg .fcard.flip{border-color:var(--accent)}
+.pg .fcard.done{cursor:default;text-align:center}
+.pg .ff,.pg .fcard .fb{display:grid;gap:12px;background:none;padding:0;animation:none;border-radius:0}
+.pg .fq{font-size:21px;font-weight:900;line-height:1.4}
+.pg .fa{font-size:16.5px;font-weight:600}
+.pg .fcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+.pg .vis{width:100%;height:auto;display:block;font-family:var(--f)}
+.pg .viswrap{overflow-x:auto;margin-top:8px}
+.pg .viswrap .vis{min-width:560px}
+.pg .fo{font-size:12.5px;line-height:1.45;color:var(--ink);display:grid;gap:4px}
+.pg .fo p{margin:0}.pg .fo.c{text-align:center}
+.pg .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.pg table.map{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+.pg table.map th{text-align:left;font-size:12px;color:var(--muted);padding:10px 12px;border-bottom:1.5px solid var(--line)}
+.pg table.map td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.pg table.map td.c{text-align:center}
+.pg table.map tr.nh td{background:var(--soft)}
+.pg table.map a{color:var(--ink)}
+.pg .okb{font-size:12px;font-weight:700;color:var(--good);border:1.5px solid var(--good);border-radius:5px;padding:0 6px}
+.pg .mono{font-family:var(--mono)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px">
+ <form id="gf" style="display:grid;gap:12px;max-width:320px;width:100%;text-align:center">
+  <div style="font-size:30px;font-weight:900">國際規則 · 1</div>
+  <label for="gp" class="muted">輸入密碼</label>
+  <input id="gp" type="password" inputmode="numeric" autocomplete="current-password" style="font-size:22px;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)">
+  <button class="cta go" type="submit">入去</button>
+  <p id="ge" style="color:var(--bad);min-height:1.4em"></p>
+ </form></div>
+<script>(function(){const H='d83036ffb5b49a153bc391fd12b4a10df06bbb200f39fed97c331b03b6833ce7',K='reglab-ok',g=document.getElementById('gate');
+ try{if(localStorage.getItem(K)===H){g.remove();return;}}catch(e){}
+ document.getElementById('gf').addEventListener('submit',async e=>{e.preventDefault();
+  const v=document.getElementById('gp').value.trim();
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const x=[...new Uint8Array(b)].map(n=>n.toString(16).padStart(2,'0')).join('');
+  if(x===H){try{localStorage.setItem(K,H)}catch(e){} g.remove();} else document.getElementById('ge').textContent='密碼唔啱，再試一次';});
+})();</script>
+<div id="app"></div>
+
+<script>
+const CARDS_DATA=[{"id": 0, "n": "01", "s": 1, "t": "fact", "f": "二十世紀嘅「走向法律」對全球治理有咩影響？", "b": "Roger 認為二十世紀嘅「走向法律」用大量有約束力嘅協議改變咗全球治理嘅版圖", "q": "This “move to law” transformed the terrain of global governance, entangling political actors in a vast legal web.", "loc": "Roger2020 p.1"}, {"id": 1, "n": "01", "s": 1, "t": "fact", "f": "國際法律化放慢嘅同時，出現咗咩新趨勢？", "b": "Roger 認為國際法律化放慢嘅同時出現咗「走向非正式」，好多機構喺傳統國際法範圍以外成立", "q": "as legalization slowed, a corresponding move to informality occurred, as a range of institutions were established beyond the traditional boundaries of international law", "loc": "Roger2020 p.1"}, {"id": 2, "n": "01", "s": 1, "t": "fact", "f": "G20 同正式國際組織比，欠咗啲乜？", "b": "Roger 指出 G20 冇常設秘書處、喺國際法上亦冇正式地位", "q": "it has no permanent secretariat and no formal status under international law", "loc": "Roger2020 p.2"}, {"id": 3, "n": "01", "s": 1, "t": "fact", "f": "今日非正式國際組織最多佔現存國際組織幾多？", "b": "Roger 嘅數據顯示非正式國際組織最多佔現存國際組織三分之一", "q": "they constitute as much as a third of all the currently active international organizations", "loc": "Roger2020 p.8"}, {"id": 4, "n": "01", "s": 1, "t": "fact", "f": "二戰剛完嗰陣，非正式國際組織佔幾多？", "b": "Roger 嘅數據顯示二戰結束時非正式國際組織只佔當時國際組織嘅 5% 至 10%", "q": "At the end of World War II, there were only a few informal organizations, constituting between 5 and 10 percent of all the international bodies active at that point.", "loc": "Roger2020 p.8"}, {"id": 5, "n": "01", "s": 1, "t": "fact", "f": "走向非正式主要由邊啲國家推動？", "b": "Roger 嘅數據顯示走向非正式主要由北美同歐洲嘅先進工業國推動", "q": "this phenomenon has largely been driven by advanced industrial states in North … America and Europe", "loc": "Roger2020 p.8"}, {"id": 6, "n": "01", "s": 2, "t": "fact", "f": "秘書處點樣分開正式同非正式組織？係唔係硬規則？", "b": "Roger 認為正式國際組織差唔多一定有秘書處，而非正式國際組織好多時冇", "q": "formal ones almost always have secretariats while informal ones frequently do not", "loc": "Roger2020 p.6"}, {"id": 7, "n": "01", "s": 2, "t": "definition", "f": "Roger 用乜嘢做最根本嘅標準分正式同非正式國際組織？", "b": "Roger 以法律基礎區分正式同非正式國際組織：前者由有法律約束力嘅國際協議成立，後者由冇約束力嘅文書成立", "q": "whereas formal organizations are constituted by legally binding international agreements, informal bodies are constituted by nonbinding instruments", "loc": "Roger2020 p.6"}, {"id": 8, "n": "01", "s": 2, "t": "evaluation", "f": "文獻一般話非正式機構有咩「功能特性」？", "b": "Eilstrup-Sangiovanni、Vabulas 同 Snidal 等學者認為非正式國際機構比正式機構快、靈活同保密", "q": "informal institutions are thought to be inter alia faster, more flexible, and more confidential than their formal counterparts", "loc": "**Eilstrup-Sangiovanni; Vabulas & Snidal; Sauer**, in Roger2020 p.7"}, {"id": 9, "n": "01", "s": 2, "t": "fact", "f": "點解喺國內開一個正式國際組織咁難？", "b": "Roger 認為喺國內成立正式國際組織要過較大嘅政治、法律同預算關卡", "q": "Establishing a formal organization, for instance, can be a very demanding process domestically, raising bigger political, legal, and budgetary hurdles.", "loc": "Roger2020 p.7"}, {"id": 10, "n": "01", "s": 2, "t": "conceptual", "f": "Roger 話除咗功能特性，仲有乜同樣重要？", "b": "Roger 認為正式同非正式組織嘅國內含義，喺解釋點解國家想成立佢哋時，同功能特性一樣重要", "q": "these contrasting domestic implications can be just as significant as the functional properties of these institutions when it comes to explaining why states, and actors within states, want to create them", "loc": "Roger2020 p.7"}, {"id": 11, "n": "01", "s": 3, "t": "cause", "f": "Roger 嘅中心命題：幾時國家會揀非正式組織？", "b": "Roger 認為有管治需求、而且決策者面對國內阻力或者由獨立機構帶頭時，國家會揀非正式國際組織", "q": "Informal organizations, I argue, are preferred when there is demand for governance", "loc": "Roger2020 p.4"}, {"id": 12, "n": "01", "s": 3, "t": "cause", "f": "獨立機構帶頭成立新國際機構時，點解傾向非正式？", "b": "Roger 認為獨立機構帶頭成立新國際機構時傾向非正式，因為非正式有助保住佢哋嘅政策自主", "q": "or independent agencies play a leading role in the creation of new institutions, since informality helps to preserve their", "loc": "Roger2020 p.4"}, {"id": 13, "n": "01", "s": 3, "t": "conceptual", "f": "Macey 話決定國際合作嘅係邊個？", "b": "Macey 認為決定國際合作嘅唔係國家本身，而係國家入面嘅監管者、官僚同政客", "q": "nations do not decide to cooperate or forge international agreements, rather the regulators, bureaucrats, and politicians within nations do", "loc": "**Macey**, in Roger2020 p.9"}, {"id": 14, "n": "01", "s": 3, "t": "cause", "f": "政治機構（例如部委）點解傾向正式合作？", "b": "Roger 認為政治機構傾向正式國際合作，因為正式合作有助掌權者展示領導同鎖定政策偏好", "q": "Political institutions, I argue, tend to prefer formal cooperation that helps those in charge to demonstrate leadership and lock in their policy preferences more effectively.", "loc": "Roger2020 p.9"}, {"id": 15, "n": "01", "s": 3, "t": "cause", "f": "獨立機構點解傾向非正式合作？", "b": "Roger 認為獨立機構傾向非正式國際合作，因為非正式合作更能保住佢哋嘅自主、俾佢哋靠專業權威做決定", "q": "Independent agencies, by contrast, often prefer informal cooperation that preserves their autonomy more effectively and allows decisions to be made on the basis of an agency’s … expert authority", "loc": "Roger2020 p.10"}, {"id": 16, "n": "01", "s": 3, "t": "cause", "f": "政客面對國內強烈反對，正式合作會點？", "b": "Roger 認為政客面對國內強烈反對時，正式國際合作會變難、政治機會成本會上升", "q": "When politicians face significant domestic opposition, legalized cooperation becomes more difficult, and political opportunity costs rise.", "loc": "Roger2020 p.10"}, {"id": 17, "n": "01", "s": 3, "t": "cause", "f": "獨立機構嘅代表團被政治化，會推向邊個方向？", "b": "Roger 認為獨立機構嘅國家代表團被政治化時，國家走正式國際合作嘅機會會上升", "q": "the probability that formal cooperation will be pursued should rise", "loc": "Roger2020 p.10"}, {"id": 18, "n": "01", "s": 3, "t": "cause", "f": "國際議價入面，想要非正式嘅國家點解有優勢？", "b": "Roger 認為喺國際議價入面，想要非正式組織嘅國家有優勢，因為佢哋嘅偏好貼近現狀", "q": "states preferring informality may have a bargaining advantage, since their preference is by nature much closer to the prevailing status quo", "loc": "Roger2020 p.11"}, {"id": 19, "n": "01", "s": 4, "t": "cause", "f": "Roger 話走向非正式嘅兩個長期國內原因係乜？", "b": "Roger 認為走向非正式主要歸因於先進工業國嘅政治兩極化同規管型國家嘅出現", "q": "the growth of political polarization, which is pervasive today but has grown steadily since the 1970s, and the complex … transformations associated with the emergence of the regulatory state over roughly the same period", "loc": "Roger2020 p.5"}, {"id": 20, "n": "01", "s": 4, "t": "fact", "f": "獨立機構越嚟越普遍、又行出國際，佢哋想保住乜？", "b": "Roger 認為獨立機構越嚟越普遍，並隨全球化更深入參與國際事務，同時想保住自主", "q": "These bodies have become … increasingly common and, with globalization, have become more deeply involved in international affairs, aiming to preserve their autonomy while doing so.", "loc": "Roger2020 p.12"}, {"id": 21, "n": "01", "s": 5, "t": "conceptual", "f": "功能論點解釋國家揀非正式？", "b": "Roger 概括功能論：國家會喺非正式組織係解決特定問題嘅最佳方法時揀非正式", "q": "States are assumed to behave instrumentally and, on average, are predicted to create informal organizations when they offer an optimal solution to the particular problem states confront", "loc": "Roger2020 p.12"}, {"id": 22, "n": "01", "s": 5, "t": "conceptual", "f": "權力論話強國同弱國各自偏好乜？", "b": "Roger 概括權力論：強國偏好有最大彈性嘅非正式安排，弱國偏好更有約束力嘅正式安排", "q": "Powerful states are hypothesized to prefer informal solutions that enable maximum flexibility while less powerful states prefer formal ones that more effectively bind.", "loc": "Roger2020 p.13"}, {"id": 23, "n": "01", "s": 5, "t": "conceptual", "f": "Roger 嘅理論同功能論、權力論係咩關係？", "b": "Roger 認為自己以國內政治為本嘅理論同功能論、權力論係互相補充", "q": "it is actually complementary to such accounts", "loc": "Roger2020 p.13"}, {"id": 24, "n": "01", "s": 6, "t": "evaluation", "f": "樂觀派（例如 Jake Sullivan）點睇非正式合作？", "b": "Jake Sullivan 認為非正式合作機制更適合處理今日分散而複雜嘅跨國挑戰", "q": "better suited to handle the diffuse and complex nature of transnational challenges today", "loc": "**Sullivan**, in Roger2020 p.14"}, {"id": 25, "n": "01", "s": 6, "t": "evaluation", "f": "悲觀派擔心非正式化會削弱乜？", "b": "Herz 同 Ribeiro Hoffmann 一派擔心非正式化會削弱全球治理嘅效能同問責", "q": "Some fear that informality actually undermines the effectiveness and accountability of global governance.", "loc": "**Herz & Ribeiro Hoffmann**, in Roger2020 p.14"}, {"id": 26, "n": "01", "s": 6, "t": "conceptual", "f": "如果非正式化由權力或國內政治推動，問題同組織形式之間有咩關係？", "b": "Roger 認為如果非正式化由權力或國內政治推動，國家面對嘅問題同國際組織嘅形式之間就冇必然關係", "q": "then there would be no necessary relationship between the kind of problem states face and the form of an organization", "loc": "Roger2020 p.15"}, {"id": 27, "n": "01", "s": 6, "t": "evaluation", "f": "好多非正式組織成功，係「因為」定「雖然」非正式？", "b": "Roger 認為好多非正式國際組織成功係雖然非正式、而唔係因為非正式", "q": "Many informal organizations appear to have thrived despite their informality, not because of it.", "loc": "Roger2020 p.15"}, {"id": 28, "n": "01", "s": 6, "t": "fact", "f": "非正式組織同正式組織比，邊個更大機會同問題錯配？", "b": "Roger 嘅數據顯示非正式國際組織比正式國際組織更大機會同佢哋要處理嘅問題錯配", "q": "they appear to be much more likely to be mismatched than their formal counterparts are", "loc": "Roger2020 p.15"}, {"id": 29, "n": "01", "s": 6, "t": "fact", "f": "非正式組織越多，錯配嘅比例有咩趨勢？", "b": "Roger 嘅數據顯示隨住非正式國際組織增加，錯配國際組織嘅比例似乎上升緊", "q": "as informal organizations have grown in number, … the share of “mismatched” international organizations appears to be rising", "loc": "Roger2020 p.15"}, {"id": 30, "n": "01", "s": 7, "t": "fact", "f": "1990 年代歐美競爭機構對國際組織嘅取態有咩變化？", "b": "Roger 指出 1990 年代歐美獨立競爭機構都同意需要國際組織，起初偏好非正式，後來就法律設計出現分歧", "q": "These agencies agreed that an international organization was needed but, despite an initial preference for informality, eventually disagreed over its legal design.", "loc": "Roger2020 p.19"}, {"id": 31, "n": "01", "s": 7, "t": "cause", "f": "歐盟委員會點解轉而推動將反壟斷放入 WTO？", "b": "Roger 認為歐盟委員會轉而推動將全球反壟斷放入 WTO，好大程度係因為當時反壟斷問題被政治化", "q": "In large part, I argue, this was due to the politicization of antitrust issues during this time.", "loc": "Roger2020 p.19"}, {"id": 32, "n": "01", "s": 7, "t": "fact", "f": "WTO 方案失敗後，邊個機構成為全球反壟斷唯一剩低嘅機構？", "b": "Roger 指出歐盟委員會嘅 WTO 方案失敗後，美國支持嘅非正式方案 ICN 成為全球反壟斷領域唯一剩低嘅機構", "q": "the informal alternative embraced by the United States … was the only institution left standing in the field of global antitrust", "loc": "Roger2020 p.19"}, {"id": 33, "n": "04", "s": 1, "t": "definition", "f": "「跨政府」合作同傳統外交有咩唔同？", "b": "Raustiala 將「跨政府（transgovernmental）」界定為各國專責嘅本地官員直接互相打交道，而且外交部通常好少監督", "q": "they involve specialized domestic officials directly interacting with each other, often with minimal supervision by foreign ministries", "loc": "Raustiala2002 p.5"}, {"id": 34, "n": "04", "s": 1, "t": "definition", "f": "監管機構之間嘅 MOU 有冇法律約束力？監管者點睇佢？", "b": "Raustiala 認為監管機構之間嘅諒解備忘錄（MOU）係軟法協議：法律上冇約束力，但好多監管者覺得佢哋好有效、又靈活得多", "q": "MOUs are soft law agreements: non-binding as a legal matter but, at least in the view of many regulators, highly effective and far more flexible.", "loc": "Raustiala2002 p.22"}, {"id": 35, "n": "04", "s": 1, "t": "fact", "f": "IOSCO 點解唔算傳統國際組織？", "b": "Raustiala 指出國際證監會組織（IOSCO）唔係傳統國際組織，因為佢冇一個成員係國家", "q": "IOSCO is not a traditional international organization—no members are states.", "loc": "Raustiala2002 p.31"}, {"id": 36, "n": "04", "s": 2, "t": "cause", "f": "推動監管網絡發展嘅三大因素係乜？", "b": "Raustiala 認為推動監管網絡發展嘅三大因素係本地監管擴張、經濟互相依存加深同埋科技創新", "q": "three chief factors are driving the evolution of regulatory networks: the expansion of domestic regulation, increased economic interdependence, and technological innovation", "loc": "Raustiala2002 p.7"}, {"id": 37, "n": "04", "s": 2, "t": "cause", "f": "喺證券、競爭、環境三個範疇，最主要推動跨政府網絡嘅係乜？", "b": "Raustiala 認為執法上嘅挑戰係推動跨政府網絡興起嘅最主要動力", "q": "enforcement challenges constitute the primary driver behind the rise of networks", "loc": "Raustiala2002 p.51"}, {"id": 38, "n": "04", "s": 2, "t": "fact", "f": "跨政府網絡集中喺邊啲國家之間？", "b": "Raustiala 指出跨政府網絡集中喺有複雜行政體系嘅富裕工業化國家之間", "q": "Networks are concentrated among the wealthier, more industrialized states that possess complex administrative states.", "loc": "Raustiala2002 p.16"}, {"id": 39, "n": "04", "s": 3, "t": "evaluation", "f": "監管權力唔對稱同分散，各自會點影響條約同國際組織？", "b": "Raustiala 認為監管權力高度唔對稱嗰陣，各國會避開條約同國際組織（liberal internationalism）；權力高度分散嗰陣，條約同國際組織就會興旺", "q": "When power is highly asymmetric, liberal internationalism is shunned; when it is highly diffuse, it flourishes.", "loc": "Raustiala2002 p.8"}, {"id": 40, "n": "04", "s": 3, "t": "evaluation", "f": "環境、競爭、證券三個範疇嘅監管權力點分佈？", "b": "Raustiala 認為環境監管嘅權力好分散、競爭法大致係兩強（美國同歐盟）、證券法就差唔多由美國一家獨大", "q": "Regulatory power is diffused in the environmental arena; largely duopolistic in the competition arena; and nearly monopolistic in securities law.", "loc": "Raustiala2002 p.27"}, {"id": 41, "n": "04", "s": 4, "t": "fact", "f": "美國證監會（SEC）喺網絡入面一貫點做？", "b": "Raustiala 指出美國證監會（SEC）一貫做法係將其他司法管轄區拉埋美國模式，而唔係改美國模式", "q": "The SEC’s unwavering approach is to bring other jurisdictions to the U.S. model, not to modify the U.S. model.", "loc": "Raustiala2002 p.35"}, {"id": 42, "n": "04", "s": 4, "t": "evaluation", "f": "跨政府網絡主要靠乜推動監管改變？", "b": "Raustiala 認為跨政府網絡推動監管改變，主要靠說服而唔係靠命令", "q": "when networks promote regulatory change, change occurs more through persuasion than command", "loc": "Raustiala2002 p.51"}, {"id": 43, "n": "04", "s": 4, "t": "conceptual", "f": "對弱國嚟講，引入強國監管模式可以當係乜？", "b": "Raustiala 認為對弱國嚟講，引入強國嘅監管模式可以當係攞齊跨政府網絡所有好處嘅「入場費」（price of admission）", "q": "For weak states the import of regulation can be thought of as “a price of admission” to the fullest range of benefits provided by the network.", "loc": "Raustiala2002 p.67"}, {"id": 44, "n": "04", "s": 4, "t": "evaluation", "f": "跨政府網絡帶嚟嘅監管劃一，好可能跟邊個嘅偏好行？", "b": "Raustiala 認為跨政府網絡帶嚟嘅監管劃一，好可能會跟主要經濟強國嘅偏好行", "q": "This uniformity, however, is likely to be in line with the preferences of the dominant economic powers.", "loc": "Raustiala2002 p.91"}, {"id": 45, "n": "04", "s": 5, "t": "cause", "f": "跨政府網絡點樣改善條約遵守？", "b": "Raustiala 認為跨政府網絡可以透過提升本地監管能力去改善國家遵守條約嘅情況，因為能力提升通常會降低守約喺國內嘅成本", "q": "networks may improve treaty compliance by improving domestic regulatory capacity; improved capacity should often lower the domestic costs of compliance", "loc": "Raustiala2002 p.78"}, {"id": 46, "n": "04", "s": 5, "t": "evaluation", "f": "點解話跨政府網絡係「填補空隙」？", "b": "Raustiala 認為跨政府網絡最普遍嘅領域，正正係條約同國際組織喺政治上行唔通嘅領域，所以網絡係填補空隙（gap filling）", "q": "The gap filling dynamic reflects that networks are most prevalent in those areas in which liberal internationalism is politically infeasible.", "loc": "Raustiala2002 p.88"}, {"id": 47, "n": "04", "s": 5, "t": "evaluation", "f": "Raustiala 總結：跨政府網絡同條約係咩關係？", "b": "Raustiala 總結認為跨政府合作係國際法嘅重要發展，比較大機會係補充、而唔係取代條約同國際組織（liberal internationalism）", "q": "Transgovernmental cooperation is a significant development in international law, one more likely to supplement liberal internationalism than supplant it.", "loc": "Raustiala2002 p.92"}, {"id": 48, "n": "04", "s": 6, "t": "evaluation", "f": "Picciotto 點評次國家官員之間嘅國際接觸？", "b": "Picciotto 認為各國官員喺次國家層面直接嘅國際接觸，長期缺乏正當性", "q": "a chronic lack of legitimacy plagues direct international contacts at the sub-state level among national officials and administrators", "loc": "**Picciotto**, in Raustiala2002 p.25"}, {"id": 49, "n": "04", "s": 6, "t": "evaluation", "f": "Franck 嘅正當性理論同跨政府合作有咩矛盾？", "b": "Raustiala 認為 Franck 嘅正當性理論（legitimacy theory）著重形式、程序同規範，同跨政府合作嘅性質有深層矛盾", "q": "the formal, procedural, and normative thrust of legitimacy theory is deeply in tension with the nature of cooperation embodied in transgovernmentalism", "loc": "Raustiala2002 p.82"}, {"id": 50, "n": "04", "s": 6, "t": "evaluation", "f": "跨政府網絡因為非正式同靈活，有咩做唔到？", "b": "Raustiala 承認跨政府網絡因為非正式同靈活，做唔到監管者想要嘅所有嘢，甚至做唔到一份強而有力嘅多邊協議做得到嘅嘢", "q": "they cannot, given their informal and flexible nature, achieve everything that regulators might desire or even what a strong multilateral agreement could", "loc": "Raustiala2002 p.50"}, {"id": 51, "n": "05", "s": 1, "t": "cause", "f": "全球問題嘅技術唔確定性同複雜性，對國際政策協調有咩影響？", "b": "Haas 認為，全球問題嘅技術唔確定性（uncertainty）同複雜性越嚟越大，令國際政策協調（international policy coordination）唔單止越嚟越有需要，亦都越嚟越難做", "q": "The growing technical uncertainties and complexities of problems of global concern have made international policy coordination not only increasingly necessary but also increasingly difficult.", "loc": "Haas1992 p.1"}, {"id": 52, "n": "05", "s": 1, "t": "conceptual", "f": "Haas 同特刊作者點睇控制知識同資訊？", "b": "Haas 同特刊作者認為，控制知識同資訊（control over knowledge and information）本身就係權力（power）嘅一個重要面向", "q": "We argue that control over knowledge and information is an important dimension of power", "loc": "Haas1992 p.2"}, {"id": 53, "n": "05", "s": 2, "t": "definition", "f": "知識社群係乜？", "b": "Haas 將知識社群（epistemic community）定義為：一個由專業人士組成嘅網絡，佢哋喺某個領域有公認嘅專長同能力，並且對嗰個領域或議題（issue-area）同政策相關嘅知識有權威性嘅說法", "q": "An epistemic community is a network of professionals with recognized expertise and competence in a particular domain and an authoritative claim to policy-relevant knowledge within that domain or issue-area", "loc": "Haas1992 p.3"}, {"id": 54, "n": "05", "s": 2, "t": "definition", "f": "知識社群第一樣共同嘢係乜？", "b": "Haas 講，知識社群第一樣共同嘢係一套共同嘅規範性同原則性信念（normative and principled beliefs），為成員嘅社會行動提供以價值為本嘅理由", "q": "(1) a shared set of normative and principled beliefs, which provide a value-based rationale for the social action of community members", "loc": "Haas1992 p.3"}, {"id": 55, "n": "05", "s": 2, "t": "definition", "f": "知識社群第二樣共同嘢係乜？", "b": "Haas 講，知識社群第二樣共同嘢係共同嘅因果信念（causal beliefs），嚟自佢哋對導致該領域核心問題嘅做法嘅分析", "q": "(2) shared causal beliefs, which are derived from their analysis of practices leading or contributing to a central set of problems in their domain", "loc": "Haas1992 p.3"}, {"id": 56, "n": "05", "s": 2, "t": "definition", "f": "知識社群第三樣共同嘢係乜？", "b": "Haas 講，知識社群第三樣共同嘢係共同嘅有效性標準（notions of validity）：即係一套主體間（intersubjective）、由內部界定、用嚟衡量同驗證專業知識嘅準則", "q": "(3) shared notions of validity … that is, intersubjective, internally defined criteria for weighing and validating knowledge in the domain of their expertise", "loc": "Haas1992 p.3"}, {"id": 57, "n": "05", "s": 2, "t": "definition", "f": "知識社群第四樣共同嘢係乜？", "b": "Haas 講，知識社群第四樣共同嘢係一個共同嘅政策事業（common policy enterprise）：即係圍繞一組問題、佢哋專業能力所針對嘅共同做法", "q": "(4) a common policy enterprise-that is, a set of common practices associated with a set of problems to which their professional competence is directed", "loc": "Haas1992 p.3"}, {"id": 58, "n": "05", "s": 3, "t": "cause", "f": "決策者最有可能喺乜嘢情況下搵知識社群？", "b": "Haas 認為，決策者最有可能喺唔確定（conditions of uncertainty）嘅情況下轉向知識社群求助", "q": "Decision makers are most likely to turn to epistemic communities under conditions of uncertainty.", "loc": "Haas1992 p.21"}, {"id": 59, "n": "05", "s": 3, "t": "cause", "f": "決策者通常要經歷乜先會克服制度慣性、主動搵知識社群？", "b": "Haas 認為，決策者往往要經歷一場危機或者衝擊（crisis or shock），先至會克服制度慣性（institutional inertia），主動搵知識社群幫手", "q": "it often takes a crisis or shock to overcome institutional inertia and habit and spur them to seek help from an epistemic community", "loc": "Haas1992 p.14"}, {"id": 60, "n": "05", "s": 3, "t": "cause", "f": "知識社群點樣將影響制度化？", "b": "Haas 認為，知識社群如果喺國家行政機關同國際秘書處（international secretariats）入面鞏固到官僚權力，就有機會將佢哋嘅影響制度化，並將觀點滲入更廣泛嘅國際政治", "q": "To the extent to which an epistemic community consolidates bureaucratic power within national administrations and international secretariats, it stands to institutionalize its influence and insinuate its views into broader international politics.", "loc": "Haas1992 p.4"}, {"id": 61, "n": "05", "s": 3, "t": "cause", "f": "系統性權力集中唔夠迫各國協調時，合作點解仍然可以維持？", "b": "Haas 認為，喺知識社群幫手建立嘅制度持續影響之下，某議題已建立嘅合作模式，即使系統性權力集中（systemic power concentrations）已經唔足以迫各國協調，都可以繼續維持", "q": "established patterns of cooperation in a given issue-area may persist even though systemic power concentrations may no longer be sufficient to compel countries to coordinate their behavior", "loc": "Haas1992 p.4"}, {"id": 62, "n": "05", "s": 3, "t": "cause", "f": "知識社群嘅影響會唔會帶嚟政策協調，取決於乜？", "b": "Haas 認為，知識社群嘅影響會唔會帶嚟政策協調，取決於佢哋嘅因果信念有冇顯示需要協調", "q": "whether epistemic influence leads to policy coordination is a function of whether the causal beliefs of epistemic communities demonstrate the need for it", "loc": "Haas1992 p.30"}, {"id": 63, "n": "05", "s": 4, "t": "conceptual", "f": "因果信念被反常現象動搖時，知識社群同利益團體反應有咩唔同？", "b": "Haas 認為，知識社群同利益團體（interest groups）唔同：如果有反常現象動搖咗佢哋嘅因果信念，佢哋會退出政策辯論，利益團體就唔會", "q": "If confronted with anomalies that undermined their causal beliefs, they would withdraw from the policy debate, unlike interest groups.", "loc": "Haas1992 p.18"}, {"id": 64, "n": "05", "s": 4, "t": "cause", "f": "知識社群嘅共同信念點樣幫佢哋頂住迎合高層嘅壓力？", "b": "Haas 認為，知識社群成員共同嘅因果信念同原則信念，會抵銷甚至壓過要佢哋提供迎合高層決策者既有政治利益嘅意見嘅壓力", "q": "would offset or outweigh the pressures for them to offer alternative advice which is more consistent with the preexisting political interests or preferences of high-level policymakers", "loc": "Haas1992 p.20"}, {"id": 65, "n": "05", "s": 5, "t": "evaluation", "f": "國家行為反映知識網絡偏好嘅程度，受乜制約？", "b": "Haas 認為，國家行為喺幾大程度上反映呢啲跨國知識網絡嘅偏好，仍然好受國際權力分佈（distribution of power）所制約", "q": "the extent to which state behavior reflects the preferences of these networks remains strongly conditioned by the distribution of power internationally", "loc": "Haas1992 p.7"}, {"id": 66, "n": "05", "s": 5, "t": "evaluation", "f": "有科學家參與、披上客觀外衣，政策選擇係咪就唔政治？", "b": "Haas 認為，就算指出有科學家參與、披上客觀同價值中立嘅外衣，政策選擇喺分配後果（allocative consequences）上仍然高度政治化", "q": "Despite the veneer of objectivity and value neutrality achieved by pointing to the input of scientists, policy choices remain highly political in their allocative consequences", "loc": "Haas1992 p.11"}, {"id": 67, "n": "05", "s": 5, "t": "normative", "f": "專門群體影響力越嚟越大，對邊啲政治價值有負面影響？", "b": "Haas 引述 Dickson、Laird 同 Sclove 等學者指出，知識社群呢類專門群體影響力越嚟越大，可能對民主同參與（democracy and participation）呢啲根深蒂固嘅政治價值有嚴重負面影響", "q": "the increasing influence of specialized groups such as epistemic communities may have serious negative implications for such deep-seated political values as democracy and participation", "loc": "**Dickson; Laird; Sclove**, in Haas1992 p.24"}, {"id": 68, "n": "05", "s": 6, "t": "action", "f": "研究知識社群嘅影響要做邊幾步？", "b": "Haas 建議，研究知識社群影響要做幾步：識別成員、確定佢哋嘅原則同因果信念、追蹤佢哋嘅活動同對決策者嘅影響、識別因佢哋影響而被排除嘅其他可行結果，同埋檢驗其他解釋", "q": "identifying community membership, determining the community members' principled and causal beliefs, tracing their activities and demonstrating their influence on decision makers at various points in time, identifying alternative credible outcomes that were foreclosed as a result of their influence, and exploring alternative explanations for the actions of decision makers", "loc": "Haas1992 p.34"}, {"id": 69, "n": "02", "s": 1, "t": "fact", "f": "Guidi、Tavares 同 Townley 提出咩謎題？", "b": "Guidi、Tavares 同 Townley 提出嘅謎題係：OECD 同 UNCTAD 已經討論緊國際競爭政策，點解各地競爭主管機關仲要另開國際網絡", "q": "Why would NCAs want to spend their own time and resources establishing an international network when they were already discussing international competition policy and enforcement in both the OECD and UNCTAD?", "loc": "GuidiTavaresTownley2022 p.1"}, {"id": 70, "n": "02", "s": 1, "t": "fact", "f": "邊個可以做 ICN 成員？國家可唔可以？", "b": "Guidi、Tavares 同 Townley 指出只有競爭主管機關可以做 ICN 成員，國家唔可以", "q": "Only NCAs can be ICN members (not their states).", "loc": "GuidiTavaresTownley2022 p.2"}, {"id": 71, "n": "02", "s": 1, "t": "fact", "f": "ICN 自稱嘅使命係乜？", "b": "ICN 自稱嘅使命係倡導全世界採用卓越嘅競爭政策標準同程序", "q": "[T]o advocate the adoption of superior standards and procedures in competition policy around the world", "loc": "**ICN**, in GuidiTavaresTownley2022 p.1"}, {"id": 72, "n": "02", "s": 1, "t": "definition", "f": "ICN 點樣形容自己？", "b": "ICN 形容自己係由已發展同發展中國家反壟斷機構組成、以項目為本、靠共識嘅非正式網絡", "q": "project-oriented, consensus-based, informal network of antitrust agencies from developed and developing countries", "loc": "**ICN**, in GuidiTavaresTownley2022 p.2"}, {"id": 73, "n": "02", "s": 1, "t": "evaluation", "f": "ICN 嘅「原罪」係乜？有利邊個？", "b": "Guidi、Tavares 同 Townley 認為 ICN 揀做 NCA 網絡而唔做政府間組織呢個「原罪」，不成比例咁有利於北美同歐洲先進工業國嘅競爭主管機關", "q": "We will see how this “original sin” disproportionately benefits the rulemakers, principally NCAs from advanced industrialised states in North America and Europe", "loc": "GuidiTavaresTownley2022 p.2"}, {"id": 74, "n": "02", "s": 1, "t": "cause", "f": "由獨立（非多數決）機構推動成立嘅國際組織，較大機會係正式定非正式？", "b": "Roger 嘅研究顯示由獨立（非多數決）機構推動成立嘅國際組織較大機會係非正式機構", "q": "If independent (non-majoritarian) actors drive the creation of international organisations, it is more likely that informal institutions will result", "loc": "**Roger**, in GuidiTavaresTownley2022 p.5"}, {"id": 75, "n": "02", "s": 1, "t": "fact", "f": "Roger 計出幾多非正式國際組織錯配？錯配嘅又有幾多係非正式？", "b": "Roger 計出近 46% 非正式國際組織同所處理嘅問題錯配，而錯配國際組織有 74% 係非正式", "q": "He calculates that almost 46% of informal international … organisations are not well matched. Furthermore, 74% of mismatched international organisations are informal.", "loc": "**Roger**, in GuidiTavaresTownley2022 p.5"}, {"id": 76, "n": "02", "s": 2, "t": "fact", "f": "ICN 嘅第一面「擋箭牌」係乜？", "b": "Guidi、Tavares 同 Townley 指出，ICN 工作成果要經 ICN 內部共識同意先算正式立場，呢點常被用嚟證明唔使擔心 ICN 正當性", "q": "First, work products are only accepted as official ICN statements once they have been agreed by consensus within the ICN", "loc": "GuidiTavaresTownley2022 p.2"}, {"id": 77, "n": "02", "s": 2, "t": "fact", "f": "ICN 嘅第二面「擋箭牌」係乜？", "b": "Guidi、Tavares 同 Townley 指出，ICN 工作成果唔具約束力，呢點亦常被用嚟證明唔使擔心 ICN 正當性", "q": "Secondly, ICN work products are not binding.", "loc": "GuidiTavaresTownley2022 p.2"}, {"id": 78, "n": "02", "s": 2, "t": "evaluation", "f": "共識規則同唔具約束力，實際上保護唔保護到新興競爭機關？", "b": "Guidi、Tavares 同 Townley 認為共識規則同成果唔具約束力實際上都保護唔到新興競爭主管機關同佢哋嘅國家", "q": "While both are formally true, we argue that, in practice, neither rule is likely to effectively protect newer NCAs (and especially their states) against the more powerful actors", "loc": "GuidiTavaresTownley2022 p.2"}, {"id": 79, "n": "02", "s": 2, "t": "conceptual", "f": "競爭政策係咪純粹技術、只講效率？", "b": "Guidi、Tavares 同 Townley 認為競爭政策同執法涉及大量再分配選擇", "q": "competition policy and enforcement demand many highly (re)distributive choices", "loc": "GuidiTavaresTownley2022 p.2"}, {"id": 80, "n": "02", "s": 3, "t": "conceptual", "f": "網絡係唔係中立？", "b": "Guidi、Tavares 同 Townley 認為網絡同所有制度一樣係政治性嘅，雖然成日被描繪成中立", "q": "Networks are often portrayed neutrally, but (like all institutions) networks are political.", "loc": "GuidiTavaresTownley2022 p.3"}, {"id": 81, "n": "02", "s": 3, "t": "conceptual", "f": "國家同監管者各自點樣談判？", "b": "Guidi、Tavares 同 Townley 認為國家通常靠政治議價（或武力）談判，而監管者著重專家論證", "q": "States normally negotiate through political bargaining (or force), whereas “regulators” tend to focus upon “expert argument.”", "loc": "GuidiTavaresTownley2022 p.4"}, {"id": 82, "n": "02", "s": 3, "t": "cause", "f": "ICN 嘅技術焦點有利邊個？", "b": "Guidi、Tavares 同 Townley 認為 ICN 嘅技術焦點有利於技術上最強嘅大型競爭主管機關", "q": "First, a “technical” focus favours those that are particularly strong in this approach.", "loc": "GuidiTavaresTownley2022 p.4"}, {"id": 83, "n": "02", "s": 3, "t": "cause", "f": "冇國家參與嘅網絡對競爭機關有咩好處？", "b": "Guidi、Tavares 同 Townley 認為一個冇國家參與嘅網絡更能保住競爭主管機關嘅自主、增加佢哋嘅權力", "q": "Secondly, a network without states more effectively preserves NCAs’ autonomy, enhancing their power (NCAs are often independent).", "loc": "GuidiTavaresTownley2022 p.4"}, {"id": 84, "n": "02", "s": 3, "t": "evaluation", "f": "ICN 嘅「卓越標準」係咪價值中立？", "b": "Guidi、Tavares 同 Townley 認為 ICN 追求卓越標準同程序被包裝成價值中立，但其實唔係", "q": "The ICN’s hunt for “Superior standards and procedures” is dressed up as value-neutral. It is not.", "loc": "GuidiTavaresTownley2022 p.4"}, {"id": 85, "n": "02", "s": 3, "t": "fact", "f": "2018 年問卷：幾多回應者覺得督導小組成員對議程影響更大？", "b": "Guidi、Tavares 同 Townley 嘅 2018 年問卷顯示 86% 回應者認為 ICN 督導小組成員對 ICN 議程有更大影響力", "q": "Eighty-six per cent of respondents answered that members of the Steering Group have more influence than other members on the ICN agenda.", "loc": "GuidiTavaresTownley2022 p.5"}, {"id": 86, "n": "02", "s": 3, "t": "fact", "f": "ICN 督導小組成員主要喺幾多個司法管轄區之間輪流？", "b": "Guidi、Tavares 同 Townley 指出 ICN 督導小組成員主要喺大約二十個司法管轄區之間輪流", "q": "Steering Group membership largely rotates between people from the same twenty or so jurisdictions", "loc": "GuidiTavaresTownley2022 p.6"}, {"id": 87, "n": "02", "s": 3, "t": "fact", "f": "ICN 十四個工作小組主席入面，歐盟同北美佔幾多？", "b": "Guidi、Tavares 同 Townley 指出 ICN 十四個工作小組主席入面歐盟同北美佔八個（57%）", "q": "we see the power of the EU and North America with eight chairs (out of fourteen, this is 57%)", "loc": "GuidiTavaresTownley2022 p.6"}, {"id": 88, "n": "02", "s": 3, "t": "evaluation", "f": "富裕競爭機關畀新興機關嘅培訓，點解好似木馬屠城？", "b": "Guidi、Tavares 同 Townley 認為富裕競爭主管機關畀新興機關嘅培訓同支援有用，但亦好似木馬屠城", "q": "Younger NCAs often find this support helpful, but it is also like a Trojan horse", "loc": "GuidiTavaresTownley2022 p.6"}, {"id": 89, "n": "02", "s": 3, "t": "cause", "f": "網絡成員好多時偏幫乜，而將本國利益放埋一邊？", "b": "Guidi、Tavares 同 Townley 認為網絡成員好多時用專業知識偏幫所屬知識社群嘅諗法，而將本國利益放埋一邊", "q": "network actors use their specialist knowledge to favour ideas from their epistemic community and marginalise their own national interests", "loc": "GuidiTavaresTownley2022 p.7"}, {"id": 90, "n": "02", "s": 3, "t": "fact", "f": "國家可唔可以入 ICN 保護自己嘅利益？", "b": "Guidi、Tavares 同 Townley 指出國家唔准入 ICN 保護自己嘅利益", "q": "And states are not allowed inside the ICN to defend their own interests.", "loc": "GuidiTavaresTownley2022 p.7"}, {"id": 91, "n": "02", "s": 4, "t": "fact", "f": "ICN 最多嘅非政府顧問係邊類？比例係幾多？", "b": "Guidi、Tavares 同 Townley 嘅問卷顯示 ICN 最多嘅非政府顧問係律師行（54%）、大企業（14%）同學者（14%）", "q": "Our survey supports the idea of the predominance of law firms (54%), big businesses (14%) and academics (14%) among the most represented NGAs.", "loc": "GuidiTavaresTownley2022 p.7"}, {"id": 92, "n": "02", "s": 4, "t": "cause", "f": "Wils 話 ICN 非政府顧問入面，邊類聲音最終最大？", "b": "Wils 認為喺 ICN 各類非政府顧問入面，代表大企業觀點同利益嘅聲音最終會最大", "q": "among the different NGAs, those representing (directly or indirectly) the views and interests of big business will end up being most vocal", "loc": "**Wils**, in GuidiTavaresTownley2022 p.8"}, {"id": 93, "n": "02", "s": 4, "t": "fact", "f": "ICN 2004 年拒絕研究濫用支配地位，有代表懷疑係點解？", "b": "Jenny 報告有代表懷疑 ICN 2004 年拒絕研究濫用支配地位，係因為商界非政府顧問唔願意", "q": "Some delegates suspected that the refusal of the ICN to take up the issue of abuse of dominance was due to the reluctance of business-related NGAs", "loc": "**Jenny**, in GuidiTavaresTownley2022 p.8"}, {"id": 94, "n": "02", "s": 5, "t": "conceptual", "f": "ICN 係非正式、成果唔具約束力，可唔可以話明佢影響力細？", "b": "Guidi、Tavares 同 Townley 認為 ICN 係非正式網絡、成果唔具法律約束力，呢件事講唔到佢實際上有幾大能力影響成員採用成果", "q": "the mere fact that the ICN is an informal network and that its working products are not legally binding does not tell us much about its capacity to influence its members to adopt them, in fact", "loc": "GuidiTavaresTownley2022 p.9"}, {"id": 95, "n": "02", "s": 5, "t": "fact", "f": "ICN 嘅工作重點近年由乜轉向乜？", "b": "Guidi、Tavares 同 Townley 指出 ICN 已經由製作工作成果轉向推動成員落實", "q": "the ICN has shifted its focus from the production of work products (which still takes place) towards pushing their implementation", "loc": "GuidiTavaresTownley2022 p.9"}, {"id": 96, "n": "02", "s": 5, "t": "cause", "f": "跨國網絡主要靠邊兩個機制影響成員？", "b": "Guidi、Tavares 同 Townley 認為跨國網絡主要靠自我規管同提升國家遵從能力兩個機制去影響成員", "q": "Transnational networks principally influence through two main mechanisms: self-regulation and improving the capacity of states to comply.", "loc": "GuidiTavaresTownley2022 p.9"}, {"id": 97, "n": "02", "s": 5, "t": "cause", "f": "律師同說客引用 ICN 文件，有咩「第二層效應」？", "b": "Guidi、Tavares 同 Townley 認為 ICN 文件被律師同說客引用，可以移動辯論嘅正當邊界、界定乜嘢係最佳做法", "q": "to move the legitimate parameters of the debate, to define “best practice.”", "loc": "GuidiTavaresTownley2022 p.10"}, {"id": 98, "n": "02", "s": 6, "t": "fact", "f": "非政府顧問係唔係 ICN 成員？", "b": "Townley、Guidi 同 Tavares 指出非政府顧問同國際組織唔係 ICN 成員", "q": "Unlike NCAs, NGAs and international organisations are not ICN members.", "loc": "TownleyGuidiTavares2022ULR p.137"}, {"id": 99, "n": "02", "s": 6, "t": "evaluation", "f": "邊個喺 ICN 實際上有不成比例嘅聲音？", "b": "Townley、Guidi 同 Tavares 認為歐美跨國企業同代表佢哋嘅律師喺 ICN 實際上有不成比例嘅聲音", "q": "major EU and US multinationals, and the lawyers that represent them, seem to have a disproportionate voice, in fact", "loc": "TownleyGuidiTavares2022ULR p.137"}, {"id": 100, "n": "02", "s": 6, "t": "fact", "f": "消費者組織同經濟學家各佔 ICN 非政府顧問幾多？", "b": "Townley、Guidi 同 Tavares 嘅問卷顯示消費者組織同經濟學家各只佔 ICN 非政府顧問大約 6%", "q": "Consumer organisations and economists are less present (around 6 per cent each).", "loc": "TownleyGuidiTavares2022ULR p.137"}, {"id": 101, "n": "02", "s": 6, "t": "cause", "f": "跨國企業同律師利用 ICN 影響力想達到乜？", "b": "Townley、Guidi 同 Tavares 認為跨國企業同律師利用 ICN 嘅影響力去改變遊戲規則、令將來對自己有利", "q": "They can also use it to change the ‘rules of the game’, to stack the deck in their favour for the future.", "loc": "TownleyGuidiTavares2022ULR p.138"}, {"id": 102, "n": "02", "s": 6, "t": "conceptual", "f": "非政府顧問影響 ICN 嘅四個機制係乜？", "b": "Townley、Guidi 同 Tavares 提出非政府顧問影響 ICN 嘅四個機制：知識社群同規則技術性、在場、早入局、旋轉門", "q": "epistemic community and the technical nature of rules; presence is something; getting in early; and revolving doors", "loc": "TownleyGuidiTavares2022ULR p.138"}, {"id": 103, "n": "02", "s": 6, "t": "cause", "f": "大企業喺 ICN 討論壓倒性在場、冇乜制衡，有咩風險？", "b": "Townley、Guidi 同 Tavares 認為大企業喺 ICN 討論中壓倒性在場而缺乏制衡，好可能扭曲討論嘅議題", "q": "The overwhelming presence of big business (and the highlighting of their interests, with little counterweight) in these conversations is likely to distort the types of issues discussed", "loc": "TownleyGuidiTavares2022ULR p.138"}, {"id": 104, "n": "02", "s": 6, "t": "fact", "f": "幾多非政府顧問參與過 ICN 文件嘅起草或審閱？", "b": "ICN 資料顯示超過 56% 非政府顧問參與過 ICN 文件嘅起草或審閱", "q": "Over 56 per cent of NGAs said they were involved in drafting (on why this matters see below) or reviewing.", "loc": "**ICN**, in TownleyGuidiTavares2022ULR p.139"}, {"id": 105, "n": "02", "s": 6, "t": "evaluation", "f": "非政府顧問冇法律權力，點解仍然可能有權力？", "b": "Townley、Guidi 同 Tavares 認為非政府顧問喺 ICN 冇法律權力，但在場好可能畀佢哋事實上嘅權力", "q": "NGAs’ presence likely gives them power, in fact", "loc": "TownleyGuidiTavares2022ULR p.139"}, {"id": 106, "n": "02", "s": 6, "t": "fact", "f": "幾多非政府顧問覺得早期參與起草重要？", "b": "Townley、Guidi 同 Tavares 嘅問卷顯示 77% 非政府顧問認為早期參與起草重要或非常重要", "q": "77 per cent of our NGA respondents considered being involved in drafting at early stages as either ‘important’ or ‘very important’", "loc": "TownleyGuidiTavares2022ULR p.139"}, {"id": 107, "n": "02", "s": 6, "t": "cause", "f": "「旋轉門」點樣影響競爭機關職員？", "b": "Townley、Guidi 同 Tavares 認為競爭主管機關職員預期離職後嘅工作機會，可能令佢哋有意無意遷就非政府顧問嘅論點", "q": "This might incentivise them (whether this is intentional or not) to seek out and show deference to NGAs’ arguments, in their NCA work.", "loc": "TownleyGuidiTavares2022ULR p.140"}, {"id": 108, "n": "02", "s": 6, "t": "evaluation", "f": "作者點評 ICN 嘅「卓越標準同程序」？", "b": "Townley、Guidi 同 Tavares 認為 ICN 嘅「卓越標準同程序」被包裝成價值中立，但其實唔係", "q": "‘Superior standards and procedures’ are dressed up as value neutral. They are not.", "loc": "TownleyGuidiTavares2022ULR p.140"}, {"id": 109, "n": "02", "s": 6, "t": "fact", "f": "ICN 嘅新角力場係乜？", "b": "Townley、Guidi 同 Tavares 指出將 ICN 重新聚焦落實現有工作成果，正成為新嘅角力場", "q": "(Re)focusing the ICN on the implementation of its existing work products is becoming the new battleground.", "loc": "TownleyGuidiTavares2022ULR p.140"}, {"id": 110, "n": "03", "s": 1, "t": "normative", "f": "評 ICN 正當性，作者主張定一個標準定畀一套工具箱？", "b": "Guidi、Tavares 同 Townley 認為與其定一個正當性標準，不如畀國家一套工具箱，由佢哋自己評估 ICN 嘅正當性", "q": "we consider it more useful to provide states (and others) with a toolbox that they can use to make their own legitimacy assessments", "loc": "GuidiTavaresTownley2022 p.10"}, {"id": 111, "n": "03", "s": 1, "t": "conceptual", "f": "效能同效率屬於邊種正當性？可唔可以補償輸入正當性？", "b": "Guidi、Tavares 同 Townley 認為效能同效率係兩種輸出正當性，可以喺某程度上補償輸入正當性嘅不足", "q": "Effectiveness and efficiency are two kinds of “output legitimacy” that might be able to compensate, to some degree, for a lack of “input legitimacy.”", "loc": "GuidiTavaresTownley2022 p.14"}, {"id": 112, "n": "03", "s": 2, "t": "evaluation", "f": "邊啲競爭機關成立或加入 ICN 時越權？", "b": "Guidi、Tavares 同 Townley 認為英國同歐盟（DG COMP）嘅競爭主管機關成立或加入 ICN 時越權", "q": "we believe that the NCAs from the UK and the EU (DG COMP) acted outside of their powers", "loc": "GuidiTavaresTownley2022 p.10"}, {"id": 113, "n": "03", "s": 2, "t": "fact", "f": "葡萄牙競爭機關點解唔越權？", "b": "Guidi、Tavares 同 Townley 指出葡萄牙法例畀葡萄牙競爭主管機關一般而明確嘅授權，參加國際組織唔使國會或政府另外批准", "q": "These provisions give the Portuguese NCA a general, explicit legal mandate to join and participate in international bodies without any need for further, specific authorisation either from the national Parliament or the national government.", "loc": "GuidiTavaresTownley2022 p.11"}, {"id": 114, "n": "03", "s": 2, "t": "evaluation", "f": "DG COMP「同意」ICN 建議做法嘅程序，達唔達到 TFEU 第 218 條？", "b": "Guidi、Tavares 同 Townley 認為 DG COMP「同意」ICN 建議做法嘅程序遠遠達唔到《歐盟運作條約》第 218 條嘅標準", "q": "The procedures that DG COMP has followed in “agreeing” the ICN recommended practices so far fall far short of the Article 218 TFEU standards", "loc": "GuidiTavaresTownley2022 p.12"}, {"id": 115, "n": "03", "s": 2, "t": "fact", "f": "ICN 同 OECD、UNCTAD 喺成立方式上有咩唔同？", "b": "Guidi、Tavares 同 Townley 指出同 OECD 同 UNCTAD 唔同，ICN 唔係由國家成立，而係由競爭主管機關成立", "q": "unlike the OECD and UNCTAD, the ICN was not created by states themselves (but by NCAs)", "loc": "GuidiTavaresTownley2022 p.10"}, {"id": 116, "n": "03", "s": 2, "t": "evaluation", "f": "ICN 最令人擔心嘅輸入正當性問題係乜？", "b": "Guidi、Tavares 同 Townley 認為 ICN 最令人擔心嘅係連成立時都冇由更廣泛國家利益揀呢條路嘅政治時刻", "q": "What is particularly concerning, though, with the ICN is the lack of a general “political moment,” even at its inception, where wider state interests elected this course", "loc": "GuidiTavaresTownley2022 p.12"}, {"id": 117, "n": "03", "s": 2, "t": "evaluation", "f": "可唔可以用審議民主合理化 ICN？", "b": "Guidi、Tavares 同 Townley 認為用審議民主去合理化 ICN 唔具說服力", "q": "However, a deliberative democracy justification for the ICN is unconvincing.", "loc": "GuidiTavaresTownley2022 p.11"}, {"id": 118, "n": "03", "s": 3, "t": "evaluation", "f": "而家量唔量度到 ICN 成果嘅效能？", "b": "Guidi、Tavares 同 Townley 認為而家冇辦法量度 ICN 工作成果嘅效能", "q": "Our starting point is that measuring the effectiveness of ICN work products is currently impossible.", "loc": "GuidiTavaresTownley2022 p.14"}, {"id": 119, "n": "03", "s": 3, "t": "normative", "f": "要理性咁平衡互相衝突嘅目標，需要乜？", "b": "Guidi、Tavares 同 Townley 認為要理性咁平衡互相衝突嘅目標，就需要一個總目標（meta goal）", "q": "A meta goal is necessary in order to rationally balance conflicting goals.", "loc": "GuidiTavaresTownley2022 p.15"}, {"id": 120, "n": "03", "s": 3, "t": "evaluation", "f": "Gerber 話喺邊啲重大實體範疇，ICN 冇乜推進趨同？", "b": "Gerber 認為喺支配企業行為同縱向限制等重大實體範疇，冇乜證據顯示 ICN 推進咗趨同", "q": "In many major substantive areas such as dominant firm conduct and vertical restrictions, there is little evidence that they have made great strides towards convergence", "loc": "**Gerber**, in GuidiTavaresTownley2022 p.15"}, {"id": 121, "n": "03", "s": 3, "t": "evaluation", "f": "ICN 自稱「以結果為本」，有冇檢查自己活動嘅實證結果？", "b": "Guidi、Tavares 同 Townley 認為 ICN 好少花力氣檢查自己活動嘅實證結果", "q": "the ICN spends very little effort in actually checking the empirical results of its activities", "loc": "GuidiTavaresTownley2022 p.16"}, {"id": 122, "n": "03", "s": 4, "t": "evaluation", "f": "ICN 喺效率上嘅正面係乜？", "b": "Guidi、Tavares 同 Townley 認為網絡（尤其 ICN）係資訊交流嘅高效渠道", "q": "Networks in general, and the ICN in particular, are highly efficient conduits for information sharing.", "loc": "GuidiTavaresTownley2022 p.17"}, {"id": 123, "n": "03", "s": 4, "t": "evaluation", "f": "如果 ICN 得出同 OECD 或 UNCTAD 一樣嘅結論，會惹來咩懷疑？", "b": "Guidi、Tavares 同 Townley 認為如果 ICN 得出同 OECD 或 UNCTAD 一樣嘅結論，就有理由懷疑佢嘅效率同效能", "q": "If the ICN comes to the same conclusions as the OECD or UNCTAD, one wonders whether this is efficient and effective.", "loc": "GuidiTavaresTownley2022 p.17"}, {"id": 124, "n": "03", "s": 4, "t": "conceptual", "f": "點解評估唔到 ICN 嘅效率？", "b": "Guidi、Tavares 同 Townley 認為唔清楚 ICN 想做知情分歧定協調統一，就評估唔到佢嘅效率", "q": "If we do not know precisely what the ICN is trying to achieve (informed divergence or harmonisation), we cannot assess how efficiently it is achieving that end.", "loc": "GuidiTavaresTownley2022 p.18"}, {"id": 125, "n": "03", "s": 5, "t": "conceptual", "f": "Rodrik 嘅三難係乜？", "b": "Rodrik 認為民主、國家自決同經濟全球化三樣冇辦法同時最大化", "q": "Recalling Rodrik’s trilemma, it is impossible to maximise democracy, national determination, and economic globalisation at the same time.", "loc": "**Rodrik**, in GuidiTavaresTownley2022 p.18"}, {"id": 126, "n": "03", "s": 5, "t": "evaluation", "f": "ICN 喺三難入面忽略咗邊兩樣？", "b": "Guidi、Tavares 同 Townley 認為 ICN 好少理國家特色，而且暫時唔容許民主控制", "q": "it gives little weight to national peculiarities, and so far it does not allow for democratic control either", "loc": "GuidiTavaresTownley2022 p.18"}, {"id": 127, "n": "03", "s": 5, "t": "normative", "f": "作者點評 ICN 增加相互依存嘅方式？", "b": "Guidi、Tavares 同 Townley 認為 ICN 喺冇國家民主機構參與、冇向受影響者開放、冇妥善吸納所有成員意見嘅情況下增加相互依存，係唔理想", "q": "That the ICN increases interdependence without involving national democratic actors, without being open to all those affected by its work, and without incorporating properly the input from all its members is, we argue, undesirable.", "loc": "GuidiTavaresTownley2022 p.19"}, {"id": 128, "n": "03", "s": 5, "t": "action", "f": "作者提議國家可以點樣加強對 ICN 嘅政治監督？", "b": "Guidi、Tavares 同 Townley 提出國家甚至可以將 ICN 成員由競爭主管機關改為國家，以加強政治監督", "q": "They might even introduce more political oversight into the ICN (by insisting on a reformulation of its membership from NCAs to states).", "loc": "GuidiTavaresTownley2022 p.19"}, {"id": 129, "n": "06", "s": 1, "t": "fact", "f": "Büthe 同 Mattli 指出規管權力有咩明顯趨勢？", "b": "Büthe 同 Mattli 指出，而家有一個好明顯嘅趨勢：政府將規管權力（regulatory authority）委託畀單一一個國際私營機構，而公營同私營行動者都當呢個機構係該範疇做全球規管嘅理所當然嘅場地", "q": "the delegation of regulatory authority from governments to a single international private-sector body that, for its area of expertise, is viewed by both public and private actors as the obvious forum for global regulation", "loc": "ButheMattli2011Ch1 p.5"}, {"id": 130, "n": "06", "s": 1, "t": "definition", "f": "「焦點機構」係乜？", "b": "Büthe 同 Mattli 將喺某個範疇做全球規則制定嘅嗰個私營機構，叫做「焦點機構」（focal institution）", "q": "such a private body is what we call the focal institution for global rule-making", "loc": "ButheMattli2011Ch1 p.5"}, {"id": 131, "n": "06", "s": 2, "t": "cause", "f": "規管點解同時私營化同國際化？（政府方面）", "b": "Büthe 同 Mattli 認為，規管同時私營化同國際化，部分原因係政府缺乏所需嘅技術專長、財政資源或者靈活性，應付唔到越嚟越複雜同緊急嘅規管工作", "q": "This simultaneous privatization and internationalization of governance is driven, in part, by governments’ lack of requisite technical expertise, financial resources, or flexibility to deal expeditiously with ever more complex and urgent regulatory tasks.", "loc": "ButheMattli2011Ch1 p.5"}, {"id": 132, "n": "06", "s": 2, "t": "cause", "f": "企業點解推動私營治理？", "b": "Büthe 同 Mattli 指出，企業同其他私人行動者成日推動私營治理（private governance），因為佢哋覺得咁樣比政府規管更有效率噉訂出更具成本效益嘅規則", "q": "Firms and other private actors also often push for private governance, which they see as leading to more cost-effective rules more efficiently than government regulation.", "loc": "ButheMattli2011Ch1 p.5"}, {"id": 133, "n": "06", "s": 2, "t": "fact", "f": "ISO 同 IEC 有咩特別？最適合點理解？", "b": "Büthe 同 Mattli 形容，ISO 同 IEC 呢類組織唔准國家同政府本身做成員，最適合理解為由中央協調嘅全球網絡", "q": "These organizations, in which states and governments as such cannot be members, are best described as centrally coordinated global networks", "loc": "ButheMattli2011Ch1 p.5"}, {"id": 134, "n": "06", "s": 2, "t": "fact", "f": "WTO TBT 協定要求成員國點樣用國際標準？", "b": "Büthe 同 Mattli 指出，WTO 嘅《技術性貿易壁壘協定》（TBT Agreement）要求所有成員國用國際標準做本國法律同規例嘅技術基礎", "q": "This agreement obliges all member states of the World Trade Organization (WTO) to use international standards as the technical basis of domestic laws and regulations", "loc": "ButheMattli2011Ch1 p.6"}, {"id": 135, "n": "06", "s": 2, "t": "fact", "f": "用咗國際標準嘅規例，喺 WTO 下有咩法律效果？", "b": "Büthe 同 Mattli 指出，用咗國際標準嘅規例，會被可推翻噉推定（rebuttably presumed）符合該國喺 WTO 下嘅義務", "q": "Regulations that use international standards are rebuttably presumed to be consistent with the country’s WTO obligations", "loc": "ButheMattli2011Ch1 p.6"}, {"id": 136, "n": "06", "s": 3, "t": "evaluation", "f": "財務報告標準國際統一，點解會引發分配衝突？", "b": "Büthe 同 Mattli 認為，財務報告標準國際統一有可觀好處，但會令某啲人承擔重大成本，所以會引發分配衝突（distributional conflicts）", "q": "the international harmonization of financial standards promises substantial benefits but also will bring significant costs for some and hence distributional conflicts", "loc": "ButheMattli2011Ch1 p.5"}, {"id": 137, "n": "06", "s": 3, "t": "fact", "f": "全球私營規管者嘅資金同監督有咩問題？", "b": "Büthe 同 Mattli 指出，呢啲全球私營規管者主要靠私營持份者自願供款，唔受公共監督（public oversight），而寫具體規則嘅專家小組亦唔需要保存會議紀錄", "q": "Financed mostly by voluntary contributions from private-sector stakeholders, they are not subject to public oversight, and the writing of specific rules is in the hands of groups of experts who are not required to keep records of their proceedings.", "loc": "ButheMattli2011Ch1 p.10"}, {"id": 138, "n": "06", "s": 4, "t": "evaluation", "f": "全球規則制定係技術定政治？", "b": "Büthe 同 Mattli 認為，全球規則制定嘅用語係技術性，但本質係政治性", "q": "The language accompanying these processes is technical; the essence of global rule-making, however, is political.", "loc": "ButheMattli2011Ch1 p.12"}, {"id": 139, "n": "06", "s": 4, "t": "conceptual", "f": "專業知識係唔係一套唯一正確嘅信念？", "b": "Büthe 同 Mattli 認為，專業知識（expertise）唔係一套關於乜嘢行得通、乜嘢行唔通嘅唯一正確信念", "q": "expertise is not a single correct set of beliefs about what works or does not", "loc": "ButheMattli2011Ch1 p.11"}, {"id": 140, "n": "06", "s": 4, "t": "fact", "f": "各國國內標準機構喺全球私營規管入面擔當乜角色？", "b": "Büthe 同 Mattli 指出，各國嘅國內標準機構喺某程度上構成咗全球規管者嘅制度骨幹（institutional backbone）", "q": "they form the institutional backbone of the global regulators", "loc": "ButheMattli2011Ch1 p.12"}, {"id": 141, "n": "06", "s": 5, "t": "cause", "f": "技術專長同財政資源，係唔係贏嘅充分條件？", "b": "Büthe 同 Mattli 認為，技術專長同財政資源係成功參與全球私營標準制定嘅必要條件，但唔係充分條件", "q": "technical expertise and financial resources are necessary but not sufficient conditions for successful involvement in global private-sector standardization", "loc": "ButheMattli2011Ch1 p.12"}, {"id": 142, "n": "06", "s": 5, "t": "cause", "f": "邊類企業較大機會喺全球私營標準制定入面贏？點解？", "b": "Büthe 同 Mattli 認為，喺層級分明、協調良好嘅國內體制入面運作嘅企業較大機會贏，因為佢哋嘅體制同只得單一焦點規管者嘅全球結構更自然咁配合", "q": "We argue that firms operating in a hierarchical and coordinated domestic system are likely to win because their system fits more naturally with the global structure, where a single regulator is the clear focal point.", "loc": "ButheMattli2011Ch1 p.13"}, {"id": 143, "n": "06", "s": 5, "t": "cause", "f": "一國喺全球私營治理嘅影響力取決於乜？", "b": "Büthe 同 Mattli 認為，一國喺全球私營治理入面嘅影響力，好大程度取決於佢嘅國內制度同國際層面現行制度結構有幾互補", "q": "influence in global private governance is significantly a function of how complementary a country’s domestic institutions are with the prevailing institutional structure at the international level", "loc": "ButheMattli2011Ch1 p.13"}, {"id": 144, "n": "07", "s": 1, "t": "conceptual", "f": "Kerwer 嘅「實證轉向」係乜意思？", "b": "Kerwer 認為，研究全球監管嘅民主正當性（democratic legitimacy）應該行「實證轉向」（empirical turn）：問題唔係按分析者自己嘅標準，而係按參與嘅行動者嘅標準，去睇一種監管形式係咪正當", "q": "the question is not whether a form of regulation is legitimate according to the criteria of the analyst but rather according to the participant actors", "loc": "Kerwer2005 p.454"}, {"id": 145, "n": "07", "s": 1, "t": "evaluation", "f": "信評機構個案顯示正當性問題伸延到邊度？", "b": "Kerwer 認為，信用評級機構（credit rating agencies, CRAs）嘅個案顯示，全球治理嘅正當性問題唔止出現喺正式嘅非多數決監管者（formal NMRs），仲伸延到非正式嘅非多數決監管者（informal NMRs），而且解決方法有時好難搵", "q": "CRAs suggest that the legitimacy problems of global governance extend beyond formal NMRs to informal NMRs and that solutions sometimes are elusive.", "loc": "Kerwer2005 p.453"}, {"id": 146, "n": "07", "s": 2, "t": "definition", "f": "外部問責同內部問責有咩分別？", "b": "Kerwer 將外部問責關係（external accountability relationship）界定為：委託人（principal）喺層級上唔高過代理人（agent）嘅問責關係，同靠授權同資助建立嘅內部問責唔同", "q": "Such external accountability relationships differ in that the principal is not hierarchically superior to the agent.", "loc": "Kerwer2005 p.457"}, {"id": 147, "n": "07", "s": 2, "t": "definition", "f": "Majone 嘅「委託人—受託人關係」係乜？", "b": "Majone 認為，當委託人授權一個非多數決監管者（NMR）代佢行事、用嚟發出可信承諾（credible commitment）嘅訊號，就成立咗「委託人—受託人關係」（principal–trustee relationship）", "q": "A principal–trustee relationship is established, whenever the principal authorizes an NMR to act on its behalf in order to signal a credible commitment (Majone).", "loc": "**Majone**, in Kerwer2005 p.457"}, {"id": 148, "n": "07", "s": 2, "t": "evaluation", "f": "點解外部問責比內部問責更容易有爭議？", "b": "Kerwer 認為，外部問責關係（external accountability）比內部問責關係更容易受到爭議（contested），因為邊個算委託人、委託人有乜制裁手段都唔清楚", "q": "external accountability relationships are likely to be much more contested than internal accountability relationships", "loc": "Kerwer2005 p.458"}, {"id": 149, "n": "07", "s": 2, "t": "evaluation", "f": "只講內部問責會忽略咗乜？", "b": "Kerwer 認為，只集中討論全球監管嘅內部問責問題，會忽略咗更普遍、更重要嘅外部問責問題", "q": "the focus on internal accountability problems of global regulation neglects the widespread and more important external accountability problems", "loc": "Kerwer2005 p.459"}, {"id": 150, "n": "07", "s": 3, "t": "conceptual", "f": "信評機構嘅評估準則實際上係乜？", "b": "Kerwer 認為，信用評級機構（CRAs）評估信用質素（creditworthiness）用嘅準則，實際上就係進入金融市場嘅准入規則（access rules）", "q": "The criteria CRAs use to evaluate creditworthiness are in effect access rules for financial markets.", "loc": "Kerwer2005 p.462"}, {"id": 151, "n": "07", "s": 3, "t": "cause", "f": "信評機構點解變成具強制性嘅監管者？", "b": "Kerwer 認為，信用評級機構（CRAs）因為喺資本市場取得咗壟斷地位（monopoly position），所以變成具強制性（coercive）嘅監管者", "q": "Furthermore, CRAs have become coercive by having acquired a monopoly position in capital markets (Cantor and Packer).", "loc": "Kerwer2005 p.462"}, {"id": 152, "n": "07", "s": 3, "t": "cause", "f": "公營監管機構喺規管入面用評級，其實係用乜換乜？", "b": "Kerwer 認為，公營金融監管機構喺規管入面使用信用評級（regulatory use of ratings），其實係用控制權換取成效（trading control for effectiveness）", "q": "The answer is that they are actually trading control for effectiveness.", "loc": "Kerwer2005 p.463"}, {"id": 153, "n": "07", "s": 3, "t": "evaluation", "f": "監管機構用評級，令信評機構變成乜？", "b": "Kerwer 認為，監管機構喺規管入面使用信用評級機構（CRAs）嘅評級，會令信用評級機構變成「準公共監管者」（quasipublic regulators）", "q": "The regulatory use of CRAs turns them into quasipublic regulators.", "loc": "Kerwer2005 p.464"}, {"id": 154, "n": "07", "s": 4, "t": "evaluation", "f": "由借款人俾錢做評級，點解係反常？", "b": "Kerwer 認為，由借款人（borrowers）俾錢做評級係一種反常（anomaly），因為呢個資訊產品真正嘅用家係投資者（investors）", "q": "The fact that the borrowers pay for ratings is an anomaly, as the real consumers of this information product are the investors", "loc": "Kerwer2005 p.468"}, {"id": 155, "n": "07", "s": 4, "t": "conceptual", "f": "美國監管機構同信評機構嘅關係較似邊種關係？", "b": "Kerwer 認為，美國監管機構同信用評級機構（CRAs）之間嘅關係，較適合形容為委託人—受託人關係（principal–trustee relationship），而唔係一般嘅委託代理關係", "q": "The relationship between the regulatory agencies and the CRAs can better be described as a principal–trustee relationship.", "loc": "Kerwer2005 p.469"}, {"id": 156, "n": "07", "s": 4, "t": "fact", "f": "信評機構對疏忽嘅法律責任申索有幾大保障？", "b": "Kerwer 指出，信用評級機構（CRAs）對於疏忽行為嘅法律責任申索（liability claims）差唔多完全免疫", "q": "CRAs are, however, virtually immune to liability claims (Husisian).", "loc": "Kerwer2005 p.469"}, {"id": 157, "n": "07", "s": 4, "t": "cause", "f": "持份者點解收唔埋問責缺口？", "b": "Kerwer 認為，持份者（stakeholders）收唔埋佢哋發現嘅問責缺口（accountability gap），原因係佢哋冇足夠權力令信用評級機構（CRAs）問責", "q": "Stakeholders cannot close the accountability gap they have identified, because they do not have the power to hold CRAs accountable.", "loc": "Kerwer2005 p.470"}, {"id": 158, "n": "07", "s": 5, "t": "normative", "f": "Kerwer 主張點樣處理信評機構？", "b": "Kerwer 主張，與其加強信用評級機構（CRAs）嘅問責或者完全廢除佢哋，不如盡可能減輕（mitigate）信用評級機構帶嚟嘅不良影響", "q": "abolishing them entirely is to mitigate the adverse impact of CRAs wherever possible", "loc": "Kerwer2005 p.472"}, {"id": 159, "n": "07", "s": 5, "t": "evaluation", "f": "Kerwer 點樣將信評機構個案推廣？", "b": "Kerwer 認為，凡係全球監管使用非多數決監管者（nonmajoritarian regulators, NMRs），都好可能出現同信用評級機構（CRAs）類似嘅問責問題", "q": "Wherever global regulation uses NMRs, similar accountability problems are likely to arise.", "loc": "Kerwer2005 p.472"}, {"id": 160, "n": "08", "s": 1, "t": "fact", "f": "到 2020 年 1 月，幾多個非洲國家有競爭法？", "b": "Kigwiru 指出，到 2020 年 1 月，54 個非洲國家入面有 37 個已經制定咗競爭法，仲有 17 個未有", "q": "By January 2020, more than half (37 out of 54) of the African countries have enacted competition laws while only 17 countries had not done so.", "loc": "Kigwiru2020 p.103"}, {"id": 161, "n": "08", "s": 1, "t": "cause", "f": "AfCFTA 帶嚟嘅競爭壓力可能引致乜？", "b": "Kigwiru 認為，AfCFTA 帶嚟嘅競爭壓力（competitive pressures）可以誘使成員國同企業做反競爭行為，破壞 AfCFTA 嘅精神", "q": "competitive pressures can provide an inducement for the Member States and business to engage in anti-competitive conduct and thwart the spirit of the AfCFTA", "loc": "Kigwiru2020 p.107"}, {"id": 162, "n": "08", "s": 1, "t": "evaluation", "f": "Kigwiru 點評 AfCFTA 之下嘅競爭政策合作？", "b": "Kigwiru 認為，AfCFTA 之下嘅競爭政策合作係建立一個有競爭力嘅大陸市場嘅不可或缺工具", "q": "Cooperation on competition policy under the AfCFTA, therefore, remains an integral tool in enhancing a competitive continental market.", "loc": "Kigwiru2020 p.107"}, {"id": 163, "n": "08", "s": 1, "t": "fact", "f": "大多數發展中國家（尤其非洲）有冇權力追究國際卡特爾？", "b": "Kigwiru 指出，大多數情況下，發展中國家（尤其非洲）冇執法權力去追究國際卡特爾（international cartels）", "q": "In most cases, developing countries, especially in Africa, have no enforcement power to pursue international cartels.", "loc": "Kigwiru2020 p.110"}, {"id": 164, "n": "08", "s": 2, "t": "definition", "f": "區域競爭制度嘅兩種合作方式係乜？", "b": "Kigwiru 將區域競爭制度採用嘅合作方式分做兩種：自願模式（voluntary）同強制模式（mandatory）", "q": "They are two approaches to cooperation adopted by regional competition regimes: voluntary or mandatory.", "loc": "Kigwiru2020 p.104"}, {"id": 165, "n": "08", "s": 2, "t": "fact", "f": "COMESA、EAC、WAEMU、ECOWAS 同 CEMAC 採用邊種模式？", "b": "Kigwiru 指出，COMESA、EAC、WAEMU、ECOWAS 同 CEMAC 採用強制模式，要求成員國執行區域競爭法", "q": "COMESA, EAC, WAEMU, ECOWAS and CEMAC adopt the mandatory model which obligates the Member States to enforce the regional competition law.", "loc": "Kigwiru2020 p.105"}, {"id": 166, "n": "08", "s": 3, "t": "fact", "f": "非洲採納競爭法，好大程度受乜影響？", "b": "Kigwiru 指出，學術文獻顯示非洲喺國家同區域層面採納競爭法，好大程度上係受外部影響", "q": "Scholarly literature shows that the adoption of competition law in Africa at both national and regional level was to a large extend externally influenced.", "loc": "Kigwiru2020 p.111"}, {"id": 167, "n": "08", "s": 3, "t": "evaluation", "f": "Fox 同 Bakhoum 點睇「世界標準」競爭法？", "b": "Fox 同 Bakhoum 認為（Kigwiru 引述），世界標準嘅競爭法同政策唔啱需要同市場結構都唔同嘅貧窮及發展中國家", "q": "the world standard of competition law and policy does not fit in poor and developing countries with distinct needs and market structures", "loc": "**Fox & Bakhoum**, in Kigwiru2020 p.111"}, {"id": 168, "n": "08", "s": 3, "t": "normative", "f": "Kigwiru 主唔主張將 NAFTA、TPP 模式照搬入 AfCFTA？", "b": "Kigwiru 明確表示，佢唔主張將 NAFTA、TPP 呢類 FTA 競爭條文模式照搬（transplant）入 AfCFTA", "q": "However, this paper does not propose that these models be transplanted into the AfCFTA.", "loc": "Kigwiru2020 p.108"}, {"id": 169, "n": "08", "s": 4, "t": "evaluation", "f": "以 RECs 做 building blocks，同時要處理會籍重疊，有咩問題？", "b": "Kigwiru 認為，保留 RECs 做 AfCFTA 嘅 building blocks，同時又要解決多重會籍重疊，兩者之間有衝突", "q": "There is a conflict between maintaining the RECs as the building blocks of the AfCFTA and at the same time resolving the challenge of multiple overlaps.", "loc": "Kigwiru2020 p.113"}, {"id": 170, "n": "08", "s": 4, "t": "evaluation", "f": "Erasmus 點評「保留既有成果」原則？", "b": "Erasmus 認為（Kigwiru 引述），preservation of acquis 原則冇成為推動自由貿易嘅前瞻機制，反而變成保護現狀嘅限制性工具", "q": "instead of being a forward-looking modality for enhancing free trade, the principle of preservation of acquis has now become a restrictive protector of the status quo", "loc": "**Erasmus**, in Kigwiru2020 p.113"}, {"id": 171, "n": "08", "s": 5, "t": "evaluation", "f": "Framework Agreement 第 4(c) 條用「cooperate」一字，顯示乜？", "b": "Kigwiru 認為，AfCFTA Framework Agreement 第 4(c) 條用「cooperate」呢個字，顯示 AfCFTA 大有可能對大陸競爭政策採軟法（soft law）而唔係硬法", "q": "connotes that, the AfCFTA is likely to adopt a soft approach model to continental competition policy rather than hard law", "loc": "Kigwiru2020 p.116"}, {"id": 172, "n": "08", "s": 5, "t": "evaluation", "f": "喺大陸層面設強制併購審查，Kigwiru 點評？", "b": "Kigwiru 認為，喺大陸層面設立強制併購審查呢種硬法做法雖然為咗法律確定性，但以目前嚟講太過進取（overambitious）", "q": "This hard law approach to merger regulation seeks to ensure legal certainty; however, it is overambitious at the moment.", "loc": "Kigwiru2020 p.116"}, {"id": 173, "n": "08", "s": 5, "t": "fact", "f": "大多數 FTA 點樣處理競爭相關爭議？", "b": "Kigwiru 指出，大多數 FTA 處理競爭相關爭議時都採用非約束性（non-binding）爭議解決機制", "q": "most FTAs adopt a non-binding dispute resolution mechanism when it comes to competition-related disputes", "loc": "Kigwiru2020 p.120"}, {"id": 174, "n": "08", "s": 5, "t": "normative", "f": "如果以軟法合作，Kigwiru 建議設乜？", "b": "Kigwiru 認為，如果成員國以軟法方式合作，喺 AfCFTA 秘書處設一個競爭政策工作小組或委員會係較可取嘅選擇", "q": "then a working group or a committee on competition policy based at the AfCFTA Secretariat will be a preferable option", "loc": "Kigwiru2020 p.121"}];
+
+const NOTES_META={"01": {"t": "走向非正式（Roger）", "q": "國家點解越嚟越多用非正式國際組織？", "read": "走向法律到走向非正式；正式同非正式點分；兩步理論；兩極化同規管型國家；功能論同權力論；錯配；ICN 預告。"}, "04": {"t": "跨政府網絡（Raustiala）", "q": "監管者之間嘅網絡點解興起、點樣運作，同條約係咩關係？", "read": "跨政府網絡同 MOU；三大因素同執法；權力分佈；監管輸出；補充唔取代；正當性同能力。"}, "05": {"t": "知識社群（Haas）", "q": "專家網絡點樣影響國際政策協調？", "read": "技術唔確定；四樣共同嘢；幾時同點樣有影響；同利益團體唔同；限制；點研究。"}, "02": {"t": "ICN 入面邊個話事", "q": "ICN 入面邊個有影響力？唔具約束力嘅成果點樣施壓？", "read": "謎題同原罪；兩面擋箭牌；富裕 NCA；NGA；唔具約束力都有壓力；NGA 四個機制。"}, "03": {"t": "ICN 嘅正當性、效能同效率", "q": "ICN 正唔正當、有冇效、有冇效率？", "read": "工具箱；輸入正當性；效能量唔到；效率同重疊；Rodrik 三難同國家可以點做。"}, "06": {"t": "私營全球規管者（Büthe 同 Mattli）", "q": "規則制定點解私營化同國際化？邊個贏？", "read": "焦點機構；點解私營化、TBT 協定；分配衝突；標準制定係政治；制度互補性。"}, "07": {"t": "信評機構嘅問責（Kerwer）", "q": "全球監管者（信評機構）點樣問責？", "read": "實證轉向；內部同外部問責；點樣變成強制性監管者；問責缺口；出路。"}, "08": {"t": "AfCFTA 競爭合作（Kigwiru）", "q": "非洲大陸自由貿易區點樣做競爭政策合作？", "read": "點解要合作；自願定強制；唔照搬；會籍重疊；軟法定硬法。"}};
+const NOTE_ORDER=["01", "04", "05", "02", "03", "06", "07", "08"];
+const NOTES=[
+{k:"01-1",t:"由「走向法律」到「走向非正式」",lv:[],vis:[],b:`<p>Roger 由一個轉變講起。二十世紀國家簽咗好多有法律約束力嘅國際協議，又成立咗聯合國、世界銀行、歐盟呢類正式國際組織去監察同執行；呢個「走向法律」改變咗全球治理嘅版圖。不過由 1970、80 年代開始，每年簽嘅條約少咗，新正式組織亦開少咗。合作冇停，而係轉咗形：法律化放慢嘅同時，出現咗一個「走向非正式」，好多機構喺傳統國際法範圍以外成立。</p>
+ <p>2008 年金融海嘯就係例子：G20 變成協調中心，但佢冇常設秘書處、喺國際法上亦冇正式地位。FSB、BCBS、IOSCO 都差唔多。氣候、私隱、保安等範疇都有同類組織。</p>
+ <p>Roger 自己整咗一套數據，證明呢個唔係錯覺：今日非正式組織最多佔現存國際組織三分之一；二戰剛完嗰陣只係得 5% 至 10%。而推動呢件事嘅主要係北美同歐洲嘅先進工業國。</p>`},
+{k:"01-2",t:"正式同非正式國際組織點分：法律基礎係最根本",lv:[],vis:["v-roger"],b:`<p>正式同非正式組織都係「國際組織」：有成員國、基本結構、共同目標同產出，所以可以拎嚟比較。分別有兩個。第一個係秘書處：正式組織差唔多一定有，非正式組織好多時冇。但呢個只係傾向，唔係硬規則。第二個先至係最根本：正式組織由有法律約束力嘅國際協議成立，非正式組織就由諒解備忘錄（MOU）、「君子協定」呢類冇約束力嘅文書成立。</p>
+ <p>點解要理呢個分別？文獻一般講「功能特性」（functional properties）：Eilstrup-Sangiovanni、Vabulas 同 Snidal 等人認為非正式機構快啲、靈活啲、保密啲。Roger 補充第二樣：「國內含義」（domestic implications）。喺國內開一個正式組織，要過好多政治、法律同預算關卡；非正式就低門檻得多。佢話呢啲國內含義喺解釋國家（同國家入面嘅人）點解想開呢類組織時，同功能特性一樣重要。</p>
+ <p class="muted"><b>筆記嘅例子：</b>幾間公司想合作：簽正式合約，要經董事會、法務同財務批，但出咗事可以告；如果只係幾個部門主管飲茶定個「默契」，快、靈活、唔使問上頭，但冇得強制執行。Roger 嘅重點係：揀邊樣，好多時唔係因為邊樣最啱件事，而係因為「上頭批唔批到」同「主管想唔想俾上頭插手」。</p>`},
+{k:"01-3",t:"Roger 嘅兩步理論：國內偏好，再加國際議價",lv:[],vis:["v-roger"],b:`<p>Roger 嘅中心命題：有管治需求嘅時候，非正式組織會被揀中——條件係決策者喺國內面對重大阻力，或者由獨立機構帶頭成立新機構，因為非正式有助保住佢哋嘅政策自主。</p>
+ <p><b>第一步：國內偏好。</b> 起點係國家唔係一個整體。佢引 Macey：唔係國家決定合作，而係國家入面嘅監管者、官僚同政客。Roger 簡化成兩類人。政治機構（例如部委）傾向正式合作，因為可以展示領導、鎖定政策。獨立機構就傾向非正式，因為可以保住自主、靠專業權威做決定。</p>
+ <p>呢兩個「基本偏好」會因條件而掉轉。政客面對國內強烈反對，正式合作就難搞、政治機會成本上升——於是轉用非正式。相反，如果獨立機構要同其他更政治化嘅國內角色分享決策（代表團被「政治化」），就更可能走正式路線。</p>
+ <p><b>第二步：國際議價。</b> 國內偏好只講到國家想要乜，唔講到最後出咩。國家之間意見唔同，就睇議價能力。Roger 話想要非正式嘅國家有議價優勢，因為佢哋嘅選擇本身就貼近現狀，容易「頂住唔簽」。</p>`},
+{k:"01-4",t:"點解越嚟越多：政治兩極化同規管型國家",lv:[],vis:["v-roger"],b:`<p>上面係「靜態」理論：某一刻點揀。Roger 再推出「動態」解釋：走向非正式主要歸因於先進工業國國內兩個長期轉變——政治兩極化，同規管型國家嘅出現。兩極化令國會僵持、國內阻力增加，政客就搵非正式出路。規管型國家就帶嚟大量獨立機構；佢哋越嚟越普遍，隨住全球化更深入參與國際事務，同時想保住自主。呢度同 Part 2 講嘅規管型國家接得上：Majone 解釋國家點樣由積極國家轉做靠獨立機構立規則（見 由積極國家到規管型國家）；Roger 就話呢班獨立機構行出國際時，會偏好非正式。</p>`},
+{k:"01-5",t:"其他解釋：功能論同權力論",lv:[],vis:[],b:`<p>文獻上有兩套主流解釋。功能論（functionalist）假設國家按問題設計機構：當非正式係解決某個問題嘅最佳方法，國家就會揀佢。權力論（power-based）就話：強國想要非正式、保持最大彈性；弱國想要正式、綁得實啲。Roger 話兩套都有部分道理，但單靠佢哋解釋唔晒；佢自己嘅理論其實係補充，唔係取代。</p>`},
+{k:"01-6",t:"利害：非正式好唔好，同「錯配」問題",lv:[],vis:[],b:`<p>點解要分清邊套理論啱？因為政策含義唔同。樂觀派例如奧巴馬政府嘅 Jake Sullivan 認為非正式合作機制更適合處理今日分散而複雜嘅跨國挑戰。悲觀派就擔心非正式會削弱全球治理嘅效能同問責。</p>
+ <p>Roger 嘅推論：如果功能論啱，非正式化大概係對新問題嘅有效回應；但如果推動非正式嘅係權力、衝突或者國內政治，咁問題嘅性質同組織嘅形式之間就冇必然關係。佢嘅個案顯示：好多非正式組織成功，係「雖然」非正式，而唔係「因為」非正式。宏觀數據亦顯示非正式組織比正式組織更大機會「錯配」——而且錯配嘅比例隨非正式組織增加而上升。Guidi、Tavares 同 Townley（2022）就引用 Roger 書中嘅數字（約 46% 非正式組織錯配），見 ICN 入面邊個話事 › 謎題。</p>`},
+{k:"01-7",t:"ICN 個案預告：美歐分歧同美國嘅否決權",lv:[],vis:[],b:`<p>本書第 7 章研究 2001 年成立嘅國際競爭網絡（International Competition Network, ICN），呢度只係預告。1990 年代反壟斷問題越嚟越跨國，歐美嘅獨立機構都覺得要有國際組織；佢哋起初都想要非正式，但後來就法律設計意見分歧。歐盟委員會轉而推動將競爭問題放入 WTO，Roger 話好大程度係因為當時反壟斷問題被政治化——即係第三節講嘅「代表團政治化就會走向正式」。美國嗰邊冇咁政治化，繼續偏好非正式；入 WTO 要美國同意，結果美國頂住，競爭議題喺多哈回合早期被剔走，美國支持嘅非正式方案（ICN）就成為全球反壟斷領域唯一企得住嘅機構。ICN 入面嘅權力分佈，見 ICN 入面邊個話事。</p>`},
+{k:"04-1",t:"跨政府網絡係乜（Transgovernmental networks）",lv:[],vis:[],b:`<p>Raustiala（2002）研究嘅係「跨政府」合作：唔係外交部同外交部之間簽條約，而係各國專責嘅本地官員直接打交道。佢哋最常用嘅工具係監管機構之間嘅諒解備忘錄（MOU）：法律上冇約束力嘅軟法，但好多監管者覺得有效又靈活。國際證監會組織（IOSCO）就係一個例子：佢唔係傳統國際組織，因為冇一個成員係國家。</p>
+ <p>呢點同 ICN 只准競爭主管機關做成員一樣，見 ICN 入面邊個話事 › 謎題；Roger（2020）就以法律基礎（冇約束力文書）去界定非正式國際組織，見 走向非正式 › 正式同非正式點分。</p>`},
+{k:"04-2",t:"點解會興起：監管擴張、互相依存、科技同執法",lv:[],vis:[],b:`<p>Raustiala 話推動監管網絡發展嘅有三大因素；而喺佢研究嘅證券、競爭同環境三個範疇，執法上嘅挑戰係最主要嘅動力。網絡唔係平均分佈：佢哋集中喺有複雜行政體系嘅富裕工業國之間。Roger（2020）亦話走向非正式主要由北美同歐洲嘅先進工業國推動，見 走向非正式 › 由走向法律到走向非正式。</p>`},
+{k:"04-3",t:"監管權力點分佈，決定揀網絡定揀條約",lv:[],vis:["v-raus"],b:`<p>Raustiala 用「監管權力」嘅分佈去解釋國家揀網絡定揀條約：權力高度唔對稱，條約同國際組織就被迴避；權力高度分散，條約同國際組織就興旺。三個範疇剛好唔同：環境分散、競爭大致係兩強、證券差唔多一家獨大。Roger（2020）嘅權力論亦話強國偏好有彈性嘅非正式安排，見 走向非正式 › 功能論同權力論。</p>`},
+{k:"04-4",t:"監管輸出同趨同（Regulatory export）",lv:[],vis:["v-raus"],b:`<p>網絡唔止交換資訊，仲會輸出監管模式。美國證監會（SEC）一貫係將其他司法管轄區拉埋美國模式，而唔係改美國模式。不過網絡推動改變，主要靠說服而唔係命令。對弱國嚟講，引入強國嘅監管模式可以當係攞齊網絡好處嘅「入場費」。結果，網絡帶嚟嘅劃一好可能跟主要經濟強國嘅偏好行。</p>
+ <p>呢點同 Guidi、Tavares 同 Townley（2022）話 ICN 不成比例咁有利北美同歐洲競爭主管機關嘅講法方向一致，見 ICN › 邊個有影響力。</p>`},
+{k:"04-5",t:"網絡同條約：補充，唔係取代",lv:[],vis:["v-raus"],b:`<p>Raustiala 唔覺得網絡會取代條約。網絡可以提升本地監管能力，從而降低守約成本、改善條約遵守；網絡最普遍嘅地方，正正係條約同國際組織政治上行唔通嘅地方，所以佢哋係填補空隙。佢嘅總結：跨政府合作係國際法嘅重要發展，比較大機會係補充、而唔係取代條約同國際組織。</p>`},
+{k:"04-6",t:"批評同限制：正當性同能力",lv:[],vis:[],b:`<p>網絡亦有人批評。Raustiala 引 Picciotto：各國官員喺次國家層面直接嘅國際接觸，長期缺乏正當性。佢自己亦指出，Franck 嘅正當性理論著重形式、程序同規範，同跨政府合作嘅性質有深層矛盾。而且網絡因為非正式同靈活，做唔到監管者想要嘅所有嘢，甚至做唔到一份強而有力嘅多邊協議做得到嘅嘢。ICN 嘅正當性分析，見 ICN 嘅正當性 › 輸入正當性。</p>`},
+{k:"05-1",t:"問題：技術唔確定下嘅國際政策協調",lv:[],vis:[],b:`<p>Haas（1992）嘅起點：全球問題嘅技術唔確定性同複雜性越嚟越大，令國際政策協調越嚟越需要、亦越嚟越難。特刊作者認為，控制知識同資訊本身就係權力嘅一個重要面向。</p>`},
+{k:"05-2",t:"乜嘢係知識社群：四樣共同嘢",lv:[],vis:["v-haas"],b:`<p>Haas 嘅定義：知識社群係一個由專業人士組成嘅網絡，喺某個領域有公認嘅專長，並且對同政策相關嘅知識有權威性嘅說法。成員有四樣共同嘢。第一，共同嘅規範同原則信念；第二，共同嘅因果信念；第三，共同嘅有效性標準；第四，共同嘅政策事業。</p>
+ <p class="muted"><b>筆記嘅例子：</b>一班喺唔同國家政府同大學做事嘅氣候科學家：佢哋都相信要保護環境（原則信念）、都相信排放導致暖化（因果信念）、都用同一套同儕評審標準判斷研究（有效性標準）、都想推減排政策（政策事業）。佢哋就算唔同國籍，都會講同一套嘢。</p>`},
+{k:"05-3",t:"知識社群點樣發揮影響",lv:[],vis:["v-haas"],b:`<p>決策者最有可能喺唔確定嘅情況下搵知識社群；而且往往要一場危機或者衝擊，先克服到制度慣性。知識社群如果喺國家行政機關同國際秘書處鞏固到官僚權力，就可以將影響制度化；咁樣，就算系統性權力集中已經唔足以迫各國協調，已建立嘅合作模式都可以維持。不過，知識社群嘅影響會唔會帶嚟政策協調，要睇佢哋嘅因果信念有冇顯示需要協調。</p>`},
+{k:"05-4",t:"知識社群同利益團體有咩唔同",lv:[],vis:["v-haas"],b:`<p>知識社群唔係另一種利益團體。如果有反常現象動搖咗佢哋嘅因果信念，佢哋會退出政策辯論，利益團體就唔會。佢哋共同嘅信念，亦會抵銷要佢哋迎合高層決策者既有利益嘅壓力。</p>
+ <p>Guidi、Tavares 同 Townley（2022）將知識社群概念用喺 ICN：網絡成員會偏幫所屬知識社群嘅諗法，而將本國利益放埋一邊，見 ICN › 邊個有影響力。</p>`},
+{k:"05-5",t:"限制同隱憂：權力、政治同民主",lv:[],vis:["v-haas"],b:`<p>Haas 冇話專家話晒事。國家行為喺幾大程度上反映呢啲網絡嘅偏好，仍然好受國際權力分佈制約。就算有科學家參與、披上客觀同價值中立嘅外衣，政策選擇喺分配後果上仍然好政治。Haas 亦引 Dickson、Laird 同 Sclove 等學者指出，專門群體影響力越嚟越大，可能對民主同參與有嚴重負面影響。</p>`},
+{k:"05-6",t:"點樣研究知識社群",lv:[],vis:[],b:`<p>最後 Haas 提出研究知識社群影響嘅步驟。</p>`},
+{k:"02-1",t:"謎題：點解要另起爐灶，同 ICN 係乜",lv:[],vis:["v-icn"],b:`<p>文章由一個謎題開始：明明 OECD 同 UNCTAD 已經有討論國際競爭政策，點解各地 NCA 仲要用自己嘅時間同資源開一個新網絡？。點解大企業又肯出錢出力？</p>
+ <p>ICN 嘅特點係只有 NCA 可以做成員，國家唔可以。ICN 自稱嘅使命係倡導全世界採用「卓越」嘅競爭政策標準同程序——並形容自己係一個以項目為本、靠共識、非正式嘅網絡。</p>
+ <p>三位作者話，揀咗開一個 NCA 網絡、而唔用 OECD 呢類正常政府間組織，係 ICN 嘅「原罪」：佢不成比例咁有利於「訂規則嘅人」，主要係北美同歐洲先進工業國嘅 NCA。佢哋引 Roger（2020）解釋點解會揀非正式：如果帶頭成立國際組織嘅係獨立（非多數決）機構，結果就較大機會係非正式機構；Roger 計出近 46% 非正式國際組織同問題錯配，而錯配嘅國際組織有 74% 係非正式。Roger 自己點講，見 走向非正式 › 錯配問題。</p>`},
+{k:"02-2",t:"兩面擋箭牌：共識同唔具約束力",lv:[],vis:["v-icn"],b:`<p>有人會話 ICN 唔使擔心正當性，理由有兩個。第一，工作成果要經 ICN 內部共識先算正式立場——即係冇 NCA 反對先得。第二，成果唔具約束力，國家可以揀做唔做。作者話兩樣喺形式上都啱，但實際上都唔大可能保護到新興 NCA（尤其佢哋嘅國家）抵抗更有權力嘅一方。</p>
+ <p>點解要緊？因為同「競爭政策純粹技術、只講效率」嘅常識相反，競爭政策同執法涉及大量再分配選擇。叫專家「淨係理效率」，結果就會偏幫某一班人；輸家係喺 ICN 冇乜聲氣嘅國家（特別係發展中國家）、消費者、小企業，同被忽略咗嘅環境等政策利益。呢點同 Townley（2009）同 Odudu（2006）「福利標準都會搬錢」一致，見 福利標準都有分配效果。</p>`},
+{k:"02-3",t:"ICN 入面邊個有影響力：富裕國家嘅 NCA",lv:[],vis:["v-icn"],b:`<p>作者話分析網絡唔可以淨係睇正式決策程序：網絡成日被描繪成中立，但同所有制度一樣，網絡係政治性嘅。</p>
+ <p><b>「專家論證」偏幫大機構。</b> 國家之間通常靠政治議價（甚至武力），監管者就著重「專家論證」。呢度嘅「專家論證」係指近二十年 NCA 流行嘅經濟學範式。有兩個原因令佢特別有利於資源充足嘅大 NCA：第一，「技術」焦點有利於喺呢方面最強嘅一方；第二，一個冇國家喺入面嘅網絡更能保住 NCA 嘅自主、增加佢哋嘅權力。作者直言 ICN 追求「卓越標準」被包裝成價值中立，但其實唔係。</p>
+ <p><b>領導位置集中。</b> 2018 年問卷顯示 86% 回應者認為督導小組（Steering Group）成員對 ICN 議程有更大影響力。督導小組成員由卸任成員推薦，加上「親近偏見」（affinity bias），結果成員主要喺大約二十個司法管轄區之間輪流。工作小組主席亦一樣：十四個主席入面歐盟同北美佔八個。富裕 NCA 仲提供培訓同支援，新興 NCA 覺得有用，但作者話呢個亦好似木馬屠城——將「訂規則嘅人」嘅諗法帶入資源最少嘅 NCA。</p>
+ <p><b>NCA 同自己國家之間嘅楔子。</b> 網絡會將成員社會化：好多時網絡成員會用佢哋嘅專業知識，偏幫自己所屬「知識社群」（epistemic community）嘅諗法，而將本國利益放埋一邊。而國家又唔准入 ICN 保護自己嘅利益。</p>
+ <p class="muted"><b>筆記嘅例子：</b>一個「國際足球規例委員會」只准各地裁判會加入，唔准各地足總加入。表面上人人一票、要全體同意先通過；但主席、秘書同起草小組幾乎全部嚟自歐洲大聯賽，佢哋又請細聯賽嘅裁判去培訓。最後通過嘅「最佳做法」好自然似大聯賽嘅做法，而細聯賽嘅足總（真正要埋單嘅人）連入房講句嘢都唔得。</p>`},
+{k:"02-4",t:"非政府顧問（NGA）：律師行同大企業",lv:[],vis:["v-icn"],b:`<p>ICN 仲容許非政府顧問（non-governmental advisors, NGA）入到核心：大企業、律師行同學者。問卷顯示最多嘅 NGA 係律師行、大企業同學者。</p>
+ <p>ICN 話 NGA 為所有持份者嘅整體利益工作；作者話呢個講法最好都只係天真。佢哋引 Wils（2019）：喺各種 NGA 入面，代表大企業觀點同利益嘅聲音差唔多必然最大。例子：2004 年有發展中國家 NCA 提議研究濫用支配地位（abuse of dominance），被拒；Jenny 報告話有代表懷疑，係因為商界 NGA 唔想競爭機關被鼓勵去追大跨國公司。呢種影響力同 Wils 喺第 3 週講嘅「獨立係為咗防俘虜」可以對照，見 歐盟競爭主管機關嘅獨立 › 防止俘虜。</p>`},
+{k:"02-5",t:"ICN 點樣影響成員：唔具約束力都有壓力",lv:[],vis:["v-icn"],b:`<p>ICN 冇立規則嘅職能，成員亦冇條約下「有約必守」（pacta sunt servanda）嘅義務，落唔落實由成員自己決定。但作者話：ICN 係非正式、成果唔具法律約束力，呢件事本身講唔到幾多佢實際上有幾大能力令成員採用佢嘅成果。而且 ICN 已經由製作成果轉向推動落實。</p>
+ <p>點樣施壓？跨國網絡主要靠兩個機制：自我規管，同提升國家遵從嘅能力。自我規管即係令聲譽變得重要：網絡社會化成員、密切監察，唔跟嘅就要解釋或者就範。能力建設就係培訓同技術援助。再長遠啲，仲有「第二層效應」：律師喺法庭、說客喺政治辯論引用 ICN 文件，去移動辯論嘅正當邊界、界定乜嘢先算「最佳做法」。呢點同軟法點樣生效嘅討論接得上，見 軟法點樣生效。</p>`},
+{k:"02-6",t:"NGA 點解同點樣爭影響力：四個機制（Townley、Guidi 同 Tavares 2022）",lv:[],vis:["v-icn"],b:`<p>第 6 週核心閱讀 Townley、Guidi 同 Tavares（2022）喺 <i>Utilities Law Review</i> 嘅短文，將上面第四節嘅非政府顧問（NGA）問題講深一層：點解大企業同律師行要入 ICN，入咗之後點樣有影響。佢哋開宗明義話，文章探討大型跨國企業同佢哋嘅律師點樣影響國際競爭政策。NGA 唔係成員——但實際上，歐美跨國企業同代表佢哋嘅律師聲音不成比例。作者估律師行喺度會保護客戶（同自己）嘅利益，代價可能係消費者同有關國家嘅經濟。消費者組織同經濟學家各只佔大約 6%。</p>
+ <p><b>點解要爭？</b> 因為競爭政策同執法喺唔同持份者同國家之間大量再分配。ICN 講乜，會影響好多競爭主管機關點樣解釋同執行措辭寬鬆嘅競爭法；有利嘅監管制度可以大大提高企業盈利。所以跨國企業同律師唔止爭個別好處，仲想改「遊戲規則」。呢個講法同 Zingales 嘅「企業影響遊戲規則」一致，見 企業嘅政治權力 › 不完全合約同爭租。</p>
+ <p><b>點樣爭？</b> 四個機制：</p>
+ <ol>
+ <li><b>知識社群同規則嘅技術性</b>：NCA 同 NGA 嘅人屬於同一個專家社群（見 知識社群（Haas））。大企業壓倒性咁在場、冇乜制衡，好可能扭曲討論咩議題、點樣權衡。</li>
+ <li><b>在場本身已經係權力</b>：NGA 冇正式控制權、唔投票——但佢哋幫手揀議題，超過 56% 參與起草或審閱。所以冇「法律」權力，但在場好可能畀到佢哋事實上嘅權力。</li>
+ <li><b>早入局</b>：作者借 Lall（金融監管）嘅講法，規則由議程、規劃、討論文件、諮詢到通過分幾個階段，越早參與影響越大。歐美 NGA 傾向提議自己本來已經跟緊嘅規則。問卷顯示 77% NGA 認為早期參與起草重要或者非常重要。</li>
+ <li><b>旋轉門</b>：即係監管機構職員之前或之後喺被監管企業做嘢。兩個過程：NCA 職員預期將來去律師行或企業搵工，可能（有意或無意）遷就 NGA 論點；企業又借調員工入資源不足嘅 NCA，作者直頭話呢個係資助 NCA。51% 問卷回應者認為曾喺 NCA 做過嘢對成為有影響力嘅 NGA 重要。旋轉門同俘虜嘅關係見 監管俘虜。</li>
+ </ol>
+ <p>結論重申 ICN 嘅「卓越標準」唔係價值中立。容易嘅議題（例如正當程序）已經做完，剩低嘅數碼等議題分配性更明顯，富裕國家 NGA 之間都有分歧，所以 NGA 返去搵共同點：推動落實 ICN 現有成果。呢點同第五節「ICN 由製作成果轉向推動落實」接得上。國內層面嘅版本（美國諮詢偏幫商界）見 公眾諮詢係咪偏幫商界。</p>`},
+{k:"03-1",t:"評正當性嘅方法：每個國家用自己嘅民主模式",lv:[],vis:["v-legit"],b:`<p>作者認為每個國家都應該透過自己對民主嘅理解去評估 ICN 同佢嘅成果。由於用 ICN 成果嘅國家好多、民主版本各有唔同，佢哋覺得提供一套國家可以自己用嘅工具箱更有用。佢哋叫呢個做 Morgan 同 Yeung 所講嘅「中層」理論。</p>
+ <p>工具箱有兩類正當性。輸入正當性（input legitimacy）問授權同參與；效能同效率就係兩種「輸出正當性」（output legitimacy），可以喺某程度上補償輸入正當性嘅不足——唔同國家接受唔同嘅平衡。呢套分類同 BHR vault 嘅 輸入、過程同輸出正當性 一致；Townley（2018）喺國內層面就話競爭法好難用輸出正當性補返輸入正當性，見 Townley 嘅結論。</p>`},
+{k:"03-2",t:"輸入正當性：越權、唔係國家成立、冇政治時刻",lv:[],vis:["v-legit"],b:`<p><b>授權嚟源。</b> 第一條要問：成立同加入 ICN 嘅 NCA 有冇喺自己權力範圍內行事？作者認為葡萄牙 NCA 冇問題，但英國同歐盟（DG COMP）嘅 NCA 越權。對比：葡萄牙法例畀佢嘅 NCA 一個一般而明確嘅法律授權，參加國際組織唔使再問國會或者政府。歐盟就唔同：如果 ICN 成果算國際協議，要跟《歐盟運作條約》第 218 條嘅程序（委員會建議、理事會授權同締結、諮詢歐洲議會）；作者話 DG COMP「同意」ICN 建議做法嘅程序遠遠達唔到第 218 條嘅標準。</p>
+ <p><b>組織性質。</b> ICN 有時自稱「國際組織」，但同 OECD 同 UNCTAD 唔同，ICN 唔係由國家自己成立，而係由 NCA 成立。最令人擔心嘅係，連成立嗰陣都冇一個由更廣泛國家利益揀呢條路嘅「政治時刻」。</p>
+ <p><b>兩種民主模式。</b> 審議民主（deliberative democracy）要受影響嘅人平等參與；作者話用審議民主去合理化 ICN 唔具說服力——因為參與者主要係非多數決嘅 NCA，大部分持份者冇代表，美歐聲音又大得多。自由民主（liberal democracy）模式就要民選政客直接或間接控制競爭政策；各國對「NCA 應該有幾自由」睇法唔同，所以答案亦唔同。</p>`},
+{k:"03-3",t:"效能：點解而家量度唔到",lv:[],vis:["v-legit"],b:`<p>好多評論者話 ICN 好成功，ICN 自己亦以成果數量做證據。作者話如果要睇成果質素，起點係：而家根本冇辦法量度 ICN 成果嘅效能。原因之一係 ICN 嘅目標之間同目標入面都有張力（例如消費者福利本身要喺唔同消費者之間取捨），而要理性咁平衡互相衝突嘅目標，就需要一個總目標；ICN 冇定，甚至好少承認有衝突。</p>
+ <p>第二，ICN 可能專揀容易達成共識嘅題目。佢哋引 Gerber：喺支配企業行為同縱向限制呢啲重大實體範疇，冇乜證據顯示 ICN 推進咗趨同。第三，ICN 自稱「以結果為本」，但好少花力氣檢查自己活動嘅實證結果。所以作者建議：喺新興 NCA 未能大致平等咁參與議程之前，ICN 或者應該少啲推落實。</p>`},
+{k:"03-4",t:"效率：資訊交流高效，但同 OECD 同 UNCTAD 重疊",lv:[],vis:["v-legit"],b:`<p>效率有好多面，最優結構通常係取捨嘅結果。正面嚟講，網絡（尤其 ICN）係資訊交流嘅高效渠道——不過對唔識呢套競爭「語言」、或者關心競爭政策更廣影響嘅人嚟講，ICN 就唔高效。</p>
+ <p>負面嚟講，ICN 同 OECD 同 UNCTAD 好多重疊。作者嘅兩難：如果 ICN 得出同 OECD 或 UNCTAD 一樣嘅結論，就要問咁做有冇效率同效能；如果結論唔同，就要問佢正唔正當。更根本嘅係：ICN 究竟想做「知情分歧」（informed divergence）定係「協調統一」（harmonisation）都未講清，咁就評估唔到佢有幾高效。</p>`},
+{k:"03-5",t:"結論：Rodrik 三難，同國家可以點做",lv:[],vis:["v-legit"],b:`<p>作者用 Rodrik 嘅「三難」（trilemma）收尾：民主、國家自決同經濟全球化三樣冇辦法同時最大化。佢哋話 ICN 強烈偏向經濟全球化（推廣統一嘅競爭規則），但好少理國家特色，而且暫時亦唔容許民主控制。結論：ICN 增加國與國之間嘅相互依存，但冇讓國家民主機構參與、冇向所有受影響嘅人開放、亦冇妥善吸納所有成員嘅意見，作者認為係唔理想。</p>
+ <p>國家可以點做？可以要求更多透明，喺用 ICN 成果之前做政治審查；甚至可以將 ICN 成員由 NCA 改為國家，以加強政治監督。作者亦提醒：呢類要求可能影響 ICN 嘅存續同效能。</p>`},
+{k:"06-1",t:"規管權由政府交畀私營國際機構（Focal institutions）",lv:[],vis:["v-tbt"],b:`<p>Büthe 同 Mattli（2011）指出一個明顯趨勢：政府將規管權力委託畀單一一個國際私營機構，而公營同私營行動者都當呢個機構係該範疇全球規管嘅理所當然場地。佢哋叫呢類機構做「焦點機構」。</p>`},
+{k:"06-2",t:"點解會私營化同國際化，同私營標準點樣有約束力",lv:[],vis:["v-tbt"],b:`<p>原因之一係政府缺乏所需嘅專長、資源或者靈活性；企業同私人行動者亦推動私營治理，覺得比政府規管更有效率、更具成本效益。例子係 ISO 同 IEC：國家同政府本身唔可以做成員，最適合理解為由中央協調嘅全球網絡。呢點同 IOSCO 冇國家成員、ICN 只准 NCA 做成員可以對照，見 跨政府網絡 › 跨政府網絡係乜。</p>
+ <p>私營標準點解有實際約束力？WTO《技術性貿易壁壘協定》（TBT Agreement）要求所有成員國用國際標準做國內法律同規例嘅技術基礎；用咗國際標準嘅規例，會被可推翻噉推定符合該國嘅 WTO 義務。即係話，私營機構寫嘅標準，透過一份條約同國內法接上。</p>`},
+{k:"06-3",t:"有得有失：分配衝突同冇公共監督",lv:[],vis:[],b:`<p>例如財務報告標準國際統一有可觀好處，但會令某啲人承擔重大成本，所以引發分配衝突。而且呢啲全球私營規管者主要靠私營持份者自願供款，唔受公共監督，寫具體規則嘅專家小組亦唔使保存會議紀錄。</p>`},
+{k:"06-4",t:"標準制定其實係政治",lv:[],vis:[],b:`<p>作者嘅核心講法：全球規則制定嘅用語係技術性，但本質係政治性。專業知識唔係一套關於乜嘢行得通嘅唯一正確信念。各國嘅國內標準機構，某程度上構成咗全球規管者嘅制度骨幹。</p>
+ <p>呢點同 Guidi、Tavares 同 Townley（2022）話 ICN 將「卓越標準」包裝成價值中立嘅批評一致，見 ICN › 邊個有影響力；Haas（1992）亦話披上客觀外衣嘅政策選擇仍然好政治，見 知識社群 › 限制同隱憂。</p>`},
+{k:"06-5",t:"邊個贏：制度互補性（Institutional complementarity）",lv:[],vis:["v-tbt"],b:`<p>邊個喺私營標準制定入面贏？技術專長同財政資源係必要、但唔係充分條件。作者嘅答案係制度互補性：喺層級分明、協調良好嘅國內體制入面運作嘅企業較大機會贏，因為佢哋嘅體制同只得單一焦點規管者嘅全球結構更配合。一國喺全球私營治理嘅影響力，好大程度取決於佢嘅國內制度同國際層面嘅制度結構有幾互補。</p>`},
+{k:"07-1",t:"由規範轉去實證：點樣睇全球監管嘅正當性",lv:[],vis:[],b:`<p>Kerwer（2005）主張研究全球監管嘅民主正當性要行「實證轉向」：問題唔係分析者覺得正唔正當，而係參與嘅行動者覺得。佢嘅結論係，信評機構個案顯示全球治理嘅正當性問題唔止喺正式嘅非多數決監管者（NMRs），仲伸延到非正式嘅，而且有時搵唔到解決辦法。</p>`},
+{k:"07-2",t:"延伸委託代理框架：內部問責同外部問責",lv:[],vis:["v-cra"],b:`<p>Kerwer 延伸委託代理框架。內部問責靠授權同資助；外部問責就唔同，委託人喺層級上唔高過代理人。佢亦借 Majone 嘅「委託人—受託人關係」：委託人授權非多數決監管者代佢行事，用嚟發出可信承諾嘅訊號（Majone 嘅可信承諾，見 獨立監管機構嘅正當性 › 點解授權）。外部問責比內部問責更容易有爭議；只集中講內部問責，會忽略更普遍、更重要嘅外部問責問題。</p>`},
+{k:"07-3",t:"信評機構點樣變成強制性監管者",lv:[],vis:["v-cra"],b:`<p>信評機構評估信用嘅準則，實際上就係進入金融市場嘅准入規則。佢哋喺資本市場取得壟斷地位，所以變得具強制性。公營監管機構喺規管入面用評級，其實係用控制權換取成效，結果令信評機構變成「準公共監管者」。</p>`},
+{k:"07-4",t:"問責缺口點解收唔埋",lv:[],vis:["v-cra"],b:`<p>問責缺口有幾個源頭。由借款人俾錢做評級係一種反常，因為真正用家係投資者；美國監管機構同信評機構嘅關係，較似委託人—受託人關係；信評機構對疏忽嘅法律責任申索差唔多完全免疫。所以持份者雖然見到問責缺口，但冇足夠權力收埋佢。</p>
+ <p>Scott（2000）亦話問責係一張網而唔係一條直線，見 規管型國家入面嘅問責 › 延伸問責。</p>`},
+{k:"07-5",t:"出路：減輕影響，同推廣到其他非多數決監管者",lv:[],vis:[],b:`<p>Kerwer 主張，與其加強信評機構嘅問責或者完全廢除佢哋，不如盡量減輕佢哋嘅不良影響。佢認為，凡係全球監管用非多數決監管者，都好可能出現類似嘅問責問題。</p>`},
+{k:"08-1",t:"點解 AfCFTA 要有競爭政策合作",lv:[],vis:[],b:`<p>Kigwiru（2020）先交代背景：到 2020 年 1 月，54 個非洲國家有 37 個已經制定競爭法。AfCFTA 帶嚟嘅競爭壓力可能誘使成員國同企業做反競爭行為，所以佢認為競爭政策合作係建立有競爭力嘅大陸市場嘅不可或缺工具。而且大多數發展中國家（尤其非洲）冇執法權去追究國際卡特爾。</p>`},
+{k:"08-2",t:"區域模式：自願定強制",lv:[],vis:["v-afcfta"],b:`<p>區域競爭制度有兩種合作方式：自願同強制。COMESA、EAC、WAEMU、ECOWAS 同 CEMAC 採用強制模式，要求成員國執行區域競爭法。</p>`},
+{k:"08-3",t:"量身訂造定照搬外國模式",lv:[],vis:[],b:`<p>文獻顯示非洲喺國家同區域層面採納競爭法，好大程度係受外部影響。Kigwiru 引 Fox 同 Bakhoum：世界標準嘅競爭法同政策唔啱需要同市場結構都唔同嘅貧窮及發展中國家。所以佢明確表示唔主張將 NAFTA、TPP 呢類模式照搬入 AfCFTA。</p>
+ <p>可以對照 Guidi、Tavares 同 Townley（2022）話 ICN 嘅「原罪」有利北美同歐洲競爭主管機關，見 ICN 入面邊個話事 › 謎題；以及 Aydin 同 Büthe（2016）講發展中國家競爭法嘅目標同障礙，見 目標要唔要因地制宜。</p>`},
+{k:"08-4",t:"區域會籍重疊同「保留既有成果」原則",lv:[],vis:[],b:`<p>AfCFTA 以區域經濟共同體（RECs）做 building blocks，但同時要處理多重會籍重疊，兩者之間有衝突。Kigwiru 引 Erasmus：保留既有成果（preservation of acquis）原則冇成為推動自由貿易嘅前瞻機制，反而變成保護現狀嘅限制性工具。</p>`},
+{k:"08-5",t:"軟法定硬法：法律形式、爭議解決同機構",lv:[],vis:["v-afcfta"],b:`<p>法律形式方面，AfCFTA Framework Agreement 第 4(c) 條用「cooperate」一字，顯示 AfCFTA 大有可能對大陸競爭政策採軟法。喺大陸層面設強制併購審查呢種硬法做法，雖然為咗法律確定性，但以目前嚟講太進取。大多數自由貿易協定處理競爭爭議都用非約束性機制。如果以軟法合作，喺 AfCFTA 秘書處設一個競爭政策工作小組或委員會係較可取嘅選擇。</p>`}
+];
+const CARDS={};CARDS_DATA.forEach(c=>{CARDS[c.id]=c;});
+function makePages(app){
+const {store,$,LNAME}=window.__S;
+/* ===================== VISUALS ===================== */
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" ${o.a?`text-anchor="${o.a}"`:''} font-weight="${o.w||400}" fill="${o.f||'var(--ink)'}">${t}</text>`;
+const box=(x,y,w,h,fill='var(--surface2)',stroke='var(--line)')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const arrow=(x1,y1,x2,y2,c='var(--muted)')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" marker-end="url(#ah)"/>`;
+const DEFS=`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+const VIS=[ {id:'v-roger',t:'Roger：正式定非正式點樣揀出嚟',n:'01 §二–四',svg:()=>`<svg viewBox="0 0 680 360" class="vis">${DEFS}
+  ${svgT(170,24,'第一步：國內偏好',{a:'middle',w:700,s:15})}${svgT(520,24,'第二步：國際議價',{a:'middle',w:700,s:15})}
+  ${box(10,40,320,52,'var(--soft)')}${svgT(170,62,'政治機構（例如部委）',{a:'middle',w:700})}${svgT(170,82,'基本偏好：正式（展示領導、鎖定政策）',{a:'middle',s:12})}
+  ${box(10,104,320,52,'var(--accent-soft)')}${svgT(170,126,'獨立機構',{a:'middle',w:700})}${svgT(170,146,'基本偏好：非正式（保住自主、靠專業）',{a:'middle',s:12})}
+  ${box(10,172,320,40,'var(--card)')}${svgT(170,197,'國內阻力大 → 政客都轉用非正式',{a:'middle',s:12})}
+  ${box(10,220,320,40,'var(--card)')}${svgT(170,245,'代表團被政治化 → 獨立機構都轉正式',{a:'middle',s:12})}
+  ${arrow(332,130,368,130)}
+  ${box(370,40,300,220,'var(--soft)')}${svgT(520,76,'國家之間意見唔同，睇議價能力',{a:'middle',s:13})}
+  ${svgT(520,110,'想要非正式嘅一方有優勢：',{a:'middle',s:13,w:700})}${svgT(520,132,'佢嘅選擇貼近現狀，',{a:'middle',s:13})}${svgT(520,154,'可以「頂住唔簽」',{a:'middle',s:13})}
+  ${svgT(520,196,'例：美國頂住 → 競爭議題',{a:'middle',s:12,f:'var(--muted)'})}${svgT(520,216,'唔入 WTO，ICN 留低',{a:'middle',s:12,f:'var(--muted)'})}
+  ${box(10,280,660,66,'var(--accent-soft)')}${svgT(340,304,'長期（動態）：政治兩極化 ＋ 規管型國家 → 走向非正式',{a:'middle',w:700,s:13})}
+  ${svgT(340,328,'非正式組織：二戰後 5–10% → 今日最多約三分之一',{a:'middle',s:12})}</svg>`},
+ {id:'v-raus',t:'Raustiala：監管權力點分佈，就揀網絡定條約',n:'04 §三–五',svg:()=>`<svg viewBox="0 0 680 300" class="vis">${DEFS}
+  <line x1="60" y1="120" x2="620" y2="120" stroke="var(--ink)" stroke-width="3"/>
+  ${[[60,'一家獨大','證券（美國）'],[340,'兩強','競爭（美國、歐盟）'],[620,'高度分散','環境']].map(([x,a,b])=>`<circle cx="${x}" cy="120" r="9" fill="var(--accent)"/>${svgT(x,96,a,{a:'middle',w:700})}${svgT(x,150,b,{a:'middle',s:12})}`).join('')}
+  ${svgT(340,40,'監管權力嘅分佈',{a:'middle',w:700,s:15})}
+  ${box(20,178,300,60,'var(--soft)')}${svgT(170,202,'權力唔對稱：避開條約、用網絡',{a:'middle',s:12,w:700})}${svgT(170,224,'強國模式靠說服輸出（入場費）',{a:'middle',s:12})}
+  ${box(360,178,300,60,'var(--soft)')}${svgT(510,202,'權力分散：條約同國際組織興旺',{a:'middle',s:12,w:700})}${svgT(510,224,'（liberal internationalism）',{a:'middle',s:12})}
+  ${svgT(340,272,'網絡唔係取代條約：提升能力、填補空隙，係補充',{a:'middle',s:13,w:700})}</svg>`},
+ {id:'v-haas',t:'知識社群：四樣共同嘢，同利益團體點唔同',n:'05 §二、四',svg:()=>`<svg viewBox="0 0 680 320" class="vis">
+  ${[['1 原則信念','行動嘅價值理由'],['2 因果信念','問題點樣造成'],['3 有效性標準','點樣驗證知識'],['4 政策事業','共同要推嘅做法']].map(([a,b],k)=>`${box(10+k*168,20,156,80,'var(--accent-soft)')}${svgT(88+k*168,52,a,{a:'middle',w:700})}${svgT(88+k*168,78,b,{a:'middle',s:12})}`).join('')}
+  ${svgT(340,130,'因果信念被反常現象動搖嗰陣……',{a:'middle',w:700})}
+  ${box(30,148,290,70,'var(--good-soft)')}${svgT(175,176,'知識社群',{a:'middle',w:700})}${svgT(175,200,'退出政策辯論',{a:'middle',s:13})}
+  ${box(360,148,290,70,'var(--bad-soft)')}${svgT(505,176,'利益團體',{a:'middle',w:700})}${svgT(505,200,'唔會退出',{a:'middle',s:13})}
+  ${svgT(340,252,'幾時被搵：唔確定之下；通常要一場危機或衝擊',{a:'middle',s:13})}
+  ${svgT(340,280,'限制：權力分佈仍然制約；分配後果仍然好政治；',{a:'middle',s:12,f:'var(--muted)'})}${svgT(340,300,'專家影響力大，可能損害民主同參與',{a:'middle',s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-icn',t:'ICN 入面邊個話事',n:'02 §一–六',svg:()=>`<svg viewBox="0 0 680 380" class="vis">${DEFS}
+  ${box(200,20,280,150,'var(--accent-soft)','var(--accent)')}${svgT(340,46,'ICN（2001）',{a:'middle',w:900,s:15})}
+  ${svgT(340,72,'成員：只係競爭主管機關（NCA）',{a:'middle',s:12})}${svgT(340,96,'督導小組：約 20 個管轄區輪流',{a:'middle',s:12})}
+  ${svgT(340,118,'14 個工作小組主席：歐盟＋北美佔 8 個',{a:'middle',s:12})}${svgT(340,146,'共識 ＋ 唔具約束力（兩面擋箭牌）',{a:'middle',s:12,w:700})}
+  ${box(10,40,170,90,'var(--bad-soft)')}${svgT(95,72,'國家',{a:'middle',w:700})}${svgT(95,96,'唔准入',{a:'middle',s:12})}${svgT(95,116,'保護唔到自己利益',{a:'middle',s:12})}
+  ${box(500,30,170,130,'var(--soft)')}${svgT(585,52,'非政府顧問 NGA',{a:'middle',w:700,s:13})}
+  ${[['律師行','54%'],['大企業','14%'],['學者','14%'],['消費者組織','約 6%'],['經濟學家','約 6%']].map(([a,b],k)=>svgT(512,76+k*18,a+' '+b,{s:12})).join('')}
+  ${arrow(498,95,482,95)}
+  ${svgT(340,206,'NGA 唔係成員，點樣都有影響？四個機制',{a:'middle',w:700})}
+  ${[['知識社群','同一套專家語言'],['在場','56%+ 參與起草'],['早入局','77% 話重要'],['旋轉門','職員望將來份工']].map(([a,b],k)=>`${box(10+k*168,222,156,64,'var(--card)')}${svgT(88+k*168,248,a,{a:'middle',w:700})}${svgT(88+k*168,272,b,{a:'middle',s:12})}`).join('')}
+  ${svgT(340,318,'唔具約束力都有壓力：自我規管（聲譽、監察）＋ 能力建設；',{a:'middle',s:12})}
+  ${svgT(340,340,'律師同說客引用 ICN 文件，移動「最佳做法」嘅邊界',{a:'middle',s:12})}
+  ${svgT(340,366,'「卓越標準」被包裝成價值中立，其實唔係',{a:'middle',s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-legit',t:'評 ICN：正當性工具箱同 Rodrik 三難',n:'03 §一–五',svg:()=>`<svg viewBox="0 0 680 330" class="vis">
+  ${box(10,20,300,130,'var(--soft)')}${svgT(160,46,'輸入正當性',{a:'middle',w:700})}${svgT(160,72,'授權：有冇越權？（英國、DG COMP）',{a:'middle',s:12})}${svgT(160,96,'由 NCA 而唔係國家成立',{a:'middle',s:12})}${svgT(160,120,'冇「政治時刻」',{a:'middle',s:12})}
+  ${box(10,166,300,130,'var(--accent-soft)')}${svgT(160,192,'輸出正當性（可部分補償）',{a:'middle',w:700})}${svgT(160,218,'效能：而家量度唔到',{a:'middle',s:12})}${svgT(160,242,'效率：資訊交流高效',{a:'middle',s:12})}${svgT(160,266,'但同 OECD、UNCTAD 重疊',{a:'middle',s:12})}
+  <polygon points="490,40 360,280 620,280" fill="none" stroke="var(--ink)" stroke-width="2"/>
+  ${svgT(490,30,'民主',{a:'middle',w:700})}${svgT(352,302,'國家自決',{a:'middle',w:700})}${svgT(628,302,'經濟全球化',{a:'middle',w:700})}
+  <circle cx="575" cy="255" r="9" fill="var(--aa)"/>${svgT(560,238,'ICN',{a:'end',w:900,f:'var(--aa)'})}
+  ${svgT(490,180,'三樣冇辦法',{a:'middle',s:12})}${svgT(490,198,'同時最大化',{a:'middle',s:12})}
+  ${svgT(340,324,'每個國家用自己嘅民主模式評（審議民主／自由民主）',{a:'middle',s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-tbt',t:'私營標準點樣變成有效力：TBT 協定條鏈',n:'06 §一–二、五',svg:()=>`<svg viewBox="0 0 680 300" class="vis">${DEFS}
+  ${[['私營焦點機構','ISO、IEC：','國家唔做成員'],['國際標準','技術用語，','政治本質'],['WTO TBT 協定','成員國要用','國際標準做基礎'],['國內規例','可推翻咁推定','符合 WTO 義務']].map(([a,b,c],k)=>`${box(10+k*170,40,150,90,k===2?'var(--accent-soft)':'var(--soft)')}${svgT(85+k*170,74,a,{a:'middle',w:700,s:13})}${svgT(85+k*170,100,b,{a:'middle',s:11})}${svgT(85+k*170,116,c,{a:'middle',s:11})}${k<3?arrow(162+k*170,85,178+k*170,85):''}`).join('')}
+  ${box(10,160,660,110,'var(--card)')}${svgT(340,188,'邊個贏？制度互補性',{a:'middle',w:700})}
+  ${svgT(340,214,'技術專長同資源：必要但唔充分',{a:'middle',s:12})}${svgT(340,238,'國內體制層級分明、協調良好 → 同「單一焦點機構」嘅全球結構配合 → 較大機會贏',{a:'middle',s:12})}
+  ${svgT(340,262,'代價：分配衝突；靠自願供款、冇公共監督',{a:'middle',s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-cra',t:'信評機構：內部問責同外部問責',n:'07 §二–四',svg:()=>`<svg viewBox="0 0 680 320" class="vis">${DEFS}
+  ${svgT(170,24,'內部問責',{a:'middle',w:700})}${svgT(510,24,'外部問責',{a:'middle',w:700})}
+  ${box(95,40,150,44,'var(--soft)')}${svgT(170,67,'委託人（喺上面）',{a:'middle',s:12})}${arrow(170,86,170,124)}${svgT(180,110,'授權、資助',{s:11})}
+  ${box(95,126,150,44,'var(--soft)')}${svgT(170,153,'代理人',{a:'middle',s:12})}
+  ${box(360,80,130,44,'var(--soft)')}${svgT(425,107,'持份者',{a:'middle',s:12})}${box(530,80,130,44,'var(--soft)')}${svgT(595,107,'信評機構',{a:'middle',s:12})}
+  ${arrow(492,102,528,102)}${svgT(510,148,'冇層級關係：邊個算委託人、',{a:'middle',s:11})}${svgT(510,164,'有乜制裁都唔清楚 → 易有爭議',{a:'middle',s:11})}
+  ${box(10,196,660,110,'var(--accent-soft)')}${svgT(340,222,'點解信評機構變成強制性監管者',{a:'middle',w:700})}
+  ${svgT(340,248,'評級準則＝入金融市場嘅准入規則；資本市場壟斷地位',{a:'middle',s:12})}
+  ${svgT(340,270,'監管機構喺規管入面用評級：用控制權換成效 → 準公共監管者',{a:'middle',s:12})}
+  ${svgT(340,292,'缺口：借款人俾錢、投資者先係用家；疏忽責任差唔多免疫',{a:'middle',s:12})}</svg>`},
+ {id:'v-afcfta',t:'AfCFTA 競爭合作：兩條軸',n:'08 §二、五',svg:()=>`<svg viewBox="0 0 680 300" class="vis">${DEFS}
+  ${svgT(340,24,'合作方式',{a:'middle',w:700})}<line x1="60" y1="50" x2="620" y2="50" stroke="var(--ink)" stroke-width="2"/>
+  ${svgT(60,74,'自願',{a:'middle',w:700})}${svgT(620,74,'強制',{a:'middle',w:700})}${svgT(620,94,'COMESA、EAC、WAEMU、',{a:'end',s:11})}${svgT(620,110,'ECOWAS、CEMAC',{a:'end',s:11})}
+  ${svgT(340,150,'法律形式',{a:'middle',w:700})}<line x1="60" y1="176" x2="620" y2="176" stroke="var(--ink)" stroke-width="2"/>
+  ${svgT(60,200,'軟法',{a:'middle',w:700})}${svgT(620,200,'硬法',{a:'middle',w:700})}
+  ${box(20,214,300,70,'var(--good-soft)')}${svgT(170,238,'第 4(c) 條用「cooperate」',{a:'middle',s:12})}${svgT(170,260,'建議：秘書處設競爭工作小組／委員會',{a:'middle',s:12})}
+  ${box(360,214,300,70,'var(--bad-soft)')}${svgT(510,238,'大陸層面強制併購審查',{a:'middle',s:12})}${svgT(510,260,'為咗法律確定性，但目前太進取',{a:'middle',s:12})}</svg>`}
+];
+function visuals(){
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">圖解 · ${VIS.length} 幅</span><h2>一幅圖睇一個概念</h2>
+   <p class="muted">每幅圖都對應筆記嘅某幾節。讀「讀懂版」或者玩完關卡之後，用嚟一眼溫返。</p></div>
+   <div class="stack">${VIS.map(v=>`<section class="panel vispanel" id="${v.id}"><div class="row" style="justify-content:space-between"><h3>${v.t}</h3><span class="tag">筆記 ${v.n}</span></div><div class="viswrap">${v.svg()}</div></section>`).join('')}</div>`;
+}
+
+/* ===================== READING NOTES ===================== */
+const LVNAME={swipe:'L1 算唔算監管',lobby:'L2 游說集團',families:'L3 四大家族',price:'L4 一個價兩筆數',judge:'L5 判案小法官',agency:'L6 合定拆',develop:'L7 因地制宜'};
+const cardsIn=(n,s)=>CARDS_DATA.filter(c=>c.n===n&&c.s===s);
+function notesPage(note){
+  note=note||NOTE_ORDER[0];
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  const m=NOTES_META[note];
+  const secs=NOTES.filter(x=>x.k.startsWith(note+'-'));
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">讀懂版 · 逐節淺白講解</span>
+    <div class="tabs">${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div></div>
+   <div class="panel stack"><h2>${note} ${m.t}</h2><p><b>呢篇問：</b>${m.q}</p><p class="muted">${m.read}</p></div>
+   <div class="stack" style="margin-top:14px">${secs.map(x=>{const n=+x.k.split('-')[1];const cs=cardsIn(note,n);const kn=cs.filter(c=>known[c.id]).length;
+     return `<section class="panel notesec" id="${x.k}">
+      <div class="row" style="justify-content:space-between"><h3>§${n} ${x.t}</h3>
+        <label class="readchk"><input type="checkbox" id="rd-${x.k}" data-k="${x.k}" ${read[x.k]?'checked':''}> 已讀</label></div>
+      <div class="nbody">${x.b}</div>
+      <div class="row links"><a class="chip" href="#lesson-${note}">▶ ${LNAME[note]}</a>
+        ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">◩ 圖：${VIS.find(z=>z.id===v).t}</a>`).join('')}
+        <a class="chip" href="#cards-${note}-${n}">▣ 呢節 ${cs.length} 張卡（識咗 ${kn}）</a></div></section>`}).join('')}</div>`;
+  app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash='notes-'+b.dataset.n;});
+  app.querySelectorAll('.readchk input').forEach(c=>c.onchange=()=>{const o=store.get().read||{};o[c.dataset.k]=c.checked;store.set('read',o);});
+  bindVisLinks();
+}
+function bindVisLinks(){app.querySelectorAll('[data-vis]').forEach(a=>a.onclick=e=>{e.preventDefault();const id=a.dataset.vis;location.hash='visuals';setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({block:'start'});},60);});}
+
+/* ===================== FLASHCARDS ===================== */
+const TYPE_ZH={action:'行動',fact:'事實',definition:'定義',conceptual:'概念',cause:'因果',evaluation:'評價',normative:'主張'};
+function cardsPage(arg){
+  const [note,sec]=(arg||'').split('-');
+  const pool=CARDS_DATA.filter(c=>(!note||c.n===note)&&(!sec||c.s===+sec));
+  let mode='unknown', order=[], idx=0, flipped=false;
+  function build(){
+    const known=store.get().known||{};
+    order=pool.filter(c=>mode==='all'||!known[c.id]).map(c=>c.id);
+    idx=0; flipped=false;
+  }
+  function shuffle(){for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;flipped=false;render();}
+  function render(){
+    const known=store.get().known||{};
+    const kn=pool.filter(c=>known[c.id]).length;
+    const scope=note?`${note} ${NOTES_META[note].t}${sec?` · §${sec} ${NOTES.find(x=>x.k===note+'-'+sec).t}`:''}`:'全部筆記';
+    let card='';
+    if(!order.length){ card=`<div class="fcard done"><div><h3>呢副卡你已經全部識晒 🎉</h3><p class="muted">轉「全部卡」可以再溫一次。</p></div></div>`; }
+    else{
+      const c=CARDS[order[idx]];
+      card=`<div class="fcard ${flipped?'flip':''}" id="fc" tabindex="0" role="button" aria-label="撳一下反卡">
+        ${!flipped?`<div class="ff"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fq">${c.f}</div><span class="muted" style="font-size:13px">撳一下（或者按空白鍵）睇答案</span></div>`
+        :`<div class="fb"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fa">${c.b}</div><blockquote>“${c.q}”</blockquote><span class="src">原文出處：${c.loc}</span></div>`}
+      </div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn ghost" id="bad">✗ 未識，等陣再嚟</button><button class="btn primary" id="good">✓ 識咗</button></div>`;
+    }
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">快速卡 · ${scope}</span>
+      <div class="tabs"><button class="tab ${!note?'on':''}" data-n="">全部</button>${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div>
+      <div class="row" style="justify-content:space-between"><span class="muted">呢副 ${pool.length} 張 · 識咗 ${kn} · 呢輪剩 ${order.length?order.length-idx:0}</span>
+      <div class="row"><button class="btn ghost sm" id="mode">${mode==='all'?'只溫未識':'全部卡'}</button><button class="btn ghost sm" id="shuf">洗牌</button><button class="btn ghost sm" id="reset">清除「識咗」</button></div></div>
+      <div class="progress"><i style="width:${pool.length?kn/pool.length*100:0}%"></i></div></div>
+      ${card}
+      <p class="muted" style="margin-top:14px;font-size:13.5px">卡面係我寫嘅問題；卡背係筆記入面嘅原子命題（中文）同原文英文引文，一字不改。卡背會出現人名，你唔使記，專心睇論點就得。</p>`;
+    app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash=b.dataset.n?'cards-'+b.dataset.n:'cards';});
+    $('#mode').onclick=()=>{mode=mode==='all'?'unknown':'all';build();render();};
+    $('#shuf').onclick=shuffle;
+    $('#reset').onclick=()=>{const k=store.get().known||{};pool.forEach(c=>delete k[c.id]);store.set('known',k);build();render();};
+    const fc=$('#fc'); if(fc){ fc.onclick=()=>{flipped=!flipped;render();$('#fc')&&$('#fc').focus();}; fc.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();fc.click();}}; }
+    const g=$('#good'), b=$('#bad');
+    if(g) g.onclick=()=>{const k=store.get().known||{};k[order[idx]]=true;store.set('known',k);next(true);};
+    if(b) b.onclick=()=>next(false);
+  }
+  function next(ok){ if(!ok){ order.push(order[idx]); } idx++; flipped=false; if(idx>=order.length){ build(); } render(); }
+  build(); render();
+}
+
+/* ===================== PROGRESS MAP ===================== */
+function mapPage(){
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  let tot=0, done=0;
+  const rows=NOTE_ORDER.map(n=>{
+    const secs=NOTES.filter(x=>x.k.startsWith(n+'-'));
+    return `<tr class="nh"><td colspan="5"><b>${n} ${NOTES_META[n].t}</b></td></tr>`+secs.map(x=>{
+      const s=+x.k.split('-')[1], cs=cardsIn(n,s), kn=cs.filter(c=>known[c.id]).length;
+      const lvDone=!!(st.done&&st.done['l'+n]);
+      const ok=read[x.k]&&kn===cs.length&&lvDone; tot++; if(ok) done++;
+      return `<tr><td><a href="#notes-${n}" data-sec="${x.k}">§${s} ${x.t}</a></td>
+        <td class="c">${read[x.k]?'✓':'—'}</td>
+        <td class="c mono">${kn}/${cs.length}</td>
+        <td><a class="chip ${lvDone?'ok':''}" href="#lesson-${n}">${LNAME[n]}${lvDone?' ✓':''}</a>
+          ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">圖</a>`).join(' ')}</td>
+        <td class="c">${ok?'<span class="okb">掌握</span>':''}</td></tr>`}).join('');
+  }).join('');
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">進度地圖 · 筆記每一節都喺度</span><h2>${done} / ${tot} 節已經全部做完</h2>
+    <p class="muted">一節要「讀懂版已讀」＋「嗰節嘅卡全部識咗」＋「嗰篇嘅課完成」，先算掌握。撳節名會跳去嗰節嘅讀懂版。</p>
+    <div class="progress"><i style="width:${done/tot*100}%"></i></div></div>
+    <div class="tablewrap"><table class="map"><thead><tr><th>節</th><th>讀懂版</th><th>卡</th><th>課／圖</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  app.querySelectorAll('[data-sec]').forEach(a=>a.onclick=e=>{e.preventDefault();const k=a.dataset.sec;location.hash='notes-'+k.split('-')[0];setTimeout(()=>{const el=document.getElementById(k);if(el)el.scrollIntoView({block:'start'});},60);});
+  bindVisLinks();
+}
+
+return {visuals,notesPage,cardsPage,mapPage};
+}
+(() => {
+const $=(s,el=document)=>el.querySelector(s);
+const app=$('#app');
+const MINE='<span class="mine">例子係我作嘅</span>';
+const MYNUM='<span class="mine">數字係我設嘅</span>';
+const KEY='reglab-10p1';
+const store={get(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}},
+  set(k,v){const o=this.get();o[k]=v;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}};
+const saveAll=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
+window.__S={store,$};
+const S=()=>Object.assign({xp:0,done:{},streak:0,last:null},store.get());
+function bumpStreak(st){const d=new Date();const today=d.toISOString().slice(0,10);
+  if(st.last===today) return; const y=new Date(d-864e5).toISOString().slice(0,10);
+  st.streak=(st.last===y)?st.streak+1:1; st.last=today;}
+const noteBody=k=>{const n=NOTES.find(x=>x.k===k);return n?{t:n.t,b:n.b}:null;};
+
+/* ---------- shared chart ---------- */
+function chart(P,MC,opt={}){
+  const W=340,H=250,L=34,B=26,T=8,R=8,x=q=>L+(q/100)*(W-L-R),y=p=>H-B-(p/100)*(H-B-T);
+  P=Math.max(P,MC); const Q=100-P;
+  const show=opt.show||['cs','c','a'];
+  let g='';
+  [0,20,40,60,80,100].forEach(t=>{g+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-5}" y="${y(t)+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`;});
+  if(show.includes('cs')) g+=`<polygon points="${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--cs)" fill-opacity="${opt.dim==='cs'?.15:.5}"/>`;
+  if(show.includes('c')&&P>MC) g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="${opt.cColor||'var(--cc)'}" fill-opacity=".65"/>`;
+  if(show.includes('a')&&P>MC) g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(100-MC)},${y(MC)}" fill="var(--aa)" fill-opacity=".8"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+13}" text-anchor="end" font-size="11" fill="var(--ink)">成本 ${MC}</text>`;
+  if(opt.old) g+=`<line x1="${x(0)}" y1="${y(opt.old)}" x2="${x(100)}" y2="${y(opt.old)}" stroke="var(--muted)" stroke-dasharray="2 4"/><text x="${x(100)}" y="${y(opt.old)-4}" text-anchor="end" font-size="10" fill="var(--muted)">合併前成本 ${opt.old}</text>`;
+  g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${x(Q)}" cy="${y(P)}" r="6" fill="var(--accent)"/>`;
+  g+=`<text x="${x(Q)+8}" y="${y(P)-6}" font-size="12" font-weight="700" fill="var(--accent)">售價 ${P}</text>`;
+  if(show.includes('cs')&&Q>10) g+=`<text x="${x(Q*.2)}" y="${y((100+P)/2)+16}" font-size="13" font-weight="900" fill="var(--ink)">CS</text>`;
+  if(show.includes('c')&&P-MC>7) g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+5}" text-anchor="middle" font-size="14" font-weight="900" fill="var(--ink)">C</text>`;
+  if(show.includes('a')&&P-MC>12) g+=`<text x="${x(Q+(100-MC-Q)/3)}" y="${y(MC+(P-MC)/3)+5}" text-anchor="middle" font-size="13" font-weight="900" fill="var(--ink)">A</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="需求線、成本線同售價">${g}</svg>`;
+}
+const calc=(P,MC)=>{P=Math.max(P,MC);const Q=100-P;return{Q,CS:.5*Q*(100-P),C:(P-MC)*Q,A:.5*(P-MC)**2,TW:.5*Q*(100-P)+(P-MC)*Q};};
+const f=n=>Math.round(n).toLocaleString('en');
+
+/* ---------- widgets ---------- */
+const W={ informal(el,done){
+  let who='min', opp='lo', pol='no'; const seen=new Set(); let asked=false;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>海島國想同鄰國合作。試吓轉吓「邊個帶頭」同國內情況，睇 Roger 會預測出正式定非正式組織。</p><p class="muted" style="font-size:13px">呢個開關係將筆記 01 §三嘅兩步理論簡化咗，只計第一步（國內偏好）。<span class="mine">開關係我設計嘅</span></p></div>
+   <p style="font-weight:700;margin:6px 0">邊個帶頭？</p><div class="tog" id="t1"><button data-v="min" class="on">部委（政治機構）</button><button data-v="ind">獨立機構</button></div>
+   <div id="sw2"></div><div id="out" style="margin:12px 0;padding:12px;border-radius:14px;background:var(--card);border:2px solid var(--line)"></div>
+   <div class="task" id="tk">🎯 搵晒兩個會令海島國揀「正式」組織嘅組合</div><div id="qq"></div></div>`;
+  const up=()=>{
+   $('#t1',el).querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===who));
+   $('#sw2',el).innerHTML=who==='min'?`<p style="font-weight:700;margin:6px 0">國內反對大唔大？</p><div class="tog" id="t2"><button data-v="lo">細</button><button data-v="hi">大（國會兩極化）</button></div>`
+     :`<p style="font-weight:700;margin:6px 0">代表團有冇被政治化（要同更政治化嘅國內角色分享決策）？</p><div class="tog" id="t2"><button data-v="no">冇</button><button data-v="yes">有</button></div>`;
+   const v=who==='min'?opp:pol;
+   $('#t2',el).querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.v===v);b.onclick=()=>{if(who==='min')opp=b.dataset.v;else pol=b.dataset.v;up();};});
+   const formal=(who==='min'&&opp==='lo')||(who==='ind'&&pol==='yes');
+   const why=who==='min'?(opp==='lo'?'部委基本偏好正式：可以展示領導、鎖定政策。':'國內強烈反對令正式合作難搞、政治機會成本上升，所以轉用非正式。')
+     :(pol==='yes'?'代表團被政治化，獨立機構都較大機會走正式路線。':'獨立機構基本偏好非正式：保住自主、靠專業權威做決定。');
+   $('#out',el).innerHTML=`<b style="font-size:20px;color:${formal?'var(--accent)':'var(--good)'}">${formal?'📜 正式（條約）':'🤝 非正式（MOU、君子協定）'}</b><p style="margin:6px 0 0">${why}</p><span class="src">出處：筆記 01 §三</span>`;
+   if(formal) seen.add(who+v);
+   if(seen.size>=2&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 兩個都搵到：部委＋反對細；獨立機構＋代表團政治化。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">1990 年代歐盟委員會轉而推動將反壟斷放入 WTO（正式）。用呢個開關，最似邊個組合？</p><div class="opts"><button class="opt" data-o="a">獨立機構＋代表團被政治化</button><button class="opt" data-o="b">部委＋國內反對大</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='a';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>Roger 話好大程度係因為當時反壟斷問題喺歐洲被政治化；美國冇咁政治化，繼續要非正式。入 WTO 要美國同意，美國頂住，結果剩低 ICN。</p><span class="src">出處：筆記 01 §七</span></div>`:`<div class="fb hint"><p>💡 歐盟委員會係獨立機構定部委？當時反壟斷問題喺歐洲係咪被政治化？</p></div>`; if(ok) done(true);});}
+  };
+  $('#t1',el).querySelectorAll('button').forEach(b=>b.onclick=()=>{who=b.dataset.v;up();});up();
+ },
+ power(el,done){
+  const P=[['一家獨大','證券：差唔多由美國一家獨大','權力高度唔對稱 → 各國避開條約同國際組織，用網絡；強國模式靠說服輸出。'],
+           ['兩強','競爭法：大致係美國同歐盟兩強','介乎兩者之間。'],
+           ['高度分散','環境：權力好分散','權力高度分散 → 條約同國際組織興旺。']];
+  let v=0; const seen=new Set([0]); let asked=false;
+  el.innerHTML=`<div class="wid"><div class="lbl"><span>監管權力嘅分佈</span><span class="mono" id="pn"></span></div>
+   <input type="range" id="pw" min="0" max="2" step="1" value="0" aria-label="監管權力分佈">
+   <div class="lbl" style="font-size:13px"><span>一家獨大</span><span>高度分散</span></div>
+   <div id="po" style="margin:10px 0;padding:12px;border-radius:14px;background:var(--card);border:2px solid var(--line);min-height:96px"></div>
+   <div class="task" id="tk">🎯 拉晒三格，睇三個範疇</div><div id="qq"></div></div>`;
+  const up=()=>{$('#pn',el).textContent=P[v][0];$('#po',el).innerHTML=`<b>${P[v][1]}</b><p style="margin:6px 0 0">${P[v][2]}</p><span class="src">出處：筆記 04 §三</span>`;
+   seen.add(v);
+   if(seen.size===3&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 權力越唔對稱，越避開條約；越分散，條約越興旺。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">海島國證監會好細，想加入證券監管者網絡。按 Raustiala，最可能要「付」乜？</p><div class="opts"><button class="opt" data-o="a">引入強國（美國）嘅監管模式，當係入場費</button><button class="opt" data-o="b">簽一份有約束力嘅多邊條約</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='a';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>對弱國嚟講，引入強國模式可以當係攞齊網絡好處嘅「入場費」；SEC 一貫將人拉埋美國模式，而唔係改自己。所以網絡帶嚟嘅劃一，好可能跟強國偏好行。</p><span class="src">出處：筆記 04 §四</span></div>`:`<div class="fb hint"><p>💡 證券係一家獨大：權力唔對稱時，大家會唔會簽條約？</p></div>`; if(ok) done(true);});}};
+  $('#pw',el).oninput=e=>{v=+e.target.value;up();};up();
+ },
+ nga(el,done){
+  let g=20, shown=false;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>你收到 ICN 嘅邀請：海島國可以派「非政府顧問」。你估吓：ICN 嘅 NGA 入面，<b>律師行</b>佔幾多？</p></div>
+   <div class="lbl"><span>你估</span><span class="mono" id="gv"></span></div>
+   <input type="range" id="gs" min="0" max="100" step="2" value="20" aria-label="估律師行佔幾多">
+   <div class="task" id="tk">🎯 揀好就撳「揭曉」</div><button class="btn primary" id="rv" style="margin:8px 0">揭曉</button><div id="bars"></div></div>`;
+  $('#gv',el).textContent=g+'%';
+  $('#gs',el).oninput=e=>{g=+e.target.value;$('#gv',el).textContent=g+'%';};
+  $('#rv',el).onclick=()=>{if(shown)return;shown=true;const D=[['律師行',54],['大企業',14],['學者',14],['消費者組織',6],['經濟學家',6]];
+   $('#bars',el).innerHTML=D.map(([a,b])=>`<div class="barrow"><span>${a}</span><span class="track"><i style="width:${b}%;background:${a==='律師行'?'var(--aa)':'var(--accent)'}"></i></span><span class="mono">${a.includes('組織')||a.includes('經濟')?'約 ':''}${b}%</span></div>`).join('')
+    +`<div class="fb ok"><p>${Math.abs(g-54)<=10?'估得好近！':'你估 '+g+'%，實際係 54%。'}律師行過半，大企業同學者各 14%，消費者組織同經濟學家各只得約 6%。作者引 Wils：代表大企業觀點嘅聲音差唔多必然最大。</p><span class="src">出處：筆記 02 §四、§六（問卷數字）</span></div>`;
+   $('#tk',el).className='task ok';$('#tk',el).textContent='✓ 已揭曉';done(Math.abs(g-54)<=10);};
+ },
+ trilemma(el,done){
+  const C=[['dem','民主'],['nat','國家自決'],['glob','經濟全球化']]; const sel=new Set(); let asked=false;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>Rodrik 嘅三難：<b>民主、國家自決、經濟全球化</b>，三樣冇辦法同時最大化。撳兩樣你最想要嘅。</p></div>
+   <div class="opts" id="cs">${C.map(([k,t])=>`<button class="opt" data-k="${k}">${t}</button>`).join('')}</div>
+   <div id="tx" style="min-height:40px;margin:8px 0"></div><div class="task" id="tk">🎯 揀兩樣</div><div id="qq"></div></div>`;
+  const up=()=>{el.querySelectorAll('#cs .opt').forEach(b=>{b.classList.toggle('right',sel.has(b.dataset.k));b.style.opacity=sel.size===2&&!sel.has(b.dataset.k)?.45:1;});
+   if(sel.size===2){const lost=C.find(c=>!sel.has(c[0]))[1];$('#tx',el).innerHTML=`<p>你揀咗 ${C.filter(c=>sel.has(c[0])).map(c=>c[1]).join(' ＋ ')} → <b>「${lost}」</b>就冇辦法同時最大化。</p>`;
+    if(!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 三樣只可以顧兩樣。';
+     $('#qq',el).innerHTML=`<p style="font-weight:700">作者話 ICN 強烈偏向邊一角？</p><div class="opts">${C.map(([k,t])=>`<button class="opt" data-o="${k}">${t}</button>`).join('')}</div><div id="fb"></div>`;
+     let tries=0;$('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{tries++;const ok=b.dataset.o==='glob';b.classList.add(ok?'right':'wrong');
+      $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>ICN 推廣統一嘅競爭規則（經濟全球化），好少理國家特色，而且暫時唔容許民主控制。作者話：增加相互依存，但冇讓國家民主機構參與，係唔理想。</p><span class="src">出處：筆記 03 §五</span></div>`:`<div class="fb hint"><p>💡 ICN 推廣統一嘅競爭規則。統一規則服務邊一角？</p></div>`; if(ok) done(tries===1);});}}
+   else $('#tx',el).innerHTML='';};
+  el.querySelectorAll('#cs .opt').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(sel.has(k))sel.delete(k);else{if(sel.size===2)return;sel.add(k);}up();});
+ }
+};
+
+/* ---------- lessons ---------- */
+/* ===== Folder 10 · Part 1 lessons (Week 4: notes 01, 04, 05, 02, 03, 06, 07, 08) ===== */
+const SCENE_TAG='<p class="muted" style="font-size:14px">情境係我作嘅（海島國係虛構），概念全部出自筆記。</p>';
+const A1={id:'l01',note:'01',icon:'1',name:'點解越嚟越多非正式組織',sub:'筆記 01 · 約 6 分鐘',screens:[
+ {type:'story',h:'你出國做嘢喇',html:`<div class="scene"><div class="big">🌏</div><p>海島國競爭局成立咗一年，你升做國際事務主管。局長話：「好多國家嘅監管者都同人合作，我哋應該簽條約，定係同人簽份諒解備忘錄（MOU）就算？」第一步，要明白點解國際合作越嚟越「非正式」。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'由「走向法律」到乜？',lead:'二十世紀國家簽咗大量有約束力嘅條約、開咗好多正式國際組織。由 1970、80 年代開始，Roger 話出現咗乜？',
+  opts:['合作停咗','走向非正式：好多機構喺傳統國際法範圍以外成立'],ans:1,hint:'合作冇停，只係轉咗形。',
+  ex:'G20 就係例子：2008 年金融海嘯變成協調中心，但冇常設秘書處、喺國際法上冇正式地位。',deep:'01-1',src:'筆記 01 §一'},
+ {type:'mcq',h:'有幾多？',lead:'Roger 自己整咗數據。今日非正式組織最多佔現存國際組織幾多？',
+  opts:['大約 5% 至 10%','最多約三分之一'],ans:1,hint:'5% 至 10% 係二戰剛完嗰陣。',
+  ex:'由二戰後嘅 5–10% 升到最多三分之一，主要由北美同歐洲嘅先進工業國推動。',deep:'01-1',src:'筆記 01 §一'},
+ {type:'mcq',h:'最根本嘅分別',lead:'正式同非正式國際組織，最根本嘅分別係乜？',
+  opts:['有冇秘書處','法律基礎：有約束力嘅國際協議，定冇約束力嘅文書（例如 MOU）'],ans:1,hint:'秘書處只係傾向，唔係硬規則。',
+  ex:'正式組織由有法律約束力嘅協議成立；非正式組織由 MOU、君子協定呢類冇約束力嘅文書成立。',deep:'01-2',src:'筆記 01 §二'},
+ {type:'flips',h:'點解要理呢個分別？',lead:'撳開兩張卡。',items:[
+  ['⚙️ 功能特性（文獻）','非正式機構快啲、靈活啲、保密啲。'],
+  ['🏛️ 國內含義（Roger 補充）','國內開正式組織要過好多政治、法律同預算關卡；非正式門檻低得多。Roger 話呢樣同功能特性一樣重要。']],deep:'01-2',src:'筆記 01 §二'},
+ {type:'mcq',h:'國家唔係一個整體',lead:'Roger 引 Macey：決定國際合作嘅係邊個？',
+  opts:['國家作為一個整體','國家入面嘅監管者、官僚同政客'],ans:1,hint:'兩步理論嘅第一步：國內偏好。',
+  ex:'Roger 簡化成兩類人：政治機構（例如部委）傾向正式；獨立機構傾向非正式。',deep:'01-3',src:'筆記 01 §三'},
+ {type:'widget',h:'試吓預測',lead:'轉吓開關。',w:'informal',deep:'01-3'},
+ {type:'mcq',h:'第二步：國際議價',lead:'海島國想要非正式，鄰國想要正式。Roger 話邊個議價有優勢？',
+  opts:['想要正式嗰個','想要非正式嗰個：佢嘅選擇貼近現狀'],ans:1,hint:'邊個可以「頂住唔簽」都冇損失？',
+  ex:'想要非正式嘅一方嘅偏好貼近現狀，所以有優勢。ICN 個案：美國頂住，競爭議題唔入 WTO。',deep:'01-3|01-7',src:'筆記 01 §三、§七'},
+ {type:'mcq',h:'點解越嚟越多？',lead:'Roger 嘅「動態」解釋：先進工業國國內兩個長期轉變係……',
+  opts:['政治兩極化，同規管型國家出現','冷戰結束，同互聯網'],ans:0,hint:'接返 Part 2：Majone 講嘅獨立機構。',
+  ex:'兩極化令國會僵持、國內阻力增加；規管型國家帶嚟大量獨立機構，佢哋行出國際時想保住自主，所以偏好非正式。',deep:'01-4',src:'筆記 01 §四'},
+ {type:'match',h:'三套解釋',lead:'將理論配對佢嘅講法。',deep:'01-5',pairs:[['功能論','非正式係解決某問題嘅最佳方法，就揀非正式'],['權力論','強國要彈性（非正式），弱國要綁實（正式）'],['Roger','國內政治：阻力同邊個帶頭']],src:'筆記 01 §三、§五'},
+ {type:'mcq',h:'錯配',lead:'如果推動非正式嘅係權力或者國內政治，咁問題嘅性質同組織形式……',
+  opts:['一定配合','冇必然關係；數據顯示非正式組織更大機會錯配'],ans:1,hint:'Roger 話好多非正式組織成功係「雖然」非正式。',
+  ex:'錯配嘅比例隨非正式組織增加而上升。Guidi 等引 Roger 嘅數字：近 46% 非正式組織錯配。',deep:'01-6',src:'筆記 01 §六'},
+ {type:'review',h:'快速溫習',ids:[7,10,11,18,19,27]}
+],take:['正式定非正式：最根本睇法律基礎。','國內政治決定偏好：部委要正式；獨立機構要非正式；阻力大轉非正式；代表團政治化轉正式。','想要非正式嘅一方議價有優勢。','兩極化＋規管型國家 → 走向非正式；非正式更易錯配。']};
+
+const A2={id:'l04',note:'04',icon:'2',name:'監管者之間嘅網絡',sub:'筆記 04 · 約 5 分鐘',screens:[
+ {type:'story',h:'MOU 上枱',html:`<div class="scene"><div class="big">📑</div><p>局長決定先唔簽條約，同鄰國競爭局簽一份 MOU。外交部有啲唔開心：「點解唔經我哋？」你要解釋乜嘢係「跨政府網絡」。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'乜嘢係「跨政府」？',lead:'Raustiala 講嘅「跨政府」合作係……',
+  opts:['外交部同外交部簽條約','各國專責嘅本地官員直接打交道，外交部通常好少監督'],ans:1,hint:'所以外交部先唔開心。',
+  ex:'最常用嘅工具係監管機構之間嘅 MOU：法律上冇約束力嘅軟法，但監管者覺得有效又靈活。',deep:'04-1',src:'筆記 04 §一'},
+ {type:'mcq',h:'IOSCO 點解唔係傳統國際組織？',lead:'國際證監會組織（IOSCO）……',
+  opts:['冇一個成員係國家','佢冇秘書處'],ans:0,hint:'睇成員係邊個。',
+  ex:'同 ICN 只准競爭主管機關做成員一樣。',deep:'04-1',src:'筆記 04 §一'},
+ {type:'sort',h:'點解會興起？',lead:'將每項分去啱嘅類別。',cats:['三大推動因素','最主要嘅動力','唔係筆記講嘅'],items:[
+  ['本地監管擴張',0,'三大因素之一。'],['經濟互相依存加深',0,'三大因素之一。'],['科技創新',0,'三大因素之一。'],
+  ['執法上嘅挑戰',1,'喺證券、競爭、環境三個範疇，最主要嘅動力。'],['外交部想慳錢',2,'筆記冇咁講。']],deep:'04-2',src:'筆記 04 §二'},
+ {type:'widget',h:'權力分佈決定形式',lead:'拉動滑桿。',w:'power',deep:'04-3|04-4'},
+ {type:'mcq',h:'靠乜推動改變？',lead:'網絡推動監管改變，主要靠……',
+  opts:['命令','說服'],ans:1,hint:'MOU 冇約束力。',
+  ex:'靠說服；結果網絡帶嚟嘅劃一，好可能跟主要經濟強國嘅偏好行。',deep:'04-4',src:'筆記 04 §四'},
+ {type:'mcq',h:'網絡會唔會取代條約？',lead:'外交部擔心：「咁以後唔使條約？」Raustiala 點答？',
+  opts:['會取代','唔會：網絡係補充，仲可以改善條約遵守'],ans:1,hint:'能力提升 → 守約成本降低。',
+  ex:'網絡提升本地監管能力，降低守約成本；網絡最普遍嘅地方正係條約政治上行唔通嘅地方，所以係「填補空隙」。',deep:'04-5',src:'筆記 04 §五'},
+ {type:'flips',h:'批評',lead:'撳開睇。',items:[
+  ['⚖️ 正當性（Picciotto）','次國家官員直接嘅國際接觸，長期缺乏正當性。'],
+  ['📐 Franck 嘅正當性理論','著重形式、程序同規範，同跨政府合作嘅性質有深層矛盾。'],
+  ['🧩 能力','非正式同靈活，做唔到一份強而有力嘅多邊協議做得到嘅嘢。']],deep:'04-6',src:'筆記 04 §六'},
+ {type:'review',h:'快速溫習',ids:[33,37,39,43,46,48]}
+],take:['跨政府網絡：本地官員直接打交道，靠 MOU（軟法）。','執法挑戰係最主要動力；集中喺富裕工業國。','權力唔對稱 → 用網絡；分散 → 條約興旺。','網絡補充、唔取代條約；但有正當性同能力嘅限制。']};
+
+const A3={id:'l05',note:'05',icon:'3',name:'專家網絡：知識社群',sub:'筆記 05 · 約 5 分鐘',screens:[
+ {type:'story',h:'會議室入面嘅經濟學家',html:`<div class="scene"><div class="big">🧑‍🔬</div><p>去到國際會議，你發現各國競爭局嘅經濟學家講同一套語言、引同一批研究，好似一班老朋友。局長問：「佢哋代表自己國家，定代表一套諗法？」</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'起點',lead:'Haas 話，乜嘢令國際政策協調越嚟越需要、亦越嚟越難？',
+  opts:['全球問題嘅技術唔確定性同複雜性越嚟越大','各國越嚟越窮'],ans:0,hint:'唔確定。',
+  ex:'而且控制知識同資訊本身就係權力嘅一個重要面向。',deep:'05-1',src:'筆記 05 §一'},
+ {type:'mcq',h:'定義',lead:'知識社群係……',
+  opts:['一個國家嘅專家委員會','由專業人士組成嘅網絡：有公認專長，對政策相關知識有權威性說法'],ans:1,hint:'可以跨國。',
+  ex:'例子出自筆記：喺唔同國家政府同大學做事嘅氣候科學家。',deep:'05-2',src:'筆記 05 §二'},
+ {type:'match',h:'四樣共同嘢',lead:'用筆記嘅氣候科學家例子配對。',pairs:[
+  ['原則信念','相信要保護環境'],['因果信念','相信排放導致暖化'],['有效性標準','用同一套同儕評審標準'],['政策事業','想推減排政策']],src:'筆記 05 §二（例子出自筆記）'},
+ {type:'mcq',h:'幾時會被搵？',lead:'決策者最有可能喺乜嘢情況下搵知識社群？',
+  opts:['一切都好清楚嘅時候','唔確定嘅時候，通常要一場危機或衝擊先克服制度慣性'],ans:1,hint:'危機。',
+  ex:'如果佢哋喺行政機關同國際秘書處鞏固到官僚權力，影響就可以制度化；合作模式喺權力集中唔夠迫各國協調時都可以維持。',deep:'05-3',src:'筆記 05 §三'},
+ {type:'mcq',h:'同利益團體點唔同？',lead:'如果有反常現象動搖咗佢哋嘅因果信念……',
+  opts:['知識社群會退出政策辯論，利益團體唔會','兩者都會繼續游說'],ans:0,hint:'佢哋嘅身份建基於共同信念。',
+  ex:'共同信念亦會抵銷要佢哋迎合高層決策者既有利益嘅壓力。',deep:'05-4',src:'筆記 05 §四'},
+ {type:'mcq',h:'返到 ICN',lead:'Guidi 等話 ICN 成員好多時偏幫所屬知識社群嘅諗法。對國家有咩含意？',
+  opts:['本國利益可能被放埋一邊','國家利益一定得到保障'],ans:0,hint:'國家又唔准入 ICN。',
+  ex:'所以 NCA 同自己國家之間會出現楔子（下一課詳講）。',deep:'05-4|02-3',src:'筆記 05 §四；筆記 02 §三'},
+ {type:'flips',h:'專家冇話晒事',lead:'撳開三個限制。',items:[
+  ['🌍 權力','國家行為反映知識網絡偏好幾多，仍然受國際權力分佈制約。'],
+  ['💰 分配','披上客觀、價值中立外衣，政策選擇喺分配後果上仍然好政治。'],
+  ['🗳️ 民主','專門群體影響力越大，可能損害民主同參與。']],deep:'05-5',src:'筆記 05 §五'},
+ {type:'review',h:'快速溫習',ids:[53,55,58,63,66,67]}
+],take:['知識社群：跨國專家網絡，四樣共同嘢。','唔確定、危機之下最有影響；可以制度化。','同利益團體唔同：因果信念被推翻會退出。','限制：權力分佈、分配後果仍政治、民主隱憂。']};
+
+const A4={id:'l02',note:'02',icon:'4',name:'ICN 入面邊個話事',sub:'筆記 02 · 約 7 分鐘',screens:[
+ {type:'story',h:'收到 ICN 邀請',html:`<div class="scene"><div class="big">✉️</div><p>國際競爭網絡（ICN）邀請海島國競爭局加入。邀請信話：「我哋靠共識、成果唔具約束力，你哋唔使擔心。」局長叫你睇清楚先。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'謎題',lead:'OECD 同 UNCTAD 已經討論國際競爭政策。點解仲要另開 ICN？作者話揀 NCA 網絡呢個「原罪」……',
+  opts:['對所有國家一樣公平','不成比例咁有利北美同歐洲先進工業國嘅 NCA'],ans:1,hint:'邊個「訂規則」？',
+  ex:'只有 NCA 可以做成員，國家唔可以。引 Roger：由獨立機構帶頭，較大機會係非正式。',deep:'02-1',src:'筆記 02 §一'},
+ {type:'mcq',h:'兩面擋箭牌',lead:'共識（冇 NCA 反對先通過）同唔具約束力，保唔保護到新興 NCA 同佢哋嘅國家？',
+  opts:['形式上啱，實際上都唔大可能保護到','完全保護到'],ans:0,hint:'競爭政策唔只係技術。',
+  ex:'競爭政策涉及大量再分配選擇；叫專家「淨係理效率」就會偏幫某班人，輸家係發展中國家、消費者、小企業同被忽略嘅政策利益。',deep:'02-2',src:'筆記 02 §二'},
+ {type:'sort',h:'影響力集中喺邊？',lead:'將每項事實分類。',cats:['領導位置集中','專家論證偏幫大機構','NCA 同國家之間嘅楔子'],items:[
+  ['督導小組成員喺約 20 個管轄區之間輪流',0,'加上親近偏見。'],['14 個工作小組主席，歐盟＋北美佔 8 個',0,'57%。'],
+  ['技術焦點有利技術最強嘅一方',1,'資源充足嘅大 NCA。'],['冇國家喺入面，保住 NCA 自主',1,'增加 NCA 權力。'],
+  ['成員偏幫知識社群嘅諗法，放低本國利益',2,'而國家又唔准入 ICN。']],deep:'02-3',src:'筆記 02 §三'},
+ {type:'mcq',h:'培訓係禮物？',lead:'富裕 NCA 畀新興 NCA 培訓同支援。作者點講？',
+  opts:['有用，但亦好似木馬屠城','純粹係慈善'],ans:0,hint:'將「訂規則嘅人」嘅諗法帶入去。',
+  ex:'筆記嘅例子：「國際足球規例委員會」只准裁判會加入，主席同起草小組幾乎全部嚟自大聯賽，又請細聯賽裁判去培訓。',deep:'02-3',src:'筆記 02 §三'},
+ {type:'widget',h:'NGA 係邊啲人？',lead:'估吓先。',w:'nga',deep:'02-4|02-6'},
+ {type:'mcq',h:'2004 年',lead:'有發展中國家 NCA 提議研究濫用支配地位，被拒。Jenny 報告話有代表懷疑點解？',
+  opts:['商界 NGA 唔想競爭機關被鼓勵去追大跨國公司','因為冇人識做'],ans:0,hint:'睇邊個係 NGA。',
+  ex:'Wils：代表大企業觀點嘅聲音差唔多必然最大。',deep:'02-4',src:'筆記 02 §四'},
+ {type:'mcq',h:'唔具約束力 = 冇壓力？',lead:'ICN 冇「有約必守」義務。作者話……',
+  opts:['唔具約束力講唔到佢實際上有幾大能力令成員採用','冇約束力即係冇影響'],ans:0,hint:'自我規管同能力建設。',
+  ex:'聲譽、監察，唔跟就要解釋；仲有培訓。長遠：律師同說客引用 ICN 文件，移動辯論嘅正當邊界、界定乜嘢係「最佳做法」。ICN 亦已由製作成果轉向推動落實。',deep:'02-5',src:'筆記 02 §五'},
+ {type:'match',h:'NGA 嘅四個機制',lead:'配對。',pairs:[
+  ['知識社群','NCA 同 NGA 屬同一個專家社群'],['在場','冇投票權，但超過 56% 參與起草或審閱'],['早入局','77% NGA 話早期參與起草重要'],['旋轉門','NCA 職員預期將來去律師行或企業做嘢']],src:'筆記 02 §六'},
+ {type:'mcq',h:'點解要爭？',lead:'跨國企業同律師點解咁落力？',
+  opts:['想改「遊戲規則」，令將來對自己有利','純粹想學嘢'],ans:0,hint:'有利嘅監管制度可以大大提高盈利。',
+  ex:'容易嘅議題（例如正當程序）做完，剩低嘅分配性更明顯，NGA 返去搵共同點：推動落實現有成果。',deep:'02-6',src:'筆記 02 §六'},
+ {type:'review',h:'快速溫習',ids:[73,78,84,91,96,102]}
+],take:['ICN 只准 NCA 做成員：「原罪」有利北美同歐洲 NCA。','共識同唔具約束力保護唔到新興 NCA。','領導集中；技術焦點偏幫大機構；NCA 同國家之間有楔子。','NGA 靠知識社群、在場、早入局、旋轉門影響規則。']};
+
+const A5={id:'l03',note:'03',icon:'5',name:'ICN 正唔正當',sub:'筆記 03 · 約 6 分鐘',screens:[
+ {type:'story',h:'國會質詢',html:`<div class="scene"><div class="big">🏛️</div><p>海島國國會議員問：「競爭局加入一個連國家都唔准入嘅網絡，跟佢嘅『最佳做法』，邊個授權？有冇用？」你要用一套工具箱答。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'用邊把尺？',lead:'作者點樣處理「ICN 正唔正當」？',
+  opts:['定一個全世界通用嘅標準','畀國家一套工具箱，每國用自己對民主嘅理解評'],ans:1,hint:'Morgan 同 Yeung 嘅「中層」理論。',
+  ex:'輸入正當性問授權同參與；效能同效率係輸出正當性，可以某程度補償輸入不足。',deep:'03-1',src:'筆記 03 §一'},
+ {type:'sort',h:'授權嚟源',lead:'成立或加入 ICN 時，邊個喺權力範圍內？',cats:['冇越權','越權'],items:[
+  ['葡萄牙 NCA：法例畀一般而明確嘅授權',0,'參加國際組織唔使再問國會或政府。'],
+  ['英國 NCA',1,'作者話越權。'],
+  ['歐盟 DG COMP：程序遠遠達唔到 TFEU 第 218 條',1,'第 218 條要委員會建議、理事會授權同締結、諮詢歐洲議會。']],deep:'03-2',src:'筆記 03 §二'},
+ {type:'mcq',h:'最令人擔心',lead:'作者話 ICN 輸入正當性最令人擔心嘅係……',
+  opts:['冇一個由更廣泛國家利益揀呢條路嘅「政治時刻」','會費太貴'],ans:0,hint:'ICN 由 NCA、唔係國家成立。',
+  ex:'用審議民主合理化亦唔具說服力：參與者主要係 NCA，大部分持份者冇代表，美歐聲音大得多。',deep:'03-2',src:'筆記 03 §二'},
+ {type:'mcq',h:'效能',lead:'ICN 以成果數量證明自己成功。作者點講？',
+  opts:['數量就係質素','而家根本冇辦法量度成果嘅效能'],ans:1,hint:'目標之間有張力，又冇總目標。',
+  ex:'仲可能專揀容易有共識嘅題目（Gerber：支配企業行為、縱向限制冇乜推進趨同）；又好少檢查實證結果。',deep:'03-3',src:'筆記 03 §三'},
+ {type:'mcq',h:'效率嘅兩難',lead:'如果 ICN 得出同 OECD 一樣嘅結論……',
+  opts:['就要問咁做有冇效率同效能','證明 ICN 好正當'],ans:0,hint:'結論唔同又點？',
+  ex:'結論一樣 → 問效率效能；結論唔同 → 問正唔正當。ICN 想做知情分歧定協調統一都未講清，就評估唔到效率。',deep:'03-4',src:'筆記 03 §四'},
+ {type:'widget',h:'Rodrik 三難',lead:'揀兩樣。',w:'trilemma',deep:'03-5'},
+ {type:'mcq',h:'國家可以點做？',lead:'作者提議嘅最進取做法係……',
+  opts:['將 ICN 成員由 NCA 改為國家，加強政治監督','即刻退出'],ans:0,hint:'亦可以要求透明、用成果前做政治審查。',
+  ex:'但作者提醒：呢類要求可能影響 ICN 嘅存續同效能。',deep:'03-5',src:'筆記 03 §五'},
+ {type:'review',h:'快速溫習',ids:[111,112,116,118,124,125]}
+],take:['評正當性：畀國家工具箱，用自己嘅民主模式。','輸入：越權（英國、DG COMP）、由 NCA 成立、冇政治時刻。','輸出：效能量唔到；效率有重疊同兩難。','Rodrik 三難：ICN 偏向全球化，少理國家特色同民主控制。']};
+
+const A6={id:'l06',note:'06',icon:'6',name:'私營全球規管者',sub:'筆記 06 · 約 5 分鐘',screens:[
+ {type:'story',h:'一條插頭標準',html:`<div class="scene"><div class="big">🔌</div><p>海島國工業部要定電器安全規例。官員話：「唔使自己寫，跟國際標準就得。」你發現寫呢啲標準嘅，係一啲國家唔可以做成員嘅私營機構。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'焦點機構',lead:'Büthe 同 Mattli 講嘅「焦點機構」係……',
+  opts:['政府將規管權委託畀、大家都當係理所當然場地嘅單一國際私營機構','聯合國'],ans:0,hint:'例如 ISO、IEC。',
+  ex:'ISO、IEC 唔准國家同政府本身做成員，最適合理解為由中央協調嘅全球網絡。',deep:'06-1|06-2',src:'筆記 06 §一、§二'},
+ {type:'mcq',h:'點解交畀私營？',lead:'政府點解肯？',
+  opts:['政府缺乏專長、資源或靈活性；企業覺得私營治理更有效率','因為法律要求'],ans:0,hint:'兩邊都有原因。',
+  ex:'規管同時私營化同國際化。',deep:'06-2',src:'筆記 06 §二'},
+ {type:'mcq',h:'私營標準點樣有效力？',lead:'海島國跟咗國際標準寫規例。喺 WTO 下有咩效果？',
+  opts:['可推翻咁推定符合 WTO 義務','自動違反 WTO'],ans:0,hint:'TBT 協定。',
+  ex:'TBT 協定要求成員國用國際標準做國內法律同規例嘅技術基礎；私營機構寫嘅標準就透過條約同國內法接上。',deep:'06-2',src:'筆記 06 §二'},
+ {type:'mcq',h:'技術定政治？',lead:'作者嘅核心講法：全球規則制定……',
+  opts:['用語技術、本質政治','純粹技術'],ans:0,hint:'專業知識唔係唯一正確嘅信念。',
+  ex:'財務報告標準統一有好處，但令某啲人承擔重大成本 → 分配衝突。私營規管者靠自願供款、唔受公共監督，專家小組唔使保存會議紀錄。',deep:'06-3|06-4',src:'筆記 06 §三、§四'},
+ {type:'mcq',h:'邊個贏？',lead:'技術專長同財政資源……',
+  opts:['已經足夠','必要但唔充分；關鍵係制度互補性'],ans:1,hint:'國內體制同全球結構配唔配合。',
+  ex:'喺層級分明、協調良好嘅國內體制入面運作嘅企業較大機會贏，因為同只得單一焦點機構嘅全球結構更配合。',deep:'06-5',src:'筆記 06 §五'},
+ {type:'mcq',h:'連結返',lead:'「卓越標準被包裝成價值中立」呢個批評，同邊篇方向一致？',
+  opts:['ICN（Guidi 等）同 Haas','冇其他筆記咁講'],ans:0,hint:'兩篇都講過。',
+  ex:'筆記 06 §四自己指出呢個連結：ICN 嘅「卓越標準」同 Haas 講披上客觀外衣嘅選擇。',deep:'06-4',src:'筆記 06 §四'},
+ {type:'review',h:'快速溫習',ids:[130,134,135,138,142,143]}
+],take:['焦點機構：單一國際私營規管者。','TBT 協定令國際標準有效力：跟咗就推定符合 WTO 義務。','標準制定用語技術、本質政治；有分配衝突、冇公共監督。','邊個贏：制度互補性。']};
+
+const A7={id:'l07',note:'07',icon:'7',name:'信評機構點樣問責',sub:'筆記 07 · 約 5 分鐘',screens:[
+ {type:'story',h:'海島國發債',html:`<div class="scene"><div class="big">📉</div><p>海島國政府想發債，財政部話：「冇評級，投資者唔買。」評級機構係私營公司，冇人選過佢哋，但佢哋一句說話可以令國家借錢貴好多。佢哋向邊個負責？</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'實證轉向',lead:'Kerwer 話研究全球監管嘅正當性，應該問……',
+  opts:['分析者自己覺得正唔正當','參與嘅行動者覺得正唔正當'],ans:1,hint:'由規範轉去實證。',
+  ex:'結論：正當性問題唔止喺正式嘅非多數決監管者，仲伸延到非正式嘅，有時搵唔到解決辦法。',deep:'07-1',src:'筆記 07 §一'},
+ {type:'sort',h:'內部定外部問責？',lead:'分類。',cats:['內部問責','外部問責'],items:[
+  ['委託人靠授權同資助控制代理人',0,'委託人喺層級上高過代理人。'],
+  ['委託人喺層級上唔高過代理人',1,'例如持份者對信評機構。'],
+  ['邊個算委託人、有乜制裁都唔清楚',1,'所以更容易有爭議。']],deep:'07-2',src:'筆記 07 §二'},
+ {type:'mcq',h:'點解信評機構係「監管者」？',lead:'佢哋又唔係政府。',
+  opts:['評級準則實際上係入金融市場嘅准入規則；佢哋有壟斷地位','因為佢哋有法例授權'],ans:0,hint:'冇評級，入唔到市場。',
+  ex:'公營監管機構喺規管入面用評級，係用控制權換成效，令信評機構變成「準公共監管者」。',deep:'07-3',src:'筆記 07 §三'},
+ {type:'flips',h:'缺口點解收唔埋？',lead:'撳開三張。',items:[
+  ['💸 邊個俾錢','由借款人俾錢係反常：真正用家係投資者。'],
+  ['🤝 委託人—受託人','美國監管機構同信評機構嘅關係較似委託人—受託人（Majone：用嚟發出可信承諾），唔係一般委託代理。'],
+  ['🛡️ 責任','對疏忽嘅法律責任申索差唔多完全免疫。持份者見到缺口，但冇足夠權力收埋佢。']],deep:'07-4',src:'筆記 07 §二、§四'},
+ {type:'mcq',h:'出路',lead:'Kerwer 主張點做？',
+  opts:['盡量減輕信評機構嘅不良影響','一定要完全廢除'],ans:0,hint:'唔係加強問責，亦唔係廢除。',
+  ex:'佢認為凡係全球監管用非多數決監管者，都好可能出現類似問責問題。',deep:'07-5',src:'筆記 07 §五'},
+ {type:'review',h:'快速溫習',ids:[144,146,150,152,154,158]}
+],take:['實證轉向：睇參與者點睇正當性。','外部問責：委託人唔喺上面，易有爭議，更普遍更重要。','評級準則＝市場准入規則；監管用評級 → 準公共監管者。','出路：減輕影響；問題伸延到其他非多數決監管者。']};
+
+const A8={id:'l08',note:'08',icon:'8',name:'非洲大陸嘅競爭合作',sub:'筆記 08 · 約 4 分鐘',screens:[
+ {type:'story',h:'最後一站',html:`<div class="scene"><div class="big">🌍</div><p>海島國研究參考其他地區嘅做法。你揀咗非洲大陸自由貿易區（AfCFTA）：54 國，好多已有競爭法，仲有一堆區域組織。佢哋點樣合作？</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'點解要合作？',lead:'Kigwiru 話 AfCFTA 嘅競爭壓力可能……',
+  opts:['誘使成員國同企業做反競爭行為','自動令市場更公平'],ans:0,hint:'仲有：大部分發展中國家追唔到國際卡特爾。',
+  ex:'到 2020 年 1 月，54 國有 37 國有競爭法。競爭政策合作係建立有競爭力大陸市場嘅不可或缺工具。',deep:'08-1',src:'筆記 08 §一'},
+ {type:'mcq',h:'兩種模式',lead:'COMESA、EAC、WAEMU、ECOWAS 同 CEMAC 用邊種？',
+  opts:['自願模式','強制模式：要求成員國執行區域競爭法'],ans:1,hint:'有「要求」。',
+  ex:'區域競爭制度嘅合作分自願同強制兩種。',deep:'08-2',src:'筆記 08 §二'},
+ {type:'mcq',h:'照搬？',lead:'Kigwiru 主唔主張將 NAFTA、TPP 嘅競爭條文模式照搬入 AfCFTA？',
+  opts:['主張','唔主張'],ans:1,hint:'Fox 同 Bakhoum：世界標準唔啱需要同市場結構唔同嘅國家。',
+  ex:'非洲採納競爭法好大程度受外部影響；可以對照 ICN「原罪」有利北美同歐洲 NCA。',deep:'08-3',src:'筆記 08 §三'},
+ {type:'mcq',h:'保留既有成果',lead:'Erasmus 點評「保留既有成果」原則？',
+  opts:['變咗保護現狀嘅限制性工具','成功推動自由貿易'],ans:0,hint:'RECs 做 building blocks，又有會籍重疊。',
+  ex:'保留 RECs 做 building blocks，同解決多重會籍重疊之間有衝突。',deep:'08-4',src:'筆記 08 §四'},
+ {type:'sort',h:'軟法定硬法',lead:'分類。',cats:['軟法方向','硬法方向'],items:[
+  ['Framework Agreement 第 4(c) 條用「cooperate」',0,'顯示大有可能採軟法。'],
+  ['秘書處設競爭政策工作小組或委員會',0,'軟法合作下較可取。'],
+  ['大陸層面強制併購審查',1,'為咗法律確定性，但目前太進取。'],
+  ['大多數 FTA 用非約束性爭議解決',0,'非約束性。']],deep:'08-5',src:'筆記 08 §五'},
+ {type:'review',h:'快速溫習',ids:[161,164,168,170,171,174]}
+],take:['AfCFTA 競爭壓力可能誘發反競爭行為；要合作。','區域模式：自願定強制。','唔照搬 NAFTA、TPP 模式。','大有可能軟法：工作小組好過強制併購審查。']};
+
+const LESSONS=[A1,A2,A3,A4,A5,A6,A7,A8];
+
+
+const LNAME={};LESSONS.forEach((l,k)=>{LNAME[l.note]=`第 ${k+1} 課：${l.name}`;});window.__S.LNAME=LNAME;
+
+
+/* ---------- home ---------- */
+const GROUPS={"0": "一、點解會有、係乜形式", "3": "二、個案：國際競爭網絡", "5": "三、私營規管者同區域條約"};
+function home(){
+  const st=S();
+  const open=k=>k===0||st.done[LESSONS[k-1].id];
+  const allDone=LESSONS.every(l=>st.done[l.id]);
+  const nodes=LESSONS.map((l,k)=>{const d=st.done[l.id],o=open(k);
+    return (GROUPS[k]?`<div class="grp">${GROUPS[k]}</div>`:'')+`<div class="node ${d?'done':o?'open':'locked'}"><button class="dot" data-l="${k}" ${o?'':'disabled'} aria-label="${l.name}">${d?'✓':o?l.icon:'🔒'}</button><div class="nm">${l.name}</div><div class="sub">${l.sub}</div></div>`;}).join('');
+  app.innerHTML=`<div class="home">
+   <div class="stats"><a href="../" class="brand" style="text-decoration:none;color:inherit" aria-label="返去課程目錄">⌂ 國際規則 · 1</a><span class="pills"><span class="pill" title="連續學習日數">🔥 ${st.streak}</span><span class="pill" title="經驗值">⭐ ${st.xp}</span><button class="pill" id="menu" aria-label="選單">☰</button></span></div>
+   <div class="course"><span class="eyebrow">Regulatory Law · 國際規則制定 · Part 1 / 2 · 第 4 週 · 8 課</span><h1>國家以外：邊個喺國際層面立規則</h1>
+    <p class="muted">跟 7FFLL582 第 4 週（Rule-making by international bodies）：國家點解越嚟越多用非正式國際組織（Roger）、監管者之間嘅跨政府網絡（Raustiala）、專家網絡（Haas）、國際競爭網絡（ICN）入面邊個話事同佢正唔正當（Guidi、Tavares 同 Townley）、私營標準制定者（Büthe 同 Mattli）、信用評級機構嘅問責（Kerwer）同非洲大陸自由貿易區（Kigwiru）。大問題：國際規則制定係乜形式？點解會有？用唔同機構立規則有咩利弊（效率、效能、正當性）？故事接住規管型國家 Part 3：你而家係海島國競爭局嘅國際事務主管。Part 2（第 5 週）講歐盟點樣單方面將規則推出歐洲。</p>
+    <p class="muted" style="font-size:14px;margin-top:8px"><b>用法：</b>玩一課 → 好奇就撳「📖 想深入啲」→ 課尾溫卡 → 有空喺選單睇圖解同進度地圖。</p>
+    ${Object.keys(st.done).some(k=>st.done[k])?`<button class="review-btn" id="rev">🔁 溫習已學嘅卡</button>`:''}
+    ${allDone?`<p class="okline" style="margin-top:10px">🎉 第 4 週八課全部完成！之後可以去 Part 2（第 5 週）。去「進度地圖」睇吓仲有邊節未掌握。</p>`:''}</div>
+   <div class="path" id="path">${nodes}</div></div>`;
+  app.querySelectorAll('.dot[data-l]').forEach(b=>b.onclick=()=>play(+b.dataset.l));
+  const r=$('#rev'); if(r) r.onclick=reviewAll;
+  $('#menu').onclick=menu;
+}
+function menu(){
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="選單"><div class="grab"></div><h3>選單</h3>
+   <div class="opts">${[['notes','📖 讀懂版：45 節逐節講解'],['cards','🃏 快速卡：175 張，全部原子命題'],['visuals','🗺️ 圖解：8 幅'],['map','📊 進度地圖：邊節掌握咗']].map(([h,t])=>`<a class="opt" href="#${h}" style="text-decoration:none;color:inherit">${t}</a>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d); d.onclick=e=>{if(e.target===d||e.target.closest('a')) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+/* ---------- player ---------- */
+function play(li){
+  const L=LESSONS[li]; let i=0, xp=0, first=0, total=0;
+  function shell(inner,ready,ctaText){
+    const sc=L.screens[i];
+    app.innerHTML=`<div class="top"><button class="x" id="quit" aria-label="離開">✕</button><div class="bar"><i style="width:${i/L.screens.length*100}%"></i></div><span class="xp">⭐ ${xp}</span></div>
+     <div class="screen" id="sc">${inner}</div>
+     <div class="foot">${sc.deep?`<button class="deep" id="deep">📖 想深入啲</button>`:''}<button class="cta ${ready?'go':''}" id="cta" ${ready?'':'disabled'}>${ctaText||'繼續'}</button></div>`;
+    $('#quit').onclick=()=>{location.hash='';home();};
+    if(sc.deep) $('#deep').onclick=()=>drawer(sc.deep);
+    $('#cta').onclick=()=>{i++; i>=L.screens.length?finish():render();};
+  }
+  const ready=()=>{const c=$('#cta');c.disabled=false;c.classList.add('go');};
+  function render(){
+    const sc=L.screens[i]; const head=`<h2>${sc.h}</h2>${sc.lead?`<p class="lead">${sc.lead}</p>`:''}`;
+    if(sc.type==='story'){shell(head+sc.html,true,'開始');return;}
+    if(sc.type==='mcq'){
+      total++; let tries=0;
+      shell(head+`<div class="opts">${sc.opts.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><div id="fb"></div>`,false);
+      app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(b.disabled) return; tries++;
+        if(j===sc.ans){b.classList.add('right'); if(tries===1){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+          app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+          $('#fb').innerHTML=`<div class="fb ok"><b class="t">${tries===1?'啱！':'啱咗！'}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}
+        else{b.classList.add('wrong');b.disabled=true;
+          if(tries===1) $('#fb').innerHTML=`<div class="fb hint"><b class="t">再諗一諗</b><p>💡 ${sc.hint}</p></div>`;
+          else{const r=app.querySelector(`.opt[data-j="${sc.ans}"]`);r.classList.add('right');app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+            $('#fb').innerHTML=`<div class="fb no"><b class="t">答案係：${sc.opts[sc.ans]}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}}
+      }); return;}
+    if(sc.type==='widget'){
+      total++;
+      shell(head+`<div id="w"></div><div id="aft"></div>`,false);
+      W[sc.w]($('#w'),ok=>{ if(ok){first++;xp+=10;$('.xp').textContent='⭐ '+xp;} if(sc.after) $('#aft').innerHTML=`<div class="fb ok"><p>${sc.after}</p></div>`; ready();});
+      return;}
+    if(sc.type==='flips'){
+      shell(head+`<div class="flips">${sc.items.map((it,j)=>`<button class="flip" data-j="${j}"><span class="h">${it[0]}</span><span class="b">撳一下睇</span></button>`).join('')}</div>${sc.src?`<span class="src">出處：${sc.src}</span>`:''}`,false);
+      const seen=new Set();
+      app.querySelectorAll('.flip').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;b.classList.add('open');b.querySelector('.b').innerHTML=sc.items[j][1];seen.add(j);if(seen.size===sc.items.length) ready();});
+      return;}
+    if(sc.type==='match'){
+      total++; let errs=0, sel=null, matched=0;
+      const R=sc.pairs.map((p,j)=>({t:p[1],j})).sort(()=>Math.random()-.5);
+      shell(head+`<div class="match"><div class="col">${sc.pairs.map((p,j)=>`<button class="mt" data-l="${j}">${p[0]}</button>`).join('')}</div><div class="col">${R.map(r=>`<button class="mt" data-r="${r.j}">${r.t}</button>`).join('')}</div></div><div id="fb"></div>`,false);
+      app.querySelectorAll('.mt[data-l]').forEach(b=>b.onclick=()=>{if(b.classList.contains('done'))return;app.querySelectorAll('.mt[data-l]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=+b.dataset.l;});
+      app.querySelectorAll('.mt[data-r]').forEach(b=>b.onclick=()=>{if(sel===null||b.classList.contains('done'))return;
+        if(+b.dataset.r===sel){b.classList.add('done');const l=app.querySelector(`.mt[data-l="${sel}"]`);l.classList.remove('sel');l.classList.add('done');sel=null;matched++;
+          if(matched===sc.pairs.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+            $('#fb').innerHTML=`<div class="fb ok"><b class="t">全部配啱！</b><span class="src">出處：${sc.src}</span></div>`;ready();}}
+        else{errs++;b.classList.add('err');setTimeout(()=>b.classList.remove('err'),320);}});
+      return;}
+    if(sc.type==='sort'){
+      total++; let errs=0, ok=0;
+      shell(head+`<div class="sortl">${sc.items.map((it,j)=>`<div class="si" data-j="${j}"><div class="st">${it[0]}</div><div class="sc">${sc.cats.map((c,ci)=>`<button class="sb" data-c="${ci}">${c}</button>`).join('')}</div><div class="sw2"></div></div>`).join('')}</div><span class="src">出處：${sc.src}</span>`,false);
+      app.querySelectorAll('.si').forEach(row=>{const j=+row.dataset.j, it=sc.items[j]; let tries=0;
+        row.querySelectorAll('.sb').forEach(b=>b.onclick=()=>{ if(row.classList.contains('done')) return; tries++;
+          if(+b.dataset.c===it[1]){row.classList.add('done');b.classList.add('right');row.querySelector('.sw2').innerHTML=`<span class="okline">✓ ${it[2]}</span>`;ok++;
+            if(ok===sc.items.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp; ready(); }}
+          else{errs++;b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),350);
+            if(tries>=2){row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 答案係「${sc.cats[it[1]]}」：${it[2]}</span>`;}
+            else row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 再諗吓：睇返上面嘅分類標準。</span>`;}});});
+      return;}
+    if(sc.type==='review'){
+      let k=0, flipped=false;
+      const draw=()=>{const c=CARDS[sc.ids[k]];
+        shell(head+`<p class="muted" style="font-size:14px">第 ${k+1} / ${sc.ids.length} 張 · 撳卡反轉。卡背係筆記原文，人名唔使記。</p>
+         <button class="rcard" id="rc">${!flipped?`<span class="q">${c.f}</span><span class="muted" style="font-size:14px">諗好答案，撳一下</span>`
+          :`<span style="font-weight:700">${c.b}</span><blockquote>“${c.q}”</blockquote><span class="src">筆記 ${c.n} §${c.s} · ${c.loc}</span>`}</button>`,
+         flipped&&k===sc.ids.length-1, flipped&&k===sc.ids.length-1?'完成':'繼續');
+        $('#rc').onclick=()=>{ if(!flipped){flipped=true;draw();if(k<sc.ids.length-1){const c2=$('#cta');c2.disabled=false;c2.classList.add('go');c2.onclick=()=>{k++;flipped=false;draw();};}} };
+      }; draw(); return;}
+  }
+  function finish(){
+    const st=S(); const bonus=20; st.xp+=xp+bonus; st.done[L.id]=true; bumpStreak(st); saveAll(st);
+    app.innerHTML=`<div class="done-screen"><div><div class="trophy">🏆</div><h2 style="font-size:26px;margin:6px 0">完成「${L.name}」</h2>
+      <div class="stat3"><div>⭐ XP<b>+${xp+bonus}</b></div><div>🎯 一次答啱<b>${first}/${total}</b></div><div>🔥 連續<b>${st.streak} 日</b></div></div>
+      <div class="take" style="margin:16px auto"><b>帶走呢幾句</b><ul>${L.take.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      ${li+1<LESSONS.length&&L.id!=='rev'?`<button class="cta go" id="nextL" style="width:100%;max-width:520px;margin-bottom:10px">下一課：${LESSONS[li+1].name} →</button>`:''}
+      <button class="cta" id="back" style="width:100%;max-width:520px">返去路線圖</button></div></div>`;
+    confetti(); $('#back').onclick=()=>{location.hash='';home();}; const nl=$('#nextL'); if(nl) nl.onclick=()=>play(li+1);
+  }
+  render();
+}
+function drawer(k){
+  const ks=k.split('|').filter(x=>noteBody(x)); if(!ks.length) return;
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="深入講解"><div class="grab"></div>${ks.map(x=>{const n=noteBody(x);return `<span class="eyebrow">筆記 ${x.replace('-',' §')} · 讀懂版</span><h3>${n.t}</h3><div class="nb" style="margin-bottom:14px">${n.b}</div>`;}).join('')}
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+function reviewAll(){
+  const st=S(); const ids=LESSONS.filter(l=>st.done[l.id]).flatMap(l=>l.screens.find(s=>s.type==='review').ids);
+  const fake={id:'rev',name:'溫習',screens:[{type:'review',h:'溫習已學嘅卡',ids:ids.sort(()=>Math.random()-.5)}],take:['隔幾日再嚟溫一次，記得更牢。']};
+  LESSONS.push(fake); play(LESSONS.length-1); LESSONS.pop();
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=document.createElement('canvas'); c.className='confetti'; document.body.appendChild(c);
+  const x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const cols=['#4B4FD9','#1F9D62','#E5A800','#D2423A'];
+  const ps=Array.from({length:90},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.4,v:2+Math.random()*3,r:Math.random()*6.28,s:5+Math.random()*5,c:cols[Math.floor(Math.random()*4)]}));
+  let t=0; (function fr(){x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore();});
+    if(++t<150) requestAnimationFrame(fr); else c.remove();})();
+}
+function sub(title,fn,arg){
+  app.innerHTML=`<div class="top"><button class="x" id="bk" aria-label="返回">←</button><b style="flex:1">${title}</b></div><div class="home pg" id="pg"></div>`;
+  $('#bk').onclick=()=>{location.hash='';};
+  const P=makePages($('#pg')); P[fn](arg);
+}
+function route(){
+  const h=location.hash.replace('#',''); const base=h.split('-')[0], arg=h.slice(base.length+1);
+  if(base==='notes') sub('讀懂版','notesPage',arg||null);
+  else if(base==='cards') sub('快速卡','cardsPage',arg||'');
+  else if(base==='visuals') sub('圖解','visuals');
+  else if(base==='map') sub('進度地圖','mapPage');
+  else if(base==='lesson'){const k=LESSONS.findIndex(l=>l.note===arg); if(k>=0){const st=S(); const ok=k===0||st.done[LESSONS[k-1].id]; ok?play(k):home();} else home();}
+  else home();
+}
+window.addEventListener('hashchange',route);
+window.__RL={NOTES,CARDS_DATA,LESSONS};
+route();
+})();
+</script>
+<!--TERMS-->
+<script>const TERMS_DATA=[["反壟斷", "antitrust", "m"], ["非正式國際組織", "informal international organisations", "n"], ["正式國際組織", "formal international organisations", "m"], ["走向非正式", "move to informality", "n"], ["走向法律", "move to law", "n"], ["諒解備忘錄", "memorandum of understanding (MOU)", "n"], ["君子協定", "gentlemen's agreement", "m"], ["秘書處", "secretariat", "n"], ["功能特性", "functional properties", "n"], ["國內含義", "domestic implications", "n"], ["功能論", "functionalist", "n"], ["權力論", "power-based", "n"], ["兩步理論", "two-step theory", "m"], ["政治兩極化", "political polarisation", "m"], ["兩極化", "polarisation", "m"], ["錯配", "mismatch", "m"], ["跨政府網絡", "transgovernmental networks", "n"], ["跨政府", "transgovernmental", "n"], ["監管輸出", "regulatory export", "n"], ["入場費", "price of admission", "n"], ["填補空隙", "gap filling", "n"], ["正當性理論", "legitimacy theory", "n"], ["因果信念", "causal beliefs", "n"], ["原則信念", "principled beliefs", "n"], ["有效性標準", "notions of validity", "n"], ["政策事業", "common policy enterprise", "n"], ["制度慣性", "institutional inertia", "n"], ["利益團體", "interest groups", "n"], ["分配後果", "allocative consequences", "n"], ["技術唔確定性", "technical uncertainty", "m"], ["國際政策協調", "international policy coordination", "n"], ["非政府顧問", "non-governmental advisors (NGA)", "n"], ["督導小組", "Steering Group", "n"], ["親近偏見", "affinity bias", "n"], ["有約必守", "pacta sunt servanda", "n"], ["濫用支配地位", "abuse of dominance", "n"], ["旋轉門", "revolving door", "m"], ["自我規管", "self-regulation", "m"], ["能力建設", "capacity building", "m"], ["最佳做法", "best practice", "m"], ["工作小組", "working group", "m"], ["總目標", "meta goal", "n"], ["知情分歧", "informed divergence", "n"], ["協調統一", "harmonisation", "n"], ["三難", "trilemma", "n"], ["國家自決", "national determination", "m"], ["經濟全球化", "economic globalisation", "m"], ["焦點機構", "focal institution", "n"], ["技術性貿易壁壘協定", "Agreement on Technical Barriers to Trade (TBT Agreement)", "n"], ["TBT 協定", "TBT Agreement", "n"], ["私營治理", "private governance", "n"], ["分配衝突", "distributional conflicts", "n"], ["公共監督", "public oversight", "n"], ["制度互補性", "institutional complementarity", "n"], ["制度骨幹", "institutional backbone", "n"], ["國際標準", "international standards", "m"], ["實證轉向", "empirical turn", "n"], ["內部問責", "internal accountability", "m"], ["外部問責", "external accountability", "n"], ["委託人—受託人關係", "principal–trustee relationship", "n"], ["信用評級機構", "credit rating agencies (CRAs)", "n"], ["信評機構", "credit rating agencies", "m"], ["准入規則", "access rules", "n"], ["準公共監管者", "quasipublic regulators", "n"], ["問責缺口", "accountability gap", "n"], ["非多數決監管者", "non-majoritarian regulators (NMRs)", "n"], ["區域經濟共同體", "regional economic communities (RECs)", "m"], ["保留既有成果", "preservation of acquis", "n"], ["硬法", "hard law", "m"], ["照搬", "transplant", "n"], ["自願模式", "voluntary model", "n"], ["強制模式", "mandatory model", "n"], ["國際卡特爾", "international cartels", "n"], ["併購審查", "merger review", "m"], ["非洲大陸自由貿易區", "African Continental Free Trade Area (AfCFTA)", "n"], ["國際競爭網絡", "International Competition Network (ICN)", "n"], ["競爭主管機關", "competition authority", "n"], ["國際證監會組織", "IOSCO", "n"], ["國際組織", "international organisations", "m"], ["國際法", "international law", "m"], ["條約", "treaty", "m"], ["監管俘虜", "regulatory capture", "n"], ["知識社群", "epistemic community", "n"], ["消費者福利", "consumer welfare", "m"], ["福利標準", "welfare standard", "m"], ["壟斷", "monopoly", "n"], ["卡特爾", "cartel", "m"], ["併購", "merger", "m"], ["競爭法", "competition law", "m"], ["競爭政策", "competition policy", "m"], ["取捨", "trade-offs", "n"], ["因地制宜", "context-specific design", "m"], ["規管型國家", "regulatory state", "n"], ["監管機構", "regulatory agency", "m"], ["監管者", "regulator", "m"], ["規則制定", "rule-making", "n"], ["再分配", "redistribution", "n"], ["多數決", "majoritarian", "n"], ["獨立監管機構", "independent regulatory agencies (IRAs)", "n"], ["軟法", "soft law", "n"], ["可信承諾", "credible commitment", "n"], ["委託人", "principal", "n"], ["受託人", "trustee", "n"], ["法律化", "juridification", "n"], ["輸入正當性", "input legitimacy", "n"], ["自由民主", "liberal democracy", "m"], ["審議民主", "deliberative democracy", "m"], ["問責", "accountability", "n"], ["正當性", "legitimacy", "n"], ["授權", "delegation", "m"], ["統一", "uniformity", "m"], ["規例", "regulation", "n"], ["輸出正當性", "output legitimacy", "n"]];
+(function(){
+/* English key terms: first time a term shows up on a screen / card / panel, add （English） after it. TERMS is injected at build. */
+const T=TERMS_DATA.slice().sort((a,b)=>b[0].length-a[0].length);
+const MAP=new Map(T.map(t=>[t[0],t]));
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const RE=new RegExp(T.map(t=>esc(t[0])).join('|'),'g');
+const DONE=new Map(T.map(t=>[t[0],new RegExp(esc(t[0])+'\\s*[（(]\\s*[A-Za-z]')]));
+const SKIP='h1,h2,h3,.brand,.nm,.sub,.pill,.grp,.dot,svg,script,style,textarea,input,blockquote,.src,.en,.tag,.tabs,.mono,.eyebrow,code,#gate,.termsheet';
+const BOX='#sc,.sheet .in,.fcard,.panel,section,tr,.node,.lvhead,.course,.crs';
+function box(n){const e=n.nodeType===1?n:n.parentElement;return (e&&e.closest(BOX))||document.getElementById('app')||document.body;}
+function gloss(root){
+  if(!root) return;
+  if(root.nodeType===1&&root.closest&&root.closest(SKIP)) return;
+  const tw=document.createTreeWalker(root.nodeType===3?root.parentNode:root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+    if(root.nodeType===3&&n!==root) return NodeFilter.FILTER_REJECT;
+    const p=n.parentElement; if(!p||p.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+    RE.lastIndex=0; return RE.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+  const list=[]; let n; while((n=tw.nextNode())) list.push(n);
+  list.forEach(tn=>{
+    const c=box(tn); const v=tn.nodeValue; RE.lastIndex=0; let m, cut=[];
+    const seen=new Set();
+    while((m=RE.exec(v))){const k=m[0]; if(seen.has(k)) continue; seen.add(k);
+      const after=v.slice(m.index+k.length);
+      if(/^\s*[（(]\s*[A-Za-z]/.test(after)) continue;
+      if(DONE.get(k).test(c.textContent)) continue;
+      cut.push([m.index+k.length,MAP.get(k)]);}
+    if(!cut.length) return;
+    // only one gloss per term per box: re-check in order while inserting
+    let node=tn, offset=0;
+    cut.forEach(([pos,t])=>{
+      if(DONE.get(t[0]).test(c.textContent)) return;
+      const rest=node.splitText(pos-offset); offset=pos;
+      const s=document.createElement('span'); s.className='en'; s.lang='en'; s.textContent='（'+t[1]+'）';
+      rest.parentNode.insertBefore(s,rest); node=rest;});
+  });
+}
+function legend(vp){
+  if(vp.querySelector('.vterms')) return;
+  const svg=vp.querySelector('svg'); if(!svg) return;
+  const txt=svg.textContent; RE.lastIndex=0; const found=[]; const seen=new Set(); let m;
+  while((m=RE.exec(txt))){const t=MAP.get(m[0]); if(!seen.has(t[1])){seen.add(t[1]);found.push(t);}}
+  if(!found.length) return;
+  const p=document.createElement('p'); p.className='vterms muted';
+  p.innerHTML='<b>英文術語：</b>'+found.map(t=>`${t[0]}<span class="en" lang="en">（${t[1]}）</span>`).join(' · ');
+  vp.appendChild(p);
+}
+function sheet(){
+  const d=document.createElement('div'); d.className='sheet termsheet';
+  const rows=T.slice().sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}));
+  d.innerHTML=`<div class="in" role="dialog" aria-label="英文術語表"><div class="grab"></div><h3>🔤 英文術語表</h3>
+   <p class="muted" style="font-size:14px">呢個課程用到嘅術語，按英文排。做 research 時用英文搵。<b>†</b>＝筆記冇寫英文，英文係我加嘅標準譯法。</p>
+   <input id="tq" type="search" placeholder="搵中文或者英文" aria-label="搵術語" style="width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0 10px">
+   <div id="tl">${rows.map(t=>`<div class="trow"><span lang="en"><b>${t[1]}</b>${t[2]==='m'?' †':''}</span><span>${t[0].replace(/[「」]/g,'')}</span></div>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="tcl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; d.querySelector('#tcl').onclick=()=>d.remove();
+  d.querySelector('#tq').oninput=e=>{const q=e.target.value.trim().toLowerCase();d.querySelectorAll('.trow').forEach(r=>{r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none';});};
+}
+function menuHook(el){
+  const inn=el.querySelector('.in[aria-label="選單"]'); if(!inn||inn.querySelector('#tbtn')) return;
+  const opts=inn.querySelector('.opts'); if(!opts) return;
+  const b=document.createElement('button'); b.className='opt'; b.id='tbtn'; b.type='button'; b.textContent=`🔤 英文術語表：${T.length} 個`;
+  b.onclick=()=>{el.remove(); sheet();}; opts.appendChild(b);
+}
+function scan(node){
+  if(node.nodeType===1){
+    if(node.classList&&node.classList.contains('sheet')) menuHook(node);
+    (node.matches&&node.matches('.vispanel')?[node]:[...(node.querySelectorAll?node.querySelectorAll('.vispanel'):[])]).forEach(legend);
+  }
+  gloss(node);
+}
+const st=document.createElement('style');
+st.textContent='.en{font-size:.84em;font-weight:500;color:var(--muted);font-family:var(--f);letter-spacing:0}.opt .en,.cta .en{color:inherit;opacity:.75}.vterms{font-size:13px;margin:10px 2px 0;line-height:1.7}.trow{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:15px}.trow span:last-child{text-align:right;color:var(--muted)}';
+document.head.appendChild(st);
+const mo=new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1&&n.classList&&n.classList.contains('en'))return; scan(n);}));});
+mo.observe(document.body,{childList:true,subtree:true});
+scan(document.body);
+window.__TERMS=T;
+})();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{}));}</script>
+</body>
+</html>
