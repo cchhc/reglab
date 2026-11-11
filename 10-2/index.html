@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="監管實驗室">
+<meta name="theme-color" content="#141A26">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;-webkit-text-size-adjust:100%}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>國際規則制定 Part 2</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: mobile-first full-screen lesson player — one idea per screen, Continue pinned to the bottom; a course path is home. */
+:root{
+  --bg:#F2F4F8; --card:#FFFFFF; --ink:#141A26; --muted:#5D6779; --line:#D9DEE8; --soft:#E9ECF3;
+  --accent:#4B4FD9; --accent-ink:#FFFFFF; --accent-soft:#E6E7FB;
+  --good:#1F9D62; --good-soft:#DFF4EA; --bad:#D2423A; --bad-soft:#FBE6E4; --warn:#B7790A;
+  --cs:#4B4FD9; --cc:#E5A800; --aa:#D2423A;
+  --f:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{overflow:hidden;height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+.muted{color:var(--muted)} .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mine{display:inline-block;font-size:12px;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 6px;margin-left:4px;vertical-align:middle}
+
+/* ---------- home / path ---------- */
+.home{flex:1;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.stats{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{font-weight:900;font-size:22px;letter-spacing:.02em}
+.pills{display:flex;gap:8px}
+.pill{display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px}
+.course{background:var(--card);border-radius:22px;padding:18px;border:1px solid var(--line);margin-bottom:22px}
+.course h1{font-size:24px;line-height:1.3;margin:4px 0 6px;font-weight:900;text-wrap:balance}
+.course p{margin:0}
+.eyebrow{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0 20px}
+.path svg.line{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:220px}
+.node:nth-child(odd){transform:translateX(-60px)} .node:nth-child(even){transform:translateX(60px)}
+.dot{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:900;background:var(--soft);color:var(--muted);border:3px solid var(--line);box-shadow:0 6px 0 var(--line)}
+.node.open .dot{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 6px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.node.done .dot{background:var(--good);color:#fff;border-color:var(--good);box-shadow:0 6px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.node.open .dot{animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.node .nm{font-weight:700;text-align:center;font-size:15.5px;line-height:1.35}
+.node .sub{font-size:13px;color:var(--muted);text-align:center}
+.node.locked{opacity:.55}
+.review-btn{width:100%;margin-top:6px;background:var(--card);border:1.5px dashed var(--accent);color:var(--accent);border-radius:16px;padding:14px;font-weight:700}
+
+/* ---------- lesson player ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+.x{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:var(--muted)}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:999px;transition:width .35s}
+.xp{font-weight:900;font-size:15px;color:var(--warn);min-width:52px;text-align:right}
+.screen{flex:1;overflow-y:auto;padding:10px max(18px,env(safe-area-inset-right,0px)) 24px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.screen h2{font-size:23px;line-height:1.35;margin:4px 0 0;font-weight:900;text-wrap:balance}
+.screen p{margin:0}
+.lead{font-size:17.5px}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:8px}
+.big{font-size:44px;line-height:1}
+.opts{display:grid;gap:10px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;font-weight:700;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt.sel{border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft);box-shadow:0 4px 0 var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 4px 0 var(--bad);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opt[disabled]{cursor:default}
+.fb{border-radius:16px;padding:14px 16px;display:grid;gap:6px;animation:in .2s ease}
+.fb.ok{background:var(--good-soft)} .fb.no{background:var(--bad-soft)} .fb.hint{background:var(--accent-soft)}
+.fb b.t{font-size:17px}
+.src{font-size:12.5px;color:var(--muted)}
+.foot{padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;border-top:1px solid var(--line);background:var(--bg)}
+.cta{flex:1;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:15px;font-weight:900;font-size:17px;box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.cta:disabled{background:var(--soft);color:var(--muted);box-shadow:0 5px 0 var(--line);cursor:default}
+.cta.go{background:var(--good);color:#fff;box-shadow:0 5px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.deep{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:0 14px;font-weight:700;font-size:14px;color:var(--muted);box-shadow:0 5px 0 var(--line)}
+/* drawer */
+.sheet{position:fixed;inset:0;background:rgba(10,14,22,.45);display:flex;align-items:flex-end;z-index:20;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet .in{background:var(--card);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:78%;overflow-y:auto;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px)}}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h3{margin:0 0 8px;font-size:19px}
+.sheet .nb{display:grid;gap:8px;font-size:15.5px}.sheet ul{margin:0;padding-left:20px;display:grid;gap:6px}
+/* widgets */
+.wid{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
+input[type=range]{width:100%;accent-color:var(--accent);height:30px}
+.lbl{display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.barrow{display:grid;grid-template-columns:76px 1fr 54px;gap:8px;align-items:center;font-size:14.5px}
+.barrow .track{height:22px;background:var(--soft);border-radius:8px;overflow:hidden}
+.barrow .track i{display:block;height:100%;border-radius:8px;transition:width .2s}
+.chart{width:100%;height:auto;display:block}
+.task{font-weight:700;color:var(--accent);font-size:15px;display:flex;gap:8px;align-items:center}
+.task.ok{color:var(--good)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{background:var(--soft);border-radius:12px;padding:8px;text-align:center;font-size:12.5px;color:var(--muted);font-weight:700}
+.nums b{display:block;font-family:var(--mono);font-size:19px;color:var(--ink)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.tog{display:flex;background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.tog button{flex:1;padding:10px;border-radius:11px;font-weight:700;font-size:15px;color:var(--muted)}
+.tog button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.flips{display:grid;gap:10px}
+.flip{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;box-shadow:0 4px 0 var(--line);display:grid;gap:4px}
+.flip .h{font-weight:900}.flip .b{color:var(--muted);font-size:15px}
+.flip.open{border-color:var(--accent)}
+.flip.open .b{color:var(--ink)}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:grid;gap:10px;align-content:start}
+.mt{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;font-weight:700;font-size:15px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.mt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.mt.done{border-color:var(--good);background:var(--good-soft);opacity:.8}
+.mt.err{animation:shake .3s;border-color:var(--bad)}
+.rcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;min-height:210px;display:grid;align-content:center;gap:10px;box-shadow:0 5px 0 var(--line);text-align:left}
+.rcard .q{font-size:21px;font-weight:900;line-height:1.4}
+.rcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+/* complete */
+.done-screen{flex:1;display:grid;place-items:center;text-align:center;padding:24px;gap:10px}
+.done-screen .trophy{font-size:72px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.stat3{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat3 div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 16px;font-weight:700}
+.stat3 b{display:block;font-size:24px}
+.take{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;display:grid;gap:6px;max-width:520px}
+.take ul{margin:0;padding-left:20px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+/* sort screen */
+.sortl{display:grid;gap:12px}
+.si{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:8px}
+.si.done{border-color:var(--good)}
+.si .st{font-weight:700}
+.si .sc{display:flex;flex-wrap:wrap;gap:8px}
+.sb{border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:700;font-size:14.5px;background:var(--bg);min-height:44px}
+.sb.right{border-color:var(--good);background:var(--good-soft)}
+.sb.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s}
+.si.done .sb:not(.right){opacity:.4}
+.okline{color:var(--good);font-weight:700;font-size:14.5px}
+.hintline{color:var(--accent);font-weight:700;font-size:14.5px}
+.grp{z-index:1;font-weight:900;font-size:14px;color:var(--muted);letter-spacing:.06em;background:var(--bg);padding:2px 10px;border-radius:8px}
+button.pill{cursor:pointer}
+/* sub pages (reading notes, cards, visuals, map) */
+.pg{--surface:var(--card);--surface2:var(--soft);--area-cs:var(--cs);--area-c:var(--cc);--area-a:var(--aa);--f-display:var(--f);--r:16px}
+.pg h2{font-size:22px;line-height:1.35;margin:4px 0;font-weight:900;text-wrap:balance}
+.pg h3{font-size:18px;margin:0;line-height:1.35}
+.pg p{margin:0}
+.pg .lvhead{display:grid;gap:8px;margin-bottom:14px}
+.pg .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.pg .stack{display:flex;flex-direction:column;gap:12px}
+.pg .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pg .tabs{display:flex;flex-wrap:wrap;gap:6px}
+.pg .tab{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 11px;font-size:13.5px;font-weight:700;min-height:36px}
+.pg .tab.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.pg .chip{display:inline-block;font-size:13px;font-weight:700;text-decoration:none;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:3px 10px;background:var(--card)}
+.pg .chip.ok{color:var(--good);border-color:var(--good)}
+.pg .links{gap:8px;margin-top:6px}
+.pg .nbody{display:grid;gap:8px;font-size:16px}
+.pg .nbody ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.pg .readchk{font-size:14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.pg .readchk input{width:22px;height:22px}
+.pg .tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);background:var(--soft)}
+.pg .btn{border:1.5px solid var(--ink);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:700;min-height:40px}
+.pg .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pg .btn.ghost{border-color:var(--line)}
+.pg .btn.sm{padding:5px 12px;font-size:13.5px;min-height:36px}
+.pg .progress{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.pg .progress i{display:block;height:100%;background:var(--good)}
+.pg .fcard{min-height:240px;border:2px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);padding:22px 18px;display:grid;align-items:center;cursor:pointer;margin-top:10px}
+.pg .fcard.flip{border-color:var(--accent)}
+.pg .fcard.done{cursor:default;text-align:center}
+.pg .ff,.pg .fcard .fb{display:grid;gap:12px;background:none;padding:0;animation:none;border-radius:0}
+.pg .fq{font-size:21px;font-weight:900;line-height:1.4}
+.pg .fa{font-size:16.5px;font-weight:600}
+.pg .fcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+.pg .vis{width:100%;height:auto;display:block;font-family:var(--f)}
+.pg .viswrap{overflow-x:auto;margin-top:8px}
+.pg .viswrap .vis{min-width:560px}
+.pg .fo{font-size:12.5px;line-height:1.45;color:var(--ink);display:grid;gap:4px}
+.pg .fo p{margin:0}.pg .fo.c{text-align:center}
+.pg .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.pg table.map{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+.pg table.map th{text-align:left;font-size:12px;color:var(--muted);padding:10px 12px;border-bottom:1.5px solid var(--line)}
+.pg table.map td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.pg table.map td.c{text-align:center}
+.pg table.map tr.nh td{background:var(--soft)}
+.pg table.map a{color:var(--ink)}
+.pg .okb{font-size:12px;font-weight:700;color:var(--good);border:1.5px solid var(--good);border-radius:5px;padding:0 6px}
+.pg .mono{font-family:var(--mono)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px">
+ <form id="gf" style="display:grid;gap:12px;max-width:320px;width:100%;text-align:center">
+  <div style="font-size:30px;font-weight:900">國際規則 · 2</div>
+  <label for="gp" class="muted">輸入密碼</label>
+  <input id="gp" type="password" inputmode="numeric" autocomplete="current-password" style="font-size:22px;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)">
+  <button class="cta go" type="submit">入去</button>
+  <p id="ge" style="color:var(--bad);min-height:1.4em"></p>
+ </form></div>
+<script>(function(){const H='d83036ffb5b49a153bc391fd12b4a10df06bbb200f39fed97c331b03b6833ce7',K='reglab-ok',g=document.getElementById('gate');
+ try{if(localStorage.getItem(K)===H){g.remove();return;}}catch(e){}
+ document.getElementById('gf').addEventListener('submit',async e=>{e.preventDefault();
+  const v=document.getElementById('gp').value.trim();
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const x=[...new Uint8Array(b)].map(n=>n.toString(16).padStart(2,'0')).join('');
+  if(x===H){try{localStorage.setItem(K,H)}catch(e){} g.remove();} else document.getElementById('ge').textContent='密碼唔啱，再試一次';});
+})();</script>
+<div id="app"></div>
+
+<script>
+const CARDS_DATA=[{"id": 0, "n": "09", "s": 1, "t": "definition", "f": "「單邊監管全球化」係乜？", "b": "Anu Bradford 將單邊監管全球化界定為單一國家透過市場機制將自己嘅法律同規例伸出境外，令標準全球化", "q": "Unilateral regulatory globalization occurs when a single state is able to externalize its laws and regulations outside its borders through market mechanisms, resulting in the globalization of standards.", "loc": "Bradford2012 p.3"}, {"id": 1, "n": "09", "s": 1, "t": "definition", "f": "「事實上」嘅布魯塞爾效應係乜？", "b": "Anu Bradford 將跨國企業喺全球生產都跟歐盟規則、令歐盟規則變成全球規則嘅過程，叫做事實上嘅布魯塞爾效應", "q": "This converts the EU rule into a global rule—the “de facto Brussels Effect.”", "loc": "Bradford2012 p.6"}, {"id": 2, "n": "09", "s": 1, "t": "definition", "f": "「法律上」嘅布魯塞爾效應係乜？", "b": "Anu Bradford 借用 Vogel 喺聯邦制度觀察到嘅類似現象，將出口型外國企業適應咗歐盟標準之後、游說本國政府採納同一標準以對付唔出口嘅本地對手嘅過程，叫做法律上嘅布魯塞爾效應", "q": "they often have the incentive to lobby their domestic governments to adopt these same standards in an effort to level the playing field against their domestic, non-export-oriented competitors—the “de jure Brussels Effect.”", "loc": "**Vogel, Trading Up (n 21)**, in Bradford2012 p.6"}, {"id": 3, "n": "09", "s": 2, "t": "conceptual", "f": "一個管轄區要為全球商業定規則，要具備邊三樣？", "b": "Anu Bradford 認為一個司法管轄區要為全球商業定規則，必須有大嘅本土市場、強嘅監管能力，同埋傾向對消費者市場呢類唔靈活嘅對象、而唔係對資本呢類靈活嘅對象執行嚴格規則", "q": "the jurisdiction must have a large domestic market, significant regulatory capacity, and the propensity to enforce strict rules over inelastic targets (e.g., consumer markets) as opposed to elastic targets (e.g., capital).", "loc": "Bradford2012 p.5"}, {"id": 4, "n": "09", "s": 2, "t": "definition", "f": "「拆唔開」（nondivisible）係乜意思？", "b": "Anu Bradford 將企業嘅生產或行為「拆唔開」界定為企業喺法律上或技術上做唔到、或者經濟上唔划算喺唔同市場維持唔同標準", "q": "This is the case in particular when the firms’ conduct or production is nondivisible, meaning that it is not legally or technically feasible, or economically viable, for the firm to maintain different standards in different markets.", "loc": "Bradford2012 p.5"}, {"id": 5, "n": "09", "s": 2, "t": "definition", "f": "「監管能力」係指乜？", "b": "Anu Bradford 用「監管能力」指能夠有效制定同執行規例嘅制度結構", "q": "By “regulatory capacity,” I refer to institutional structures that are capable of producing and enforcing regulations effectively.", "loc": "Bradford2012 p.10"}, {"id": 6, "n": "09", "s": 2, "t": "cause", "f": "點解全球合併係法律上拆唔開？", "b": "Anu Bradford 認為全球合併喺法律上拆唔開，因為唔可以逐個管轄區完成，所以最嚴嘅反壟斷管轄區決定成宗交易喺全球嘅命運", "q": "“Legal nondivisibility” can be seen in global mergers, which cannot be consummated on a jurisdiction-by-jurisdiction basis—the most stringent antitrust jurisdiction gets to determine the fate of the transaction worldwide.", "loc": "Bradford2012 p.18"}, {"id": 7, "n": "09", "s": 3, "t": "evaluation", "f": "喺反壟斷，歐盟同美國嘅標準邊個常常變成全球標準？", "b": "Anu Bradford 認為歐盟反壟斷法經常成為事實上嘅全球反壟斷標準，較寬鬆嘅美國反壟斷法要讓路", "q": "the EU antitrust laws have often become the de facto global antitrust standards, to which the more permissive U.S. antitrust laws must yield.", "loc": "Bradford2012 p.20"}, {"id": 8, "n": "09", "s": 3, "t": "fact", "f": "歐盟 REACH 規例引發咗乜效應？", "b": "Vogel 指出歐盟 REACH 化學品規例引發咗較有限嘅法律上布魯塞爾效應，令其他國家採納 REACH 式法律", "q": "REACH has triggered a more limited de jure Brussels Effect, prompting international adoption of REACH-style laws.", "loc": "**Vogel, Politics of Precaution (n 140)**, in Bradford2012 p.28"}, {"id": 9, "n": "09", "s": 3, "t": "evaluation", "f": "歐盟規管基改生物係咪完全嘅布魯塞爾效應？", "b": "Anu Bradford 認為歐盟規管基因改造生物係部分成功輸出食物安全規例、但布魯塞爾效應唔完全嘅例子", "q": "The EU’s attempt to regulate Genetically Modified Organisms (GMOs) is an example where the EU has been partially successful in externalizing its food safety regulations but where the Brussels Effect has been incomplete.", "loc": "Bradford2012 p.32"}, {"id": 10, "n": "09", "s": 4, "t": "conceptual", "f": "美國同歐盟分別較怕邊種錯？", "b": "Anu Bradford 認為美國對監管行動嘅成本同「假陽性」規例較敏感，而歐盟就強調唔行動嘅成本同「假陰性」嘅風險", "q": "the United States is therefore more sensitive to the costs of regulatory action and “false positive” regulations, whereas the EU emphasizes the costs of inaction and the risks of “false negatives.”", "loc": "Bradford2012 p.16"}, {"id": 11, "n": "09", "s": 4, "t": "evaluation", "f": "Bradford 點睇「歐盟搞規管帝國主義」嘅指控？", "b": "Anu Bradford 認為指控歐盟搞規管帝國主義睇落係誤導", "q": "The charges of regulatory imperialism appear misguided.", "loc": "Bradford2012 p.35"}, {"id": 12, "n": "09", "s": 4, "t": "cause", "f": "布魯塞爾效應嘅起源同動機，最有力嘅解釋係乜？", "b": "Anu Bradford 認為歐盟內部協調規例嘅需要，係布魯塞爾效應嘅起源同動機最有力嘅解釋", "q": "Still, it is the internal goals relating to the need to harmonize regulations within the EU that provide the most powerful explanation for the origins of, and the motivations for, the Brussels Effect.", "loc": "Bradford2012 p.42"}, {"id": 13, "n": "09", "s": 5, "t": "evaluation", "f": "市場推動嘅協調比政治協調有咩優勢？", "b": "Anu Bradford 認為市場推動嘅協調比政治協調有明顯優勢，因為締約成本低、執行成本有限", "q": "Market-driven harmonization has a distinct advantage over political harmonization: it entails low contracting costs and limited enforcement costs.", "loc": "Bradford2012 p.44"}, {"id": 14, "n": "09", "s": 5, "t": "evaluation", "f": "對歐盟監管權力最大嘅約束來自邊度？", "b": "Anu Bradford 認為對歐盟監管權力最大嘅約束來自歐盟內部", "q": "This Article therefore argues that the greatest check on the EU’s regulatory powers comes from within the EU itself.", "loc": "Bradford2012 p.6"}, {"id": 15, "n": "09", "s": 5, "t": "cause", "f": "幾時布魯塞爾效應唔大可能出現？", "b": "Anu Bradford 認為只要企業按唔同規則調整生產或行為嘅成本低，布魯塞爾效應就唔大可能出現", "q": "Thus, the Brussels Effect is unlikely whenever the firm’s costs of customizing its conduct or production to different rules are low.", "loc": "Bradford2012 p.61"}, {"id": 16, "n": "09", "s": 6, "t": "normative", "f": "Bradford 篇文有冇處理布魯塞爾效應好唔好嘅規範問題？", "b": "Anu Bradford 表明篇文係描述性，刻意唔處理布魯塞爾效應喺社會上係咪可取嘅規範問題", "q": "This discussion has been descriptive, intentionally omitting the normative inquiry on whether the Brussels Effect is socially desirable.", "loc": "Bradford2012 p.64"}, {"id": 17, "n": "09", "s": 6, "t": "evaluation", "f": "如果其他地方嘅規例本來已經最適當，布魯塞爾效應會點？", "b": "Anu Bradford 認為如果其他管轄區現有規例已經係最適當，布魯塞爾效應好可能導致全球整體監管過高、損害全球福利", "q": "If existing regulations in other jurisdictions are optimal, the Brussels Effect is likely to lead to inefficiently high overall global regulation, adversely affecting global welfare.", "loc": "Bradford2012 p.64"}, {"id": 18, "n": "09", "s": 6, "t": "evaluation", "f": "如果其他地方規例太寬鬆或執行太弱，單邊監管全球化可能係乜？", "b": "Anu Bradford 認為如果其他管轄區現有規例太寬鬆或者執行太弱，單邊監管全球化可能係凌駕其他地方偏低規例嘅可取方法", "q": "If existing regulations in other jurisdictions are too permissive or weakly enforced, unilateral regulatory globalization might be a desirable means of overriding suboptimally low regulations elsewhere.", "loc": "Bradford2012 p.64"}, {"id": 19, "n": "09", "s": 6, "t": "conceptual", "f": "Bradford 話歐盟嘅規管影響力顯示咗乜？", "b": "Anu Bradford 認為歐盟嘅規管影響力顯示歐盟可以喺唔係超級國家嘅情況下做超級強國", "q": "The EU’s regulatory clout shows that the EU can be a superpower without a super state.", "loc": "Bradford2012 p.66"}, {"id": 20, "n": "10", "s": 1, "t": "fact", "f": "大部分全球數碼服務供應商點樣回應 GDPR？", "b": "Bendiek 同 Römer 指出，大部分全球營運嘅數碼服務供應商聲稱會喺全球範圍跟 GDPR 標準，令所有客戶都享有同一資料保護水平", "q": "Nevertheless, most globally operating digital service providers claim that they will adhere to GDPR standards globally, granting all their customers the same level of data protection.", "loc": "BendiekRomer2019 p.33"}, {"id": 21, "n": "10", "s": 1, "t": "conceptual", "f": "點解話歐洲資料保護法係消極整合（市場建構）？", "b": "Bendiek 同 Römer 認為歐洲資料保護法係消極整合（市場建構），因為佢統一咗喺共同立法之前限制歐洲內部數據流動嘅零碎規例", "q": "It is negative, or market making, by homogenizing the patchwork regulations which had limited intra-European data transfers prior to common legislation.", "loc": "BendiekRomer2019 p.34"}, {"id": 22, "n": "10", "s": 1, "t": "conceptual", "f": "點解又話佢係積極整合（市場塑造）？", "b": "Bendiek 同 Römer 認為歐洲資料保護法亦係積極整合（市場塑造），因為佢畀資料當事人權利、對資料處理者設定義務", "q": "It is positive, or market shaping, by granting rights to data subjects and creating obligations for data processors.", "loc": "BendiekRomer2019 p.34"}, {"id": 23, "n": "10", "s": 2, "t": "cause", "f": "Bendiek 同 Römer 講嘅「加州效應」係乜？", "b": "Bendiek 同 Römer 認為歐洲資料保護法造成「加州效應」，即係歐盟透過單方面訂立標準，向歐盟以外嘅市場施壓", "q": "European data protection law creates a ‘‘California Effect’’, whereby the EU exerts pressure on extra-territorial markets by unilateral standard setting.", "loc": "BendiekRomer2019 p.32"}, {"id": 24, "n": "10", "s": 2, "t": "cause", "f": "Vogel 嘅「向上看齊」論點解大型進口市場可以定標準？", "b": "Vogel 嘅「向上看齊」論認為，大型進口市場可以單方面訂立產品標準，迫想出口到嗰度嘅外來生產者跟從", "q": "Second, large import markets can set product standards unilaterally and compel outsiders to meet them if they are to benefit from exports.", "loc": "**Vogel (1997)**, in BendiekRomer2019 p.35"}, {"id": 25, "n": "10", "s": 2, "t": "cause", "f": "對全球數碼企業嚟講，點解全球跟 GDPR 更有效率？", "b": "Bendiek 同 Römer 認為，對全球數碼企業嚟講，喺全球實施嚴格嘅歐洲資料保護規例，遠比將數碼市場按國界劃分更有效率", "q": "For now, it is far more efficient to implement the rigid European regulations on a global scale, instead of trying to align digital markets with national borders.", "loc": "BendiekRomer2019 p.35"}, {"id": 26, "n": "10", "s": 2, "t": "fact", "f": "歐盟資料保護法法律上保障邊個？事實上又點？", "b": "Bendiek 同 Römer 指出，雖然歐盟資料保護法喺法律上只係保障使用外國服務嘅歐盟客戶，但歐盟事實上將資料保護法嘅地域範圍擴大，迫外國市場參與者無論服務邊度嘅客戶都要守歐盟法", "q": "although legally only aiming to safeguard EU customers who rely on foreign based services, the EU de facto extends the territorial reach of its data protection law, forcing foreign market participants to obey EU law irrespective of whether they serve EU, US or any other customers.", "loc": "BendiekRomer2019 p.35"}, {"id": 27, "n": "10", "s": 3, "t": "definition", "f": "GDPR 嘅地域範圍涵蓋乜？", "b": "Bendiek 同 Römer 指出 GDPR 涵蓋歐盟境內所有個人資料處理，以及喺歐盟以外處理歐盟客戶資料、而該公司直接針對或者向居於歐盟嘅客戶賣廣告嘅情況", "q": "the GDPR covers all processing of personal data within EU borders, as well as all processing of EU customers’ data abroad, if the company directly targeted or advertised to customers residing in the EU.", "loc": "BendiekRomer2019 p.38"}, {"id": 28, "n": "10", "s": 3, "t": "definition", "f": "充分性協議容許乜？", "b": "Bendiek 同 Römer 指出，充分性協議容許將個人資料傳去資料保護水平同歐盟相當嘅第三國", "q": "Adequacy agreements allow transfers of personal data to third countries, if the country’s level of data protection is equivalent to the EU’s.", "loc": "BendiekRomer2019 p.38"}, {"id": 29, "n": "10", "s": 4, "t": "cause", "f": "冇國家單方面介入，消費者利益會點？", "b": "Bendiek 同 Römer 認為，喺冇國家單方面介入嘅情況下，消費者利益好易被忽略，而且多數會陷入規管上嘅逐底競爭（特拉華效應）", "q": "The interests of consumers are therefore easily neglected and, in the absence of unilateral state interventions, more often than not subject to a regulatory race to the bottom (Delaware-effects).", "loc": "BendiekRomer2019 p.36"}, {"id": 30, "n": "10", "s": 4, "t": "normative", "f": "為歐盟嘅對外效應辯護，等同捍衛乜？", "b": "Bendiek 同 Römer 認為，為歐盟嘅對外效應辯護，等同於捍衛全球消費者享用符合最高私隱同保護標準嘅數碼服務嘅權利", "q": "Justifying the EU’s external effects is thus coterminous with defending the right of global consumers to digital services that live up to the best standards of privacy and protection.", "loc": "BendiekRomer2019 p.36"}, {"id": 31, "n": "10", "s": 5, "t": "evaluation", "f": "歐盟透過 GDPR 開咗咩先例？有咩諷刺？", "b": "Bendiek 同 Römer 認為歐盟透過 GDPR 開咗一個有影響力嘅域外適用先例，儘管歐盟以前批評過美國咁做", "q": "However, it has also set an influential precedent of extra-territorial applicability of its legislation – despite having previously criticized the US for such practices.", "loc": "BendiekRomer2019 p.41"}, {"id": 32, "n": "10", "s": 5, "t": "evaluation", "f": "域外效應造成嘅衝突係咪不正當？", "b": "Bendiek 同 Römer 認為，國家法律嘅域外效應所造成嘅衝突，可能違反盡職義務原則，但唔係不正當", "q": "Conflicts created through the extra-territorial effects of national law may contradict the principle of due diligence obligations but are nevertheless not illegitimate.", "loc": "BendiekRomer2019 p.32"}, {"id": 33, "n": "10", "s": 5, "t": "evaluation", "f": "作者預計其他主要經濟體將來會點？後果係乜？", "b": "Bendiek 同 Römer 預計其他主要經濟體將來會更願意通過有域外效力嘅法律，可能令各國法律體系互相碰撞，助長全球經濟空間同互聯網嘅碎片化", "q": "Other major economies are likely to be less reluctant in the future about passing legal provisions with extra-territorial effect. This could result in a collision course for different national legal systems, which would encourage the fragmentation of the global economic space and the Internet.", "loc": "BendiekRomer2019 p.41"}, {"id": 34, "n": "10", "s": 5, "t": "normative", "f": "作者建議立法者單方面為數碼經濟訂規則時要重視乜？", "b": "Bendiek 同 Römer 建議立法者喺單方面為數碼經濟訂規則時，要更重視盡職義務規範", "q": "Legislators are well advised to pay more attention to the due-diligence norm when unilaterally drafting rules for the digital economy.", "loc": "BendiekRomer2019 p.41"}, {"id": 35, "n": "11", "s": 1, "t": "conceptual", "f": "歐盟通常點樣伸展域外影響力？", "b": "Diz 同 Araújo 認為歐盟好少直接聲稱域外管轄，而係用細緻得多嘅方法伸展影響力", "q": "the EU rarely makes direct extraterritorial claims, rather it acts in a much more subtle way", "loc": "DizAraujo2021 PDF p.1"}, {"id": 36, "n": "11", "s": 1, "t": "cause", "f": "歐盟影響外國行為者嘅一個成功方法係乜？", "b": "Diz 同 Araújo 認為歐盟影響外國行為者行為嘅一個成功方法，往往係訂立本身冇內在域外元素嘅本地法律", "q": "One successful way the EU exerts influence over the behaviour of foreign actors is often achieved by the enactment of domestic laws, which at first do not possess an intrinsic extraterritorial element to them.", "loc": "DizAraujo2021 PDF p.1"}, {"id": 37, "n": "11", "s": 1, "t": "conceptual", "f": "域外問題應該睇形式定實質？", "b": "Diz 同 Araújo 認為域外問題唔可以淨係從形式理解，仲要從實質理解", "q": "the extraterritoriality issue must be understood not only in its formal aspect but also in its material one", "loc": "DizAraujo2021 PDF p.1"}, {"id": 38, "n": "11", "s": 2, "t": "definition", "f": "Diz 同 Araújo 分開邊兩樣嘢？", "b": "Diz 同 Araújo 將直接域外管轄嘅聲稱，同有域外含意嘅本地措施分開", "q": "Such contention is a good reason to distinguish between claims of direct extraterritorial jurisdiction on the one hand and domestic measures with extraterritorial implications on the other.", "loc": "DizAraujo2021 PDF p.4"}, {"id": 39, "n": "11", "s": 2, "t": "definition", "f": "按 Scott 嘅標準，乜嘢措施算域外？", "b": "Scott 認為一個國家嘅措施，如果將義務加諸同立法國冇相關領土連繫嘅人，就會被視為域外措施", "q": "a state’s measure will be deemed extraterritorial when it imposes obligations on persons who do not enjoy a relevant territorial connection with the enacting state.", "loc": "**Scott (2014)**, in DizAraujo2021 PDF p.5"}, {"id": 40, "n": "11", "s": 3, "t": "definition", "f": "Bradford 點樣描述單邊全球治理？", "b": "Bradford 將單邊全球治理描述為單一國家透過市場機制將自己嘅法律同規例推出境外，令標準全球化", "q": "single state is able to externalize its laws and regulations outside its borders through market mechanisms, resulting in the globalization of standards", "loc": "**Bradford (2012)**, in DizAraujo2021 PDF p.5"}, {"id": 41, "n": "11", "s": 3, "t": "cause", "f": "單邊推動全球治理要咩條件？", "b": "Bradford 認為一個國家要單邊推動全球治理，條件係有龐大本地市場、相當嘅規管能力，同埋傾向對冇彈性嘅對象（例如消費市場）而唔係有彈性嘅對象（例如資本）執行嚴格規則", "q": "a large domestic market, significant regulatory capacity, and a propensity to enforce strict rules over inelastic targets (e.g., consumer markets) as opposed to elastic ones (e.g., capital).", "loc": "**Bradford (2012)**, in DizAraujo2021 PDF p.6"}, {"id": 42, "n": "11", "s": 3, "t": "cause", "f": "歐盟單邊推動環境全球治理嘅能力同乜有因果關係？", "b": "Diz 同 Araújo 認為歐盟單邊推動環境全球治理嘅能力，同歐盟市場力量嘅重要性有因果關係", "q": "Its ability to unilaterally push in the direction of environmental global governance is causally linked to the importance of its market forces.", "loc": "DizAraujo2021 PDF p.7"}, {"id": 43, "n": "11", "s": 4, "t": "fact", "f": "歐盟喺管轄權上採用乜原則？有咩例外？", "b": "Diz 同 Araújo 指出歐盟喺管轄權上完全採用領土原則，只有以國籍為理由嘅聲稱係例外", "q": "the EU fully adopts the territoriality principle, except for claims on the grounds of nationality.", "loc": "DizAraujo2021 PDF p.7"}, {"id": 44, "n": "11", "s": 4, "t": "evaluation", "f": "歐盟基改產品追溯同標籤規例係咪「域外」？", "b": "Diz 同 Araújo 認為歐盟基改產品追溯同標籤規例 Regulation (EC) No 1830/2003 只係喺含意上屬於「域外」", "q": "Technically speaking, this regulation is only “extraterritorial” in terms of its implications.", "loc": "DizAraujo2021 PDF p.8"}, {"id": 45, "n": "11", "s": 5, "t": "conceptual", "f": "歐盟木材規例（EUTR）點樣定性？", "b": "Diz 同 Araújo 將歐盟木材規例（EUTR）定性為歐盟一項有條件、有域外後果嘅單邊行動", "q": "In this sense, the EUTR is a contingent unilateral action taken by the EU that has extraterritorial consequences.", "loc": "DizAraujo2021 PDF p.12"}, {"id": 46, "n": "11", "s": 5, "t": "evaluation", "f": "EUTR 符唔符合「共同但有區別責任」原則？", "b": "Diz 同 Araújo 認為歐盟木材規例（EUTR）符唔符合「共同但有區別責任」原則（CBDR）仍然成疑", "q": "it remains questionable if the EUTR complies with the CBDR principle.", "loc": "DizAraujo2021 PDF p.12"}, {"id": 47, "n": "11", "s": 5, "t": "evaluation", "f": "Morgera 點睇歐盟喺 FLEGT 之下嘅角色？", "b": "Morgera 認為喺 FLEGT 之下，歐盟係規範嘅共同創造者（夥伴），而唔係單邊嘅全球監管者", "q": "it can be said that the EU is the co-creator of norms (a partner), not a unilateral global regulator (Morgera 2013).", "loc": "**Morgera (2013)**, in DizAraujo2021 PDF p.12"}, {"id": 48, "n": "11", "s": 6, "t": "normative", "f": "歐盟訂有域外含意嘅標準，會唔會帶嚟公平競爭？", "b": "Diz 同 Araújo 認為歐盟訂立有域外含意嘅標準，唔一定帶嚟國家之間公平均等嘅競爭，尤其考慮到各國發展水平唔同", "q": "the creation of standards by the EU—with extraterritorial implications—does not necessarily entail fair and even competition among states, especially when considering their various levels of development", "loc": "DizAraujo2021 PDF p.13"}, {"id": 49, "n": "11", "s": 6, "t": "fact", "f": "歐盟公司同非歐盟公司喺符合標準上有咩分別？", "b": "Diz 同 Araújo 指出位於歐盟嘅公司可以攞到各種資助、補助同貸款去符合歐盟嚴格標準，但原則上非歐盟公司攞唔到", "q": "have access to a wide range of subsidies, grants and loans that help them to comply with and conform to the stringent criteria adopted by the EU, which does not apply, in principle, to non-EU companies.", "loc": "DizAraujo2021 PDF p.14"}, {"id": 50, "n": "e5", "s": 1, "t": "definition", "f": "輸入導向嘅民主思想強調乜？", "b": "Scharpf 認為輸入導向嘅民主思想強調「由人民管治」（government by the people）", "q": "Input-oriented democratic thought emphasizes ‘government by the people’.", "loc": "Scharpf1999Ch1 p.6"}, {"id": 51, "n": "e5", "s": 1, "t": "definition", "f": "按輸入導向，政治選擇點解正當？", "b": "Scharpf 認為按輸入導向嘅講法，政治選擇之所以正當，係因為佢反映人民意志，即可以由社群成員嘅真實偏好推導出嚟", "q": "if they can be derived from the authentic preferences of the members of a community", "loc": "Scharpf1999Ch1 p.6"}, {"id": 52, "n": "e5", "s": 1, "t": "definition", "f": "按輸出導向，政治選擇點解正當？", "b": "Scharpf 認為按輸出導向嘅講法，政治選擇之所以正當，係因為佢有效促進有關群體嘅共同福祉", "q": "Here, political choices are legitimate if and because they effectively promote the common welfare of the constituency in question.", "loc": "Scharpf1999Ch1 p.6"}, {"id": 53, "n": "e5", "s": 2, "t": "normative", "f": "輸入導向正當性理論嘅關鍵問題係乜？", "b": "Scharpf 認為多數決嘅合理化，係輸入導向民主正當性理論嘅關鍵問題", "q": "must be considered as the crucial problem of input-oriented theories of democratic legitimization", "loc": "Scharpf1999Ch1 p.7"}, {"id": 54, "n": "e5", "s": 2, "t": "evaluation", "f": "歐盟有冇國家民主入面嗰種「厚」集體身份？", "b": "Scharpf 認為歐盟離國家民主入面理所當然嘅「厚」集體身份仲好遠", "q": "there is no question that the Union is very far from having achieved the ‘thick’ collective identity that we have come to take for granted in national democracies", "loc": "Scharpf1999Ch1 p.9"}, {"id": 55, "n": "e5", "s": 2, "t": "evaluation", "f": "冇厚身份，制度改革可唔可以大大增加歐盟多數決決定嘅輸入正當性？", "b": "Scharpf 認為歐盟冇厚集體身份，制度改革都唔會大大增加歐盟以多數決作出嘅決定嘅輸入正當性", "q": "in its absence, institutional reforms will not greatly increase the input-oriented legitimacy of decisions taken by majority rule.", "loc": "Scharpf1999Ch1 p.9"}, {"id": 56, "n": "e5", "s": 3, "t": "conceptual", "f": "輸出導向正當性需要「厚」定「薄」身份？", "b": "Scharpf 認為輸出導向嘅正當性喺只有「薄」身份、冇有機體色彩嘅群體入面都可以達到", "q": "Legitimacy, in other words, can also be achieved in constituencies with a ‘thin’ identity lacking organismic overtones.", "loc": "Scharpf1999Ch1 p.11"}, {"id": 57, "n": "e5", "s": 3, "t": "conceptual", "f": "將歐盟界定為集體解決共同問題嘅群體，概念上有冇困難？", "b": "Scharpf 認為將歐盟界定為集體解決某幾類共同問題嘅合適群體，概念上冇困難", "q": "the European Union as the appropriate constituency for the collective resolution of certain classes of common problems", "loc": "Scharpf1999Ch1 p.11"}, {"id": 58, "n": "e5", "s": 3, "t": "conceptual", "f": "以輸出為本嘅正當性有咩代價？", "b": "Scharpf 認為以輸出為本嘅正當性雖然較能容忍弱嘅集體身份，但制度上要求更高，實質範圍亦更有限", "q": "output-based legitimacy, while more tolerant of weak collective identities, is at the same time institutionally more demanding and in its substantive reach more limited.", "loc": "Scharpf1999Ch1 p.12"}, {"id": 59, "n": "e5", "s": 4, "t": "conceptual", "f": "有幾多類制度機制可以支撐輸出正當性？", "b": "Scharpf 認為至少有四類制度機制可以單獨或一齊用嚟支撐輸出導向嘅正當性", "q": "We thus have at least four different types of institutional mechanisms which, separately or jointly, can be drawn upon to support output-oriented legitimacy.", "loc": "Scharpf1999Ch1 p.21"}, {"id": 60, "n": "e5", "s": 4, "t": "conceptual", "f": "國家層面，專家判斷明顯違反多數人強烈偏好時會點？", "b": "Scharpf 認為喺國家層面，如果一連串決定明顯違反廣大多數人嘅強烈偏好，向選民問責嘅官員仍然可以推翻專家判斷", "q": "clearly violate the intense preferences of broad majorities … would still be able to override the expert judgement", "loc": "Scharpf1999Ch1 p.16"}, {"id": 61, "n": "e5", "s": 4, "t": "fact", "f": "歐洲層面有冇國家層面嗰種多數決後備？", "b": "Scharpf 指出歐洲層面冇國家層面嗰種由向選民問責嘅立法機關作多數決介入嘅後備位置", "q": "At the European level, however, the fallback position of majoritarian intervention by an electorally accountable legislature does not exist", "loc": "Scharpf1999Ch1 p.22"}, {"id": 62, "n": "e5", "s": 4, "t": "cause", "f": "歐盟非多數決機制更加獨立，正當化力量點解反而減弱？", "b": "Scharpf 認為歐盟非多數決機制因為更加獨立、冇得被政治推翻，佢哋嘅正當化力量反而一齊減弱", "q": "As a paradoxical consequence of this greater independence, the legitimizing power … is weakened as well.", "loc": "Scharpf1999Ch1 p.22"}, {"id": 63, "n": "e5", "s": 5, "t": "normative", "f": "歐洲政策要有效，其中一條路係乜？", "b": "Scharpf 認為歐洲政策要有效，其中一條路係低於政治能見度嘅門檻、避開反對", "q": "European policy must either avoid opposition by remaining below the threshold of political visibility", "loc": "Scharpf1999Ch1 p.23"}, {"id": 64, "n": "e5", "s": 5, "t": "cause", "f": "點解歐盟用司法方式制定政策有比較優勢？", "b": "Scharpf 認為歐盟需要避開政治反對，令司法方式嘅政策制定比政治方式更有比較優勢", "q": "The need to avoid political opposition gives a comparative advantage to judicial over political modes of policy", "loc": "Scharpf1999Ch1 p.23"}, {"id": 65, "n": "e5", "s": 5, "t": "evaluation", "f": "歐洲法院司法造法嘅權力主要只可以用嚟做乜？", "b": "Scharpf 認為歐洲法院司法造法呢種幾乎睇唔見嘅權力，主要只可以用嚟擴展負面整合對國家自由市場障礙措施嘅禁止", "q": "this nearly invisible power is mainly available for extending the prohibitions of ‘negative integration’ against national policy measures that could constitute barriers to the free market.", "loc": "Scharpf1999Ch1 p.24"}, {"id": 66, "n": "e5", "s": 5, "t": "definition", "f": "「正面整合」係乜？", "b": "Scharpf 將正面整合界定為處理市場整合所產生問題嘅歐洲措施，一般要由部長理事會同歐洲議會以政治上更顯眼嘅決定正式通過", "q": "‘positive integration’—that is, European measures dealing with the problems that are created by market integration—generally must be achieved through politically more visible decisions that are formally adopted by the Council of Ministers and the European Parliament.", "loc": "Scharpf1999Ch1 p.24"}, {"id": 67, "n": "e5", "s": 5, "t": "cause", "f": "各國政府利益衝突時，政治上顯著嘅歐洲政策會點？", "b": "Scharpf 認為當各國政府本身追求或維護互相衝突嘅利益，歐洲層面政治上顯著嘅政策選擇好可能喺部長理事會被卡住", "q": "politically salient policy choices at the European level are likely to be blocked in the Council of Ministers", "loc": "Scharpf1999Ch1 p.25"}, {"id": 68, "n": "e5", "s": 6, "t": "cause", "f": "經濟全球化對國家政策嘅限制，喺歐共體入面點樣被收緊？", "b": "Scharpf 認為經濟全球化對國家政策選擇造成嘅一般限制，喺歐共體入面被負面整合嘅法律效力進一步收緊", "q": "the general constraints on national policy choices that have resulted from economic ‘globalization’ … tightened through the legal force of ‘negative integration’ in the European Community", "loc": "Scharpf1999Ch1 p.28"}, {"id": 69, "n": "e5", "s": 6, "t": "conceptual", "f": "各國監管制度之間嘅競爭有咩特徵？", "b": "Scharpf 認為各國監管制度之間嘅競爭具有囚徒困境嘅特徵，令所有參與競爭嘅國家都傾向向資本同商界利益作出多過原本意願嘅讓步", "q": "This ‘competition among systems of regulation’ seems to have the characteristics of a Prisoner's Dilemma in which all competing countries are tempted to make larger concessions to capital and business interests than they would otherwise have preferred.", "loc": "Scharpf1999Ch1 p.41"}];
+
+const NOTES_META={"09": {"t": "布魯塞爾效應（Bradford）", "q": "歐盟點樣單靠市場管全世界？", "read": "定義同兩種效應；五個條件；例子；點解係歐盟；市場推動對政治協調同限制；點樣評價。"}, "10": {"t": "GDPR 行出歐洲（Bendiek 同 Römer）", "q": "歐盟資料保護規則點樣影響全世界？", "read": "兩道保障；加州效應；地域範圍、充分性同貿易協定；點樣合理化；域外先例同盡職義務。"}, "11": {"t": "環境法伸出境外（Diz 同 Araújo）", "q": "歐盟環境法點樣影響境外：直接管轄定本地措施？", "read": "好少直接管轄；兩種管轄；單邊全球治理；基改同航空 ETS；木材規例同 CBDR；要睇實質。"}, "e5": {"t": "輸入同輸出正當性（Scharpf）", "q": "歐盟管治憑乜正當？", "read": "由人民同為人民；厚身份；薄身份；四種機制同多數決後備；低調、避衝突、借國家正當性；全球化同負面整合。"}};
+const NOTE_ORDER=["09", "10", "11", "e5"];
+const NOTES=[
+{k:"09-1",t:"布魯塞爾效應係乜：唔靠條約、唔靠脅迫，靠市場",lv:[],vis:["v-be"],b:`<p>Bradford 用一個早上開頭：好少美國人知道，佢哋朝早搽嘅化妝品、食嘅早餐穀物、電腦用嘅軟件、Facebook 嘅私隱設定，都係由歐盟規例決定。佢將呢個現象叫做「布魯塞爾效應」（Brussels Effect），背後嘅過程叫「單邊監管全球化」（unilateral regulatory globalization）：。</p>
+ <p>佢將呢種全球化擺喺另外兩種中間。一種係政治全球化：國家或者監管機關之間談判出條約同協議；另一種係單邊脅迫：一個司法管轄區用威脅或者制裁將規則加諸人哋。布魯塞爾效應兩樣都唔係。歐盟冇主動強加，第三國亦唔係心甘情願接受；推動嘅係企業。BHR 嗰邊將呢種做法擺喺 「有域外含意嘅本地措施」 嗰一頭。</p>
+ <p>點樣推法？想同歐盟做生意，外國企業就要跟歐盟標準，否則放棄成個市場。如果企業喺全世界都用返同一套歐盟標準，就係「事實上」（de facto）嘅布魯塞爾效應。企業跟咗之後，仲會返去游說自己政府都立同一套法，等本地唔出口嘅對手唔可以平啲做——呢個係「法律上」（de jure）嘅布魯塞爾效應。次序係企業先改、立法者後跟。</p>
+ <p>Bradford 話佢建基於 Vogel 嘅「加州效應」（California Effect）：加州市場大、又偏好嚴格嘅消費者同環境規例，有時實際上就定咗全美國嘅標準。但佢強調布魯塞爾效應唔係一場大家爭住向上嘅競賽，而係一個管轄區凌駕其他管轄區。</p>
+ <p class="muted"><b>筆記嘅例子：</b>一間玩具廠每年出幾百萬件貨，三成賣去歐洲。歐盟禁咗某種塑化劑，工廠可以開兩條生產線，一條歐洲版、一條其他地方版；但兩條線成本高過全部改用歐盟版。於是全世界小朋友都玩緊歐盟標準嘅玩具，雖然自己國家從來冇立過呢條法。</p>`},
+{k:"09-2",t:"五個條件：市場、能力、嚴格偏好、走唔甩嘅對象、拆唔開嘅生產",lv:[],vis:["v-be"],b:`<p>唔係個個大經濟體都做到。Bradford 列出條件：個管轄區要有大嘅本土市場、強嘅監管能力，同埋傾向向唔走得嘅對象（例如消費者市場）而唔係走得嘅對象（例如資本）執行嚴格規則。再加上企業嘅生產或者行為要「拆唔開」（nondivisible）。</p>
+ <p><b>（一）市場力量（market power）。</b> 歐盟 GDP 約 16 萬億美元（購買力平價），有五億消費者，係世界最大進口市場。不過市場大唔等於自動有規管權力：歐盟標準要成為全球標準，要跟單一標準嘅好處大過喺寬鬆地方慳成本嘅好處。</p>
+ <p><b>（二）監管能力（regulatory capacity）。</b> 即係有制度結構去有效制定同執行規例。Bradford 引 Majone 話，建立單一市場時嘅制度發展，令歐盟有咗大量監管能力；但歐盟嘅全球規管權只限於成員國交咗專屬或者共享權限畀歐盟嘅範疇。佢強調做規管強權係刻意揀嘅。</p>
+ <p><b>（三）偏好嚴格規則。</b> 要做全球監管者，本土標準就要夠嚴，嚴到單憑「最嚴」就壓過其他寬鬆標準。</p>
+ <p><b>（四）傾向管唔走得嘅對象。</b> 歐盟主要管消費者市場：企業想賣貨畀歐洲人，就搬唔走；資本就唔同，可以走去規管寬鬆嘅地方。</p>
+ <p><b>（五）拆唔開（nondivisibility）。</b> 就算企業要跟歐盟標準，佢哋都可以只喺歐盟跟。效應要擴散到全球，前提係企業喺法律上、技術上或者經濟上冇辦法喺唔同市場維持唔同標準。Bradford 分三種：法律上、技術上同經濟上拆唔開。最典型係全球合併：一宗合併唔可以逐個國家完成，最嚴嘅反壟斷管轄區就話晒事。相反，勞工標準拆得開，所以 Bradford 用佢做反例。</p>`},
+{k:"09-3",t:"例子：反壟斷、私隱、化學品、環境、食物安全",lv:[],vis:[],b:`<p><b>反壟斷。</b> 美國同歐盟都主張基於效果嘅管轄權，但歐盟用更頻密、更深入嘅補救措施。GE/Honeywell 呢宗美國公司之間嘅合併，美國批咗、歐盟禁咗，就係法律上拆唔開嘅經典例子；Microsoft（2004）同 Intel（2009）就係罰款同補救嘅例子。Bradford 嘅結論：。佢強調分別唔在能力本身，而在偏好。</p>
+ <p><b>私隱。</b> 歐盟將私隱當作基本權利。《數據保護指令》（Data Protection Directive 95/46/EC）禁止將數據由歐盟轉去保障唔「足夠」嘅第三國；美國企業要靠「安全港」（Safe Harbor）安排先可以傳數據。</p>
+ <p><b>化學品。</b> 《REACH》規例奉行「冇數據，冇市場」（no data, no market），而美國《有毒物質管制法》（TSCA）就豁免咗大部分現有化學物。呢度嘅拆唔開來自規模經濟。REACH 亦引起有限度嘅法律上效應：加拿大、澳洲、中國、南韓、日本、俄羅斯等出現 REACH 式法律。</p>
+ <p><b>環境。</b> 《RoHS 指令》限制電子產品入面嘅有害物質，加州嘅 Cal RoHS 仲將歐盟日後嘅修訂直接納入加州法。航空業納入排放交易計劃（ETS）之後，三藩市飛倫敦嘅航班只有約 9% 排放喺歐盟空域，但要成程計；歐盟法院喺 <i>Air Transport Association of America</i> 案判定冇侵犯第三國嘅領土或主權。</p>
+ <p><b>食物安全。</b> 基因改造生物（GMOs）係效應唔完全嘅例子。美國喺 WTO 告贏咗歐盟，但歐盟冇遵從裁決；而因為分開種植有成本，部分美國農夫索性只種歐盟批准嘅品種。</p>`},
+{k:"09-4",t:"點解係歐盟：嚴格偏好同內部動機",lv:[],vis:[],b:`<p>點解唔係美國？1980 年代以前，消費者同環境規範其實係美國定；之後角色調轉，歐盟越嚟越嚴，美國冇跟。Bradford 話歐盟決策者偏好嚴格規管，反映佢哋厭惡風險、又承諾「社會市場經濟」（social market economy）。歐盟奉行預防原則（precautionary principle）：只要有合理擔憂，就算風險未可以量化都可以出手。兩邊嘅分別係怕錯邊樣。點解唔係中國？Bradford 話中國嘅監管能力，同埋將消費者同環境保護放喺增長之上嘅意願，冇隨經濟一齊快速增長。</p>
+ <p>歐盟點解要咁做？有人批評係「規管帝國主義」（regulatory imperialism），Bradford 唔同意。佢話更有說服力嘅解釋係內部動機：保住單一市場，同時唔削弱歐洲企業嘅競爭力。成員國規則唔一致會威脅單一市場，所以要協調；協調嘅標準往往係先行成員國（例如環境方面嘅德國、荷蘭、北歐國家）嘅偏好，之後布魯塞爾效應再將佢帶去第三國。對外影響於是可以睇成內部動機嘅意外副產品。</p>
+ <p>委員會本身亦有官僚利益。歐盟預算只係歐盟 GDP 約 1%，但規例唔受撥款限制——Bradford 引 Majone 話委員會建立咗一個「法律同規例嘅帝國」。</p>`},
+{k:"09-5",t:"市場推動對政治協調，同埋限制喺邊",lv:[],vis:["v-be"],b:`<p>歐盟有兩條路令規則趨同：政治協調（條約同機構）同市場推動協調（布魯塞爾效應）。後者有明顯優勢：。歐盟連游說都可以外判畀外國企業：佢哋喺歐盟付出咗守規成本之後，會返本國推更高標準。不過 Bradford 預測歐盟喺某啲範疇仍然會行多邊：例如佢係淨出口方嘅範疇，或者想推人權等道德目標嘅時候，單邊全球化好少足夠。</p>
+ <p>外部限制好弱。市場罰唔到管唔走得對象嘅監管者；其他國家選擇有限，而且冇任何「優先適用」原則可以約束歐盟；WTO 嘅補救唔追溯、又唔可以強迫，Bradford 引 Shaffer 話 WTO 甚至可以為布魯塞爾效應擋箭。</p>
+ <p>所以佢嘅核心結論係：最大嘅約束來自歐盟內部。內部限制有兩類。一係條件唔齊：例如歐盟冇權限、冇偏好（金融交易稅缺乏監管傾向，因為英國反對）、監管對象走得甩（資本、幹細胞研究），或者產品拆得開——Microsoft 推出冇瀏覽器嘅歐洲版 Windows 7 E、汽車、DVD 分區碼都係例子。二係內部衝突同越嚟越大嘅分歧：歐盟監管權力越大，內部分歧亦越大。</p>`},
+{k:"09-6",t:"點樣評價：對邊個好、對邊個唔好",lv:[],vis:[],b:`<p>Bradford 自己明言篇文係描述性，刻意唔處理規範問題。但佢點出評價取決於其他地方原本嘅規則：如果其他地方嘅規例本來已經最適當，布魯塞爾效應會令全球監管過高、損害全球福利；如果其他地方太寬鬆或者執行太弱，單邊監管全球化就可能係凌駕偏低規例嘅可取方法。</p>
+ <p>對邊個好、對邊個唔好，文中有幾組人。美國政府經常覺得歐盟規管無效率、損害美國福利，而且係反多數決、唔民主；喺效應發生嘅範疇，較寬鬆嘅美國監管者就變得多餘。但美國入面都有贏家：唔出口嘅企業（事實上效應令出口對手要跟歐盟）、出口企業（法律上效應令本地對手都要跟）、進步派州份、非政府組織同消費者。發展中國家就可以借歐盟嘅資源。另一面，布魯塞爾成為游說重地，被俘虜嘅回報亦更大；歐盟內部嘅輸家包括要付較高價錢嘅歐盟消費者，同埋依賴較平外國投入嘅企業。</p>
+ <p>至於權力，Bradford 話規管權力成本較低、較易部署、亦較持久，結論係：。</p>
+ <p>至於課堂問題「對英國有冇含義」：篇文冇將英國當第三國討論；英國喺文中主要以反對金融交易稅、反對金融規管嘅成員國身份出現。</p>
+ <p><b>同其他頁嘅關係：</b> Majone（1994）講出口型跨國企業想避開各國唔一致嘅規例、推動歐共體監管增長（見 歐共體點解越管越多），Bradford（2012）就講同類企業點樣將歐盟規則帶出歐盟。Raustiala（2002）講監管模式靠跨政府網絡、主要以說服輸出（見 監管輸出同趨同），Bradford（2012）講嘅輸出就靠市場准入同企業選擇。Roger（2020）分析國家點解揀非正式國際組織（見 功能論同權力論），Bradford（2012）就比較歐盟揀政治協調定市場推動協調。Bernat 同 Spera（2024）轉述 Bradford 嘅框架並提出歐盟立法重心已移向境外（見 Bradford 個框架），而 Bradford（2012）就話對外影響係內部動機嘅副產品。</p>`},
+{k:"10-1",t:"問題：歐盟點樣將資料保護規則推出歐洲",lv:[],vis:["v-gdpr"],b:`<p>作者由數碼貿易講起：2014 年起，歐美之間買賣嘅服務一半以上係數碼服務。為咗喺國際數據經濟入面保護個人，歐盟立法者設咗兩道保障。第一道係「履行地法」原則（lex loci solutionis）。第二道係將 GDPR 原則寫入國際貿易協定，例如歐美「私隱盾」（Privacy Shield）同歐日經濟夥伴協定（JEFTA）。</p>
+ <p>兩道保障本來都係為咗保護歐洲客戶，但大部分全球營運嘅數碼服務供應商都話會全球跟 GDPR 標準，令全部客戶享有同一保護水平。作者話，歐盟透過為全球最大消費市場定標準，迫全球企業對所有客戶採用佢嘅原則。篇文章就係要解釋呢個過程，同時點出呢種全球規則制定方式可能引起嘅衝突。</p>
+ <p>理論起點係 Scharpf 嘅積極／消極整合。作者話歐洲資料保護法兩樣都係：佢係消極整合（市場建構，market making），因為統一咗以前限制歐洲內部數據流動嘅零碎規例；佢亦係積極整合（市場塑造，market shaping），因為佢畀資料當事人權利、對資料處理者加義務。作者仲話，喺歐洲資料保護法入面，係歐盟成為咗消費者嘅捍衛者。</p>`},
+{k:"10-2",t:"加州效應：點解跨國企業寧願全球跟 GDPR",lv:[],vis:["v-gdpr"],b:`<p>作者問：政治上四分五裂嘅歐盟，點解可以咁大力影響全球最大嘅數碼經濟？佢哋借 Vogel（1997）《Trading Up》嘅解釋：自由貿易往往帶嚟更強、更照顧消費者嘅規例。Vogel 有三個論據：更嚴規例可以加強企業競爭優勢；大進口市場可以單方面定產品標準、迫外人跟；同埋關心消費者嘅政府會傾國際協議去推行標準。作者話後兩點（市場力量同國際協議）最有助理解歐洲資料保護法對美國市場嘅影響。</p>
+ <p>「加州效應」一詞源自 1980 年代加州訂嚴格嘅汽車排放標準。美國車廠要揀：一係負擔兩套標準嘅成本，一係將較嚴標準推廣到全部產品。結果車廠好快明白，行一套標準、服務一個市場，就算整體標準高啲，都平過兩套。</p>
+ <p>作者話資料保護今日一樣：對 Google、Facebook、Amazon 嚟講，離開歐洲市場唔係選項；按兩套法律規則經營就係極大負擔；而數據本身嘅流動性，令事實上嘅跨國規管無可避免。所以大型數碼服務供應商聲稱畀美國消費者同歐洲客戶一樣嘅保護。作者引述美國聯邦貿易委員會委員 Rohit Chopra 話，好多美國人會發現自己受一條外國法律保護。不過作者喺註 3 加咗條件：呢個成本效益計算長遠守唔守得住，好大程度睇 GDPR 喺歐盟內執行得幾嚴。</p>
+ <p class="muted"><b>筆記嘅例子：</b>一間手機 app 公司，歐洲用戶要預設「唔追蹤」，其他地方用戶冇呢個要求。佢可以寫兩個版本，但兩套程式碼、兩套客服、兩套法律文件好麻煩；佢索性全球都預設「唔追蹤」。結果美國用戶冇投過票，都受咗歐洲規則保護。</p>`},
+{k:"10-3",t:"唔止靠市場：GDPR 嘅地域範圍、充分性協議同貿易協定",lv:[],vis:["v-gdpr"],b:`<p>作者話，從歐盟角度，單靠市場帶嚟嘅間接效應唔夠。所以歐盟另外傾國際協議，確保歐盟客戶嘅數據喺外地處理都受保護。</p>
+ <p>GDPR 本身係點嚟？1995 年《資料保護指令》談判時，歐洲議會強調基本權利，委員會就著重共同規則嘅市場建構功能。GDPR 首次帶嚟統一、直接有約束力嘅資料保護法，目的之一係避免成員國鬥低保護。違規罰款最高係全年營業額 4% 或 2,000 萬歐元，以較高者為準，喺歐盟市場經營嘅第三國企業一樣要守。作者亦提到 GDPR 有關自動化決策（automated decision making）嘅部分引起激烈爭論。</p>
+ <p>對國際數據傳輸，作者話 GDPR 有兩樣最重要：地域範圍同充分性要求。地域範圍方面，GDPR 涵蓋歐盟境內所有個人資料處理，同埋喺外地處理歐盟客戶資料、而公司直接針對或者向歐盟居民賣廣告嘅情況。呢個擴大咗嘅地域範圍受到批評，尤其係佢製造嘅執行問題。</p>
+ <p>充分性方面，委員會擁有對外貿易嘅專屬權限，負責傾充分性協議；除咗具約束力企業規則（binding corporate rules），充分性協議係歐盟訂國際數據流動規則嘅主要途徑。喺 GDPR 之下（亦即 Schrems 案之後），充分性要睇埋法律上同事實上兩面。貿易協定方面，作者話歐盟—南韓自貿協定第 7.43 條唔再將資料保護視為自由貿易嘅例外，而係強調先要建立足夠保障。2015 年歐洲法院推翻「安全港」（Safe Harbour），之後由「私隱盾」取代；作者認為私隱盾相對複雜而無效嘅執行同監察，中期會帶嚟法律不確定。</p>`},
+{k:"10-4",t:"點樣合理化：保護全球消費者，對抗逐底競爭",lv:[],vis:["v-gdpr"],b:`<p>作者承認呢種做法有批評：有學者警告，各國喺互聯網管治呢個跨國範疇立互相衝突嘅法律，會造成規管碎片化，限制互聯網嘅開放。一個彌合方法係「盡職義務」原則（due diligence）：國家唔止要管好自己境內，仲要為國內規例嘅對外後果負責。不過作者懷疑呢個原則有冇充分照顧全球市場建構嘅不對稱性，同佢對個人嘅直接影響。</p>
+ <p>作者嘅推論係：全球政治入面，組織良好嘅資本利益同分散嘅消費者利益之間嚴重失衡（Olson）；市場建構跟消極整合嘅路行（Scharpf），已經大致脫離政治控制同進取嘅社會標準（Ruggie）。所以如果冇國家單方面介入，消費者利益好易被忽略，陷入逐底競爭（作者叫「特拉華效應」，Delaware-effects）。由此，歐盟對外效應嘅替代品唔係民主或者良好管治，而係市場主導、唔理消費者。</p>`},
+{k:"10-5",t:"結論：域外先例、CLOUD Act、碎片化同盡職義務",lv:[],vis:["v-gdpr"],b:`<p>作者總結：歐盟透過 GDPR 可能解決咗歐洲公民數據按美國法儲存同評估嘅問題——但同時開咗一個有影響力嘅域外適用先例，儘管歐盟以前批評過美國咁做。國際企業越嚟越多將歐洲客戶數據存喺歐洲，避免同歐盟法衝突；作者話咁樣歐盟會喺人哋嘅主權領土上應用自己嘅法律。作者亦話，歐洲制度有條件成為榜樣，因為資料保護機構已經同企業緊密合作，支援有效率嘅實施。</p>
+ <p>美國嘅 CLOUD Act（2018）係平行例子：Microsoft 2013 年拒絕畀 FBI 攞儲存喺愛爾蘭嘅通訊數據，打咗幾年官司，到 2018 年國會通過 CLOUD Act，令美國調查人員可以喺全球範圍取覽美國公司擁有嘅伺服器。CLOUD Act 只容許同各國政府簽雙邊協議，繞過咗歐盟。作者話 GDPR 同 CLOUD Act 嘅目標（私隱保護同有效執法）都完全正當，但都為將來規管數碼經濟嘅衝突開咗門。所以作者建議立法者單方面立數碼經濟規則時，要更重視盡職義務，並話盡職義務應該被視為國際關係嘅最低公分母。</p>
+ <p>同 vault 已有頁面嘅關係：Raustiala（2002）講跨政府網絡點樣輸出監管模式（見 跨政府網絡 › 監管輸出），Bendiek 同 Römer（2019）就講歐盟靠市場規模同單方面立法令標準向外擴散。Majone（1994）用出口型跨國企業想避開唔一致規例去解釋歐共體監管點解增長（見 歐共體點解越管越多），Bendiek 同 Römer（2019）就用全球企業唔想行兩套規則去解釋 GDPR 點樣行出歐洲。</p>`},
+{k:"11-1",t:"問題：歐盟好少直接聲稱域外管轄",lv:[],vis:[],b:`<p>Diz 同 Araújo 一開始就講明佢哋嘅判斷：歐盟好少直接聲稱域外管轄，做法細緻得多。成功嘅方法往往係立一啲本身冇域外元素嘅本地法。</p>
+ <p>佢哋揀嘅個案係歐盟為咗打擊毀林，對木材生產商同貿易商訂嘅入市條件。揀木材唔係隨便，因為佢特別影響巴西同歐洲之間嘅出口同貿易。背景係環境問題本身跨境，但國際上冇一個總括嘅環境條約制度。</p>
+ <p>由此帶出全篇主旨：域外問題唔可以淨係睇形式，要睇實質。即係要評估一套規管框架有幾大能力，將某啲義務「加」落生產商同供應商身上，作為入一個消費市場嘅條件。</p>`},
+{k:"11-2",t:"管轄權由領土出發：直接管轄同有域外含意嘅本地措施",lv:[],vis:["v-extra"],b:`<p>作者先交代管轄權（jurisdiction）嘅基本：有立法（prescriptive）、執法（enforcement）同審判（adjudicative）三種，呢篇主要講立法管轄權。管轄權最重要嘅限制係地理。除咗領土原則，仲有國籍原則、保護原則、美國喺反壟斷案首先用嘅效果原則（effects doctrine）同普遍管轄原則；效果原則有爭議。</p>
+ <p>正因為有爭議，作者話值得分開兩樣嘢。後者同本國有領土連繫，雖然好少，但一樣影響到外國行為。BHR vault 嘅 Extraterritoriality › The spectrum 亦記錄咗 Ruggie 同 Zerk 用同一對概念，去講國家保護人權嘅責任。</p>
+ <p>點樣先算「域外」？作者引 Scott 嘅標準：一項措施如果將義務加諸同立法國冇相關領土連繫嘅人，就算域外。而直接域外管轄一般受「合理」要求約束，背後係主權平等同不干涉原則。</p>`},
+{k:"11-3",t:"單邊全球治理：布魯塞爾效應點樣出現",lv:[],vis:[],b:`<p>點解單靠本地措施都可以影響外國？作者用 Bradford（2012）嘅講法：一個國家可以透過市場機制，將自己嘅法律同規例推出境外，令標準全球化。叫法有幾個；作者用 Klabbers 嘅叫法，但話名稱唔係重點。</p>
+ <p>Bradford 列出單邊推動全球治理嘅條件；加上生產「唔可分割」（non-divisible），即係喺唔同市場維持唔同標準喺法律上、技術上或者經濟上唔可行。作者話歐盟符合：市場大，富裕消費者多。</p>
+ <p>仲有一個推手係歐盟企業：佢哋已經付咗符合歐洲共同標準嘅調整成本，就有誘因推呢啲標準去全球。不過嚴格嘅本地規則要成為全球標準，前提係冇得避。危險廢物係反例：守規成本高，但非法轉移廢物喺全球仍然常見，生產商有路走。所以歐盟將規管集中喺同消費市場掛鈎嘅範疇，因為消費市場嘅規模同購買力避唔到。結論係：歐盟單邊推動環境全球治理嘅能力，同佢市場力量嘅份量有因果關係。（歐共體點解喺內部越管越多，見 Majone 1994 › 歐共體點解越管越多；Majone 講嘅係跨國企業想避開唔一致嘅規例，Diz 同 Araújo 講嘅係歐盟企業將已經守咗嘅標準推出境外。）</p>
+ <p class="muted"><b>筆記嘅例子：</b>一間大商場規定所有租戶嘅食物要標明有冇致敏原。商場冇權管街外嘅舖頭，但想入嚟開舖嘅連鎖店，索性全線分店都跟同一套標籤，因為印兩套包裝太麻煩。商場冇伸手出去，但規矩自己行咗出去。</p>`},
+{k:"11-4",t:"歐盟做「代理」：基改食物同航空碳排放",lv:[],vis:["v-extra"],b:`<p>落到歐盟本身，作者嘅判斷係歐盟完全採用領土原則，國籍原則係唯一例外；效果原則同普遍管轄唔常見。佢哋提醒，唔係所有對外國人同外國行為嘅管轄都算嚴格意義上嘅域外。</p>
+ <p>第一個例子係基改食物：根據 Regulation (EC) No 1830/2003，含基改成分嘅產品喺生產同分銷每個階段都要追溯、要標籤；歐洲內外嘅賣家想入歐盟消費市場都要跟，但唔入歐盟市場就唔受管。所以作者話佢只係含意上「域外」。第二個例子係 2012 年起將航空業納入碳排放交易體系（ETS）：計埋成條航線喺歐盟空域以外嘅排放，有域外元素；但航班一定要喺歐盟機場起飛或降落，所以仍然有領土連繫。</p>
+ <p>兩個例子顯示歐盟好少用直接域外管轄，反而經常用有域外影響嘅本地措施，從而間接規管境外嘅活動，影響外國法律制度，甚至國際法嘅發展。（Raustiala（2002）講美國證監會透過跨政府網絡輸出監管模式，見 跨政府網絡 › 監管輸出；Diz 同 Araújo 講嘅輸出途徑係歐盟嘅入市條件。）</p>`},
+{k:"11-5",t:"木材規例：有條件嘅單邊行動同「共同但有區別責任」",lv:[],vis:["v-extra"],b:`<p>作者先描述國際環境法係一個鬆散嘅「制度複合體」（regime complex，Keohane 同 Victor），而區別對待（differentiation）同「共同但有區別責任」原則（CBDR）係國際環境法嘅基本結構之一。木材方面，訂具約束力國際森林制度屢次失敗之後，歐盟同其他國家決定單邊行動。</p>
+ <p>歐盟木材規例（Regulation (EU) No 995/2010，EUTR）有三個義務：禁止將非法採伐木材放上歐盟市場、貿易商要做盡職審查（due diligence）、同埋保存追溯紀錄。盡職審查嘅核心係對木材供應商做風險評估。配套嘅 FLEGT 規例有一個自願機制，非歐盟出口國可以同歐盟簽自願夥伴協議（VPA）攞許可證。</p>
+ <p>作者將 EUTR 定性為「有條件嘅單邊行動」——有條件，因為簽咗 VPA 就可以避開禁令。單邊行動令歐盟可以透過界定乜嘢係「合法木材」，為全球木材貿易定標準。作者話呢種做法有爭議但唔應該全盤否定：冇國際規例之下，歐盟用市場力量處理全球毀林。但 EUTR 符唔符合 CBDR，仍然成疑。</p>
+ <p>VPA 有冇空間做區別對待？VPA 嘅原則之一係靈活，要配合每個非歐盟國家嘅實況。有學者因此將歐盟睇成規範嘅共同創造者；亦有學者話 VPA 最多只係推動一種化約式參與。作者兩邊都報告，冇判邊個啱；佢哋話 FLEGT 尊重非歐盟供應國嘅本地規則，但非歐盟國家參與少、VPA 落實時間長。</p>`},
+{k:"11-6",t:"結論：要睇實質，同埋競爭嘅代價",lv:[],vis:["v-extra"],b:`<p>作者喺摘要同結論都重申：域外難題唔可以靠評估形式上嘅地理界線去理解。對歐盟嚟講，呢套做法係推行綠色治理嘅方法，可以提高環境保護水平，同時為入市訂清晰條件。</p>
+ <p>但對邊個好、對邊個唔好？作者話歐盟訂嘅標準唔一定帶嚟公平競爭。原因之一係歐盟境內嘅公司有資助、補助同貸款幫佢哋符合嚴格標準，非歐盟公司原則上冇。結果係入市機會並冇真正去到所有非歐盟國家，要求嘅保護水平同達到佢嘅資源之間明顯錯配。作者最後點出保護環境嘅論述同保護歐盟本地市場之間嘅二分。</p>`},
+{k:"e5-1",t:"正當性嘅兩副面孔：「由人民」同「為人民」",lv:[],vis:["v-scharpf"],b:`<p>Scharpf 開章就講，喺民主理論入面，行使管治權力之所以正當，係因為佢係集體自決（collective self-determination）嘅體現。但「自決」有兩種讀法。第一種係輸入導向：佢強調「由人民管治」——政治選擇之所以正當，係因為佢反映「人民意志」，即係可以由社群成員嘅真實偏好推導出嚟。</p>
+ <p>第二種係輸出導向：佢強調「為人民管治」，政治選擇之所以正當，係因為佢真係有效促進到有關群體嘅共同福祉。Scharpf 喺註 1 話，盧梭嘅《社約論》可以讀成輸入正當性嘅邏輯前提，而《聯邦黨人文集》就係講輸出正當性嘅制度前提。喺民主國家，兩者係並存、互相加強同補足嘅。</p>
+ <p>Chalmers 佢哋喺 正當化策略同歐洲身份 › 羅馬招 借 van Middelaar 用「羅馬招」「希臘招」嘅名去分正當化策略，而 Scharpf 呢度用嘅係「輸入」「輸出」呢對詞。監管法嗰邊 Coen 都用呢對詞，但將技術資訊叫輸入、代表性諮詢叫輸出。呢對詞後嚟點樣被 Schmidt 等人沿用同擴展成三個維度，見 Input, throughput and output legitimacy › 詞彙來源。</p>
+ <p class="muted"><b>筆記嘅例子：</b>一個屋苑換管理公司。輸入嘅講法係：「業主大會投票揀咗佢，所以佢有資格管。」輸出嘅講法係：「佢管得好，電梯唔壞、保安得力，所以大家收貨。」兩句都可以令人接受個管理公司，但理由完全唔同。</p>`},
+{k:"e5-2",t:"輸入正當性要「厚」身份，歐盟冇",lv:[],vis:["v-scharpf"],b:`<p>輸入正當性最大嘅難題，係點樣合理化多數決（majority rule）——Scharpf 話多數決嘅合理化 。點解少數要接受多數話事？佢話前提係每個人嘅偏好入面都要計埋所有人嘅福祉。佢引 Offe 話，呢種對同胞嘅信任，實際上最可能來自相信「我哋」本質上一樣，即 Weber 所講嘅 Gemeinsamkeitsglaube。</p>
+ <p>用呢把尺去量，歐盟差好遠：。單一歐洲法令、馬斯特里赫特同阿姆斯特丹條約雖然擴大咗歐洲議會（European Parliament）嘅權力，民主赤字（democratic deficit）依然存在。冇呢種厚身份，制度改革都唔會大大增加多數決決定嘅輸入正當性。佢喺註 4 亦講明，唔相信搞歐洲範圍嘅公投可以大大加強歐洲決定嘅正當性。</p>
+ <p>德國聯邦憲法法院（BVerfG）嘅 Maastricht 判決就係用呢個邏輯：既然民主暫時只存在於國家層面，歐洲嘅權限就要收窄解釋。Scharpf 話由輸入角度睇，呢個結論係合理嘅。不過佢喺註 5 指出，同一個法院講到歐洲中央銀行嘅獨立性時，就用咗一個明確屬於輸出導向嘅「修改民主原則」嘅講法。</p>`},
+{k:"e5-3",t:"輸出正當性：「薄」身份已經夠，但要求高、範圍窄",lv:[],vis:["v-scharpf"],b:`<p>輸出嗰邊就唔同。「為人民管治」嘅正當性，來自解決需要集體處理嘅問題嘅能力——嗰啲問題靠個人行動、市場交換或者公民社會自願合作都解決唔到。佢唔需要厚身份，只需要大家覺得有一段夠闊、夠穩定嘅共同利益，足以支持集體行動嘅制度安排。所以「薄」身份都可以有正當性——而將歐盟界定為處理某幾類共同問題嘅合適群體，概念上冇困難。</p>
+ <p>代價係：單靠輸出嘅正當性係以利益、而唔係以身份為基礎。所以佢需要制度規範去做兩件事。Scharpf 話討論歐盟嘅人成日攞一堆由國家辯論搬過嚟、輸入同輸出混埋一齊嘅標準去評歐盟，結果造成 ；分開兩套標準，先睇得清歐盟喺邊方面做得到、邊方面做唔到。</p>`},
+{k:"e5-4",t:"國家靠四種機制撐輸出正當性，背後有多數決後備",lv:[],vis:["v-scharpf"],b:`<p>喺國家層面，Scharpf 數出四類制度機制，可以單獨或者一齊撐起輸出正當性：選舉問責（electoral accountability）、獨立專家（independent expertise）、統合主義同政府間協議（corporatist and intergovernmental agreement），同埋多元政策網絡（pluralist policy networks）。</p>
+ <p>第一類係核心。第二類（例如法院同獨立央行）嘅理據係，選舉問責被認為唔適合確保以公共利益為本嘅政策選擇——而專家主要靠專業社群內部嘅批評去控制。但關鍵在於：如果一連串決定明顯違反廣大多數人嘅強烈偏好，向選民問責嘅官員仍然可以推翻專家判斷。即係話，非多數決機構背後有一個多數決後備（majoritarian fallback）。</p>
+ <p>歐洲層面就冇呢個後備。喺國家層面，Bundesbank、聯儲局、Kartellamt 或者美國嘅獨立監管委員會都可以由普通立法修正；歐洲就唔同。Scharpf 話呢度有個悖論：歐盟嘅非多數決機制因為更加獨立，正當化力量反而一齊減弱。冇政治問責，政治上顯著嘅歐洲決定，正當性就要靠佢哋有效達成共識目標。</p>
+ <p>Scharpf 由「冇多數決後備」去講歐盟非多數決機制嘅正當性；Majone（1999）就喺 獨立監管機構嘅正當性 › 歐洲嘅「民主赤字」 將民主赤字拆成字面同較闊兩個意思去處理同一個題目。</p>`},
+{k:"e5-5",t:"歐盟政策點樣先正當：低調、避衝突、借國家正當性",lv:[],vis:["v-scharpf"],b:`<p>既然冇後備，歐洲決定只可以喺佢正當性基礎嘅限制之內先算正當。Scharpf 因此話歐洲政策要有效，得三條路：一係低於政治能見度嘅門檻、避開反對；二係搵減少衝突嘅方案；三係靠國家同地方政府願意又有能力 。</p>
+ <p><b>低調：司法造法同負面整合。</b> 要避開政治反對，司法比政治方式有優勢。歐洲政策比國家層面更大程度係司法造法（judicial law-making）嘅產物。但呢種幾乎睇唔見嘅權力，主要只可以用嚟擴展負面整合——即禁止國家設置自由市場障礙嘅措施。相反，正面整合（positive integration）要靠部長理事會同歐洲議會作出政治上更顯眼嘅決定。</p>
+ <p><b>避衝突：委員會程序同政策網絡。</b> 要避免或者減少衝突，解釋咗點解歐洲政策過程入面「委員會程序」（comitology）咁多。如果歐洲政策網絡真係搵到滿足所有受影響利益嘅雙贏方案，輸出正當性就有保證，民主赤字亦唔再重要；但 Scharpf 話呢類問題嘅範圍好有限。</p>
+ <p><b>借國家正當性：理事會卡死。</b> 如果避唔開重大爭議。而國家政府要孭政治責任，就會想保留政治控制。所以當各國政府本身利益衝突，政治上顯著嘅政策選擇就好可能喺部長理事會被卡住；結論係 處於衝突嘅議題上採取正面行動。</p>
+ <p>Majone（1994）喺 歐洲規管型國家點樣冒起 › 三個悖論 話民主赤字問題關乎所有規管型國家；Scharpf 呢度就由歐盟冇多數決後備，推出歐盟政策只可以喺低調、避衝突或者借國家正當性呢幾條路上行。</p>`},
+{k:"e5-6",t:"全球化同負面整合：國家失去經濟邊界",lv:[],vis:["v-scharpf"],b:`<p>Scharpf 將正當性同能力扣埋一齊：如果以前由外在必然性決定、或者由唔使問責嘅權威決定嘅事，變成真實而有效嘅集體選擇，民主正當性就會擴大；反過嚟講，如果決定被新嘅必然性或者唔使問責嘅權威搶先定咗，正當性就會收縮。佢喺呢章嘅主張係：經濟全球化對國家政策選擇嘅限制，喺歐共體入面再被負面整合嘅法律效力收緊。</p>
+ <p>背景係民主國家同資本主義經濟嘅關係——但兩者嘅範圍唔對稱：。戰後嘅國際制度建立咗一種「嵌入式自由主義」（embedded liberalism），令國家政府仍然可以保護國民福利、抵禦外來衝擊。到 1970 年代之後，資本流動同市場整合拆走咗呢層保護；喺歐共體入面，連剩低保護國家經濟嘅法律障礙，都隨住 1992 年底完成「內部市場」而被廢除。佢一句總結：。</p>
+ <p>結果係各國監管制度之間嘅競爭。Scharpf 話呢種競爭似一個囚徒困境（Prisoner's Dilemma），各國都忍唔住向資本同商界讓步多過自己原本想讓嘅。喺歐盟入面問題尤其尖銳——因為成員國已經完全冇咗偏袒本國生產者嘅選項。佢將詳細論證留畀下一章。</p>`}
+];
+const CARDS={};CARDS_DATA.forEach(c=>{CARDS[c.id]=c;});
+function makePages(app){
+const {store,$,LNAME}=window.__S;
+/* ===================== VISUALS ===================== */
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" ${o.a?`text-anchor="${o.a}"`:''} font-weight="${o.w||400}" fill="${o.f||'var(--ink)'}">${t}</text>`;
+const box=(x,y,w,h,fill='var(--surface2)',stroke='var(--line)')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const arrow=(x1,y1,x2,y2,c='var(--muted)')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" marker-end="url(#ah)"/>`;
+const DEFS=`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+const VIS=[ {id:'v-be',t:'布魯塞爾效應：五個條件同兩種效應',n:'09 §一–二',svg:()=>`<svg viewBox="0 0 680 330" class="vis">${DEFS}
+  ${[['市場力量','大本土市場'],['監管能力','制定同執行'],['偏好嚴格','嚴到壓過寬鬆'],['管走唔甩','消費市場，唔係資本'],['拆唔開','法律／技術／經濟']].map(([a,b],k)=>`${box(6+k*135,20,127,70,'var(--accent-soft)')}${svgT(69+k*135,48,a,{a:'middle',w:700,s:13})}${svgT(69+k*135,72,b,{a:'middle',s:11})}`).join('')}
+  ${arrow(340,94,340,122)}
+  ${box(10,126,320,90,'var(--soft)')}${svgT(170,152,'事實上（de facto）',{a:'middle',w:700})}${svgT(170,178,'企業全球都跟歐盟標準',{a:'middle',s:12})}${svgT(170,198,'（一條線平過兩條線）',{a:'middle',s:12})}
+  ${arrow(332,170,348,170)}
+  ${box(350,126,320,90,'var(--soft)')}${svgT(510,152,'法律上（de jure）',{a:'middle',w:700})}${svgT(510,178,'出口企業返本國游說立同一套法',{a:'middle',s:12})}${svgT(510,198,'等唔出口嘅對手都要跟',{a:'middle',s:12})}
+  ${svgT(340,244,'次序：企業先改，立法者後跟',{a:'middle',w:700,s:13})}
+  ${svgT(340,272,'唔係政治協調（條約），亦唔係單邊脅迫（制裁）',{a:'middle',s:12})}
+  ${svgT(340,296,'最大約束：歐盟內部（冇權限、冇偏好、走得甩、拆得開、內部分歧）',{a:'middle',s:12,f:'var(--muted)'})}</svg>`},
+ {id:'v-gdpr',t:'GDPR 點樣行出歐洲',n:'10 §一–三',svg:()=>`<svg viewBox="0 0 680 300" class="vis">${DEFS}
+  ${svgT(170,24,'市場：加州效應',{a:'middle',w:700})}${svgT(510,24,'法律：歐盟額外加嘅保障',{a:'middle',w:700})}
+  ${box(10,40,320,150,'var(--soft)')}${svgT(170,66,'離開歐洲市場唔係選項',{a:'middle',s:12})}${svgT(170,92,'行兩套規則負擔極大',{a:'middle',s:12})}${svgT(170,118,'數據本身流動性高',{a:'middle',s:12})}
+  ${svgT(170,152,'→ 全球跟 GDPR',{a:'middle',s:13,w:700})}${svgT(170,174,'美國用戶都受保護',{a:'middle',s:12})}
+  ${box(350,40,320,150,'var(--accent-soft)')}${svgT(510,66,'地域範圍：針對歐盟客戶都計',{a:'middle',s:12})}${svgT(510,92,'充分性協議：保護水平相當先傳',{a:'middle',s:12})}${svgT(510,118,'貿易協定（私隱盾、JEFTA）',{a:'middle',s:12})}${svgT(510,144,'罰款：營業額 4% 或 2,000 萬歐元',{a:'middle',s:12})}${svgT(510,170,'（以較高者為準）',{a:'middle',s:12})}
+  ${box(10,206,660,80,'var(--card)')}${svgT(340,232,'辯護：冇單方面介入 → 消費者被忽略、逐底競爭（特拉華效應）',{a:'middle',s:12})}
+  ${svgT(340,256,'代價：開咗域外先例；同美國 CLOUD Act 衝突；互聯網碎片化',{a:'middle',s:12})}${svgT(340,276,'建議：重視盡職義務',{a:'middle',s:12,w:700})}</svg>`},
+ {id:'v-extra',t:'直接域外管轄 vs 有域外含意嘅本地措施',n:'11 §二–五',svg:()=>`<svg viewBox="0 0 680 300" class="vis">
+  <line x1="40" y1="70" x2="640" y2="70" stroke="var(--ink)" stroke-width="3"/>
+  ${svgT(40,44,'直接域外管轄',{w:700})}${svgT(640,44,'有域外含意嘅本地措施',{a:'end',w:700})}
+  ${svgT(40,98,'義務加諸冇領土連繫嘅人（Scott）',{s:12})}${svgT(640,98,'有領土連繫：入歐盟市場嘅條件',{a:'end',s:12})}
+  ${svgT(40,118,'歐盟好少用',{s:12,f:'var(--muted)'})}${svgT(640,118,'歐盟經常用',{a:'end',s:12,f:'var(--muted)'})}
+  ${[[560,'基改標籤','只係含意上域外'],[400,'航空碳排 ETS','計成程，但要喺歐盟起降'],[240,'木材 EUTR','有條件嘅單邊行動（VPA）']].map(([x,a,b],k)=>`<circle cx="${x}" cy="70" r="8" fill="var(--accent)"/>${box(x-110,140+k*48,220,40,'var(--soft)')}${svgT(x,158+k*48,a,{a:'middle',w:700,s:12})}${svgT(x,174+k*48,b,{a:'middle',s:11})}`).join('')}
+  ${svgT(340,280,'要睇實質唔係形式：能夠將幾多義務加落生產商身上做入市條件',{a:'middle',s:12})}${svgT(340,298,'三個例子喺軸上嘅位置係示意，唔係筆記嘅排序',{a:'middle',s:11,f:'var(--warn)'})}</svg>`},
+ {id:'v-scharpf',t:'Scharpf：輸入、輸出同多數決後備',n:'歐盟筆記 05 §一–五',svg:()=>`<svg viewBox="0 0 680 340" class="vis">${DEFS}
+  ${box(10,20,320,90,'var(--soft)')}${svgT(170,46,'輸入：由人民管治',{a:'middle',w:700})}${svgT(170,72,'反映人民意志',{a:'middle',s:12})}${svgT(170,94,'要「厚」身份：歐盟冇',{a:'middle',s:12})}
+  ${box(350,20,320,90,'var(--accent-soft)')}${svgT(510,46,'輸出：為人民管治',{a:'middle',w:700})}${svgT(510,72,'有效促進共同福祉',{a:'middle',s:12})}${svgT(510,94,'「薄」身份已夠；要求高、範圍窄',{a:'middle',s:12})}
+  ${svgT(340,138,'輸出嘅四種機制：選舉問責 · 獨立專家 · 統合主義／政府間協議 · 多元政策網絡',{a:'middle',s:12})}
+  ${box(10,156,320,80,'var(--good-soft)')}${svgT(170,182,'國家層面',{a:'middle',w:700})}${svgT(170,206,'專家判斷可以被民選者推翻',{a:'middle',s:12})}${svgT(170,224,'（多數決後備）',{a:'middle',s:12})}
+  ${box(350,156,320,80,'var(--bad-soft)')}${svgT(510,182,'歐洲層面',{a:'middle',w:700})}${svgT(510,206,'冇後備：越獨立，',{a:'middle',s:12})}${svgT(510,224,'正當化力量越弱',{a:'middle',s:12})}
+  ${svgT(340,262,'所以歐洲政策只有三條路：',{a:'middle',w:700,s:13})}
+  ${svgT(340,286,'低調（司法造法 → 負面整合）· 避衝突（委員會程序）· 借國家正當性（理事會易卡死）',{a:'middle',s:12})}
+  ${svgT(340,314,'全球化 ＋ 負面整合 → 監管競爭似囚徒困境',{a:'middle',s:12,f:'var(--muted)'})}</svg>`}
+];
+function visuals(){
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">圖解 · ${VIS.length} 幅</span><h2>一幅圖睇一個概念</h2>
+   <p class="muted">每幅圖都對應筆記嘅某幾節。讀「讀懂版」或者玩完關卡之後，用嚟一眼溫返。</p></div>
+   <div class="stack">${VIS.map(v=>`<section class="panel vispanel" id="${v.id}"><div class="row" style="justify-content:space-between"><h3>${v.t}</h3><span class="tag">筆記 ${v.n}</span></div><div class="viswrap">${v.svg()}</div></section>`).join('')}</div>`;
+}
+
+/* ===================== READING NOTES ===================== */
+const LVNAME={swipe:'L1 算唔算監管',lobby:'L2 游說集團',families:'L3 四大家族',price:'L4 一個價兩筆數',judge:'L5 判案小法官',agency:'L6 合定拆',develop:'L7 因地制宜'};
+const cardsIn=(n,s)=>CARDS_DATA.filter(c=>c.n===n&&c.s===s);
+function notesPage(note){
+  note=note||NOTE_ORDER[0];
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  const m=NOTES_META[note];
+  const secs=NOTES.filter(x=>x.k.startsWith(note+'-'));
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">讀懂版 · 逐節淺白講解</span>
+    <div class="tabs">${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div></div>
+   <div class="panel stack"><h2>${note} ${m.t}</h2><p><b>呢篇問：</b>${m.q}</p><p class="muted">${m.read}</p></div>
+   <div class="stack" style="margin-top:14px">${secs.map(x=>{const n=+x.k.split('-')[1];const cs=cardsIn(note,n);const kn=cs.filter(c=>known[c.id]).length;
+     return `<section class="panel notesec" id="${x.k}">
+      <div class="row" style="justify-content:space-between"><h3>§${n} ${x.t}</h3>
+        <label class="readchk"><input type="checkbox" id="rd-${x.k}" data-k="${x.k}" ${read[x.k]?'checked':''}> 已讀</label></div>
+      <div class="nbody">${x.b}</div>
+      <div class="row links"><a class="chip" href="#lesson-${note}">▶ ${LNAME[note]}</a>
+        ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">◩ 圖：${VIS.find(z=>z.id===v).t}</a>`).join('')}
+        <a class="chip" href="#cards-${note}-${n}">▣ 呢節 ${cs.length} 張卡（識咗 ${kn}）</a></div></section>`}).join('')}</div>`;
+  app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash='notes-'+b.dataset.n;});
+  app.querySelectorAll('.readchk input').forEach(c=>c.onchange=()=>{const o=store.get().read||{};o[c.dataset.k]=c.checked;store.set('read',o);});
+  bindVisLinks();
+}
+function bindVisLinks(){app.querySelectorAll('[data-vis]').forEach(a=>a.onclick=e=>{e.preventDefault();const id=a.dataset.vis;location.hash='visuals';setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({block:'start'});},60);});}
+
+/* ===================== FLASHCARDS ===================== */
+const TYPE_ZH={action:'行動',fact:'事實',definition:'定義',conceptual:'概念',cause:'因果',evaluation:'評價',normative:'主張'};
+function cardsPage(arg){
+  const [note,sec]=(arg||'').split('-');
+  const pool=CARDS_DATA.filter(c=>(!note||c.n===note)&&(!sec||c.s===+sec));
+  let mode='unknown', order=[], idx=0, flipped=false;
+  function build(){
+    const known=store.get().known||{};
+    order=pool.filter(c=>mode==='all'||!known[c.id]).map(c=>c.id);
+    idx=0; flipped=false;
+  }
+  function shuffle(){for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;flipped=false;render();}
+  function render(){
+    const known=store.get().known||{};
+    const kn=pool.filter(c=>known[c.id]).length;
+    const scope=note?`${note} ${NOTES_META[note].t}${sec?` · §${sec} ${NOTES.find(x=>x.k===note+'-'+sec).t}`:''}`:'全部筆記';
+    let card='';
+    if(!order.length){ card=`<div class="fcard done"><div><h3>呢副卡你已經全部識晒 🎉</h3><p class="muted">轉「全部卡」可以再溫一次。</p></div></div>`; }
+    else{
+      const c=CARDS[order[idx]];
+      card=`<div class="fcard ${flipped?'flip':''}" id="fc" tabindex="0" role="button" aria-label="撳一下反卡">
+        ${!flipped?`<div class="ff"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fq">${c.f}</div><span class="muted" style="font-size:13px">撳一下（或者按空白鍵）睇答案</span></div>`
+        :`<div class="fb"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fa">${c.b}</div><blockquote>“${c.q}”</blockquote><span class="src">原文出處：${c.loc}</span></div>`}
+      </div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn ghost" id="bad">✗ 未識，等陣再嚟</button><button class="btn primary" id="good">✓ 識咗</button></div>`;
+    }
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">快速卡 · ${scope}</span>
+      <div class="tabs"><button class="tab ${!note?'on':''}" data-n="">全部</button>${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div>
+      <div class="row" style="justify-content:space-between"><span class="muted">呢副 ${pool.length} 張 · 識咗 ${kn} · 呢輪剩 ${order.length?order.length-idx:0}</span>
+      <div class="row"><button class="btn ghost sm" id="mode">${mode==='all'?'只溫未識':'全部卡'}</button><button class="btn ghost sm" id="shuf">洗牌</button><button class="btn ghost sm" id="reset">清除「識咗」</button></div></div>
+      <div class="progress"><i style="width:${pool.length?kn/pool.length*100:0}%"></i></div></div>
+      ${card}
+      <p class="muted" style="margin-top:14px;font-size:13.5px">卡面係我寫嘅問題；卡背係筆記入面嘅原子命題（中文）同原文英文引文，一字不改。卡背會出現人名，你唔使記，專心睇論點就得。</p>`;
+    app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash=b.dataset.n?'cards-'+b.dataset.n:'cards';});
+    $('#mode').onclick=()=>{mode=mode==='all'?'unknown':'all';build();render();};
+    $('#shuf').onclick=shuffle;
+    $('#reset').onclick=()=>{const k=store.get().known||{};pool.forEach(c=>delete k[c.id]);store.set('known',k);build();render();};
+    const fc=$('#fc'); if(fc){ fc.onclick=()=>{flipped=!flipped;render();$('#fc')&&$('#fc').focus();}; fc.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();fc.click();}}; }
+    const g=$('#good'), b=$('#bad');
+    if(g) g.onclick=()=>{const k=store.get().known||{};k[order[idx]]=true;store.set('known',k);next(true);};
+    if(b) b.onclick=()=>next(false);
+  }
+  function next(ok){ if(!ok){ order.push(order[idx]); } idx++; flipped=false; if(idx>=order.length){ build(); } render(); }
+  build(); render();
+}
+
+/* ===================== PROGRESS MAP ===================== */
+function mapPage(){
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  let tot=0, done=0;
+  const rows=NOTE_ORDER.map(n=>{
+    const secs=NOTES.filter(x=>x.k.startsWith(n+'-'));
+    return `<tr class="nh"><td colspan="5"><b>${n} ${NOTES_META[n].t}</b></td></tr>`+secs.map(x=>{
+      const s=+x.k.split('-')[1], cs=cardsIn(n,s), kn=cs.filter(c=>known[c.id]).length;
+      const lvDone=!!(st.done&&st.done['l'+n]);
+      const ok=read[x.k]&&kn===cs.length&&lvDone; tot++; if(ok) done++;
+      return `<tr><td><a href="#notes-${n}" data-sec="${x.k}">§${s} ${x.t}</a></td>
+        <td class="c">${read[x.k]?'✓':'—'}</td>
+        <td class="c mono">${kn}/${cs.length}</td>
+        <td><a class="chip ${lvDone?'ok':''}" href="#lesson-${n}">${LNAME[n]}${lvDone?' ✓':''}</a>
+          ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">圖</a>`).join(' ')}</td>
+        <td class="c">${ok?'<span class="okb">掌握</span>':''}</td></tr>`}).join('');
+  }).join('');
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">進度地圖 · 筆記每一節都喺度</span><h2>${done} / ${tot} 節已經全部做完</h2>
+    <p class="muted">一節要「讀懂版已讀」＋「嗰節嘅卡全部識咗」＋「嗰篇嘅課完成」，先算掌握。撳節名會跳去嗰節嘅讀懂版。</p>
+    <div class="progress"><i style="width:${done/tot*100}%"></i></div></div>
+    <div class="tablewrap"><table class="map"><thead><tr><th>節</th><th>讀懂版</th><th>卡</th><th>課／圖</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  app.querySelectorAll('[data-sec]').forEach(a=>a.onclick=e=>{e.preventDefault();const k=a.dataset.sec;location.hash='notes-'+k.split('-')[0];setTimeout(()=>{const el=document.getElementById(k);if(el)el.scrollIntoView({block:'start'});},60);});
+  bindVisLinks();
+}
+
+return {visuals,notesPage,cardsPage,mapPage};
+}
+(() => {
+const $=(s,el=document)=>el.querySelector(s);
+const app=$('#app');
+const MINE='<span class="mine">例子係我作嘅</span>';
+const MYNUM='<span class="mine">數字係我設嘅</span>';
+const KEY='reglab-10p2';
+const store={get(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}},
+  set(k,v){const o=this.get();o[k]=v;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}};
+const saveAll=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
+window.__S={store,$};
+const S=()=>Object.assign({xp:0,done:{},streak:0,last:null},store.get());
+function bumpStreak(st){const d=new Date();const today=d.toISOString().slice(0,10);
+  if(st.last===today) return; const y=new Date(d-864e5).toISOString().slice(0,10);
+  st.streak=(st.last===y)?st.streak+1:1; st.last=today;}
+const noteBody=k=>{const n=NOTES.find(x=>x.k===k);return n?{t:n.t,b:n.b}:null;};
+
+/* ---------- shared chart ---------- */
+function chart(P,MC,opt={}){
+  const W=340,H=250,L=34,B=26,T=8,R=8,x=q=>L+(q/100)*(W-L-R),y=p=>H-B-(p/100)*(H-B-T);
+  P=Math.max(P,MC); const Q=100-P;
+  const show=opt.show||['cs','c','a'];
+  let g='';
+  [0,20,40,60,80,100].forEach(t=>{g+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-5}" y="${y(t)+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`;});
+  if(show.includes('cs')) g+=`<polygon points="${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--cs)" fill-opacity="${opt.dim==='cs'?.15:.5}"/>`;
+  if(show.includes('c')&&P>MC) g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="${opt.cColor||'var(--cc)'}" fill-opacity=".65"/>`;
+  if(show.includes('a')&&P>MC) g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(100-MC)},${y(MC)}" fill="var(--aa)" fill-opacity=".8"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+13}" text-anchor="end" font-size="11" fill="var(--ink)">成本 ${MC}</text>`;
+  if(opt.old) g+=`<line x1="${x(0)}" y1="${y(opt.old)}" x2="${x(100)}" y2="${y(opt.old)}" stroke="var(--muted)" stroke-dasharray="2 4"/><text x="${x(100)}" y="${y(opt.old)-4}" text-anchor="end" font-size="10" fill="var(--muted)">合併前成本 ${opt.old}</text>`;
+  g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${x(Q)}" cy="${y(P)}" r="6" fill="var(--accent)"/>`;
+  g+=`<text x="${x(Q)+8}" y="${y(P)-6}" font-size="12" font-weight="700" fill="var(--accent)">售價 ${P}</text>`;
+  if(show.includes('cs')&&Q>10) g+=`<text x="${x(Q*.2)}" y="${y((100+P)/2)+16}" font-size="13" font-weight="900" fill="var(--ink)">CS</text>`;
+  if(show.includes('c')&&P-MC>7) g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+5}" text-anchor="middle" font-size="14" font-weight="900" fill="var(--ink)">C</text>`;
+  if(show.includes('a')&&P-MC>12) g+=`<text x="${x(Q+(100-MC-Q)/3)}" y="${y(MC+(P-MC)/3)+5}" text-anchor="middle" font-size="13" font-weight="900" fill="var(--ink)">A</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="需求線、成本線同售價">${g}</svg>`;
+}
+const calc=(P,MC)=>{P=Math.max(P,MC);const Q=100-P;return{Q,CS:.5*Q*(100-P),C:(P-MC)*Q,A:.5*(P-MC)**2,TW:.5*Q*(100-P)+(P-MC)*Q};};
+const f=n=>Math.round(n).toLocaleString('en');
+
+/* ---------- widgets ---------- */
+const W={ brussels(el,done){
+  /* Story: a 海島國 toy factory (note 09's example: 30% of output sold to Europe).
+     My numbers: output 100 萬件/年; EU standard costs +$2/件; a second production line costs $160 萬/年 (or $10 萬 if production is easy to split). */
+  let s=30, cheap=false, step=0;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>海島國一間玩具廠，每年出 <b>100 萬件</b>，三成賣去歐洲（例子出自筆記）。歐盟禁咗某種塑化劑。開兩條線（歐洲版＋其他版），定全部改用歐盟版？</p>
+   <p class="muted" style="font-size:13px">我設嘅數：歐盟版每件貴 $2；第二條線每年要 $160 萬。${MYNUM}</p></div>
+   <div class="lbl"><span>賣去歐洲嘅比例</span><span class="mono" id="sv"></span></div>
+   <input type="range" id="ss" min="0" max="100" step="5" value="30" aria-label="賣去歐洲嘅比例">
+   <div class="tog" id="tg"><button data-v="0" class="on">生產拆唔開（第二條線 $160 萬）</button><button data-v="1">生產好易拆（第二條線 $10 萬）</button></div>
+   <div class="barrow"><span>全部用<br>歐盟版</span><span class="track"><i id="b1" style="background:var(--accent)"></i></span><span class="mono" id="v1"></span></div>
+   <div class="barrow"><span>開兩條線</span><span class="track"><i id="b2" style="background:var(--cc)"></i></span><span class="mono" id="v2"></span></div>
+   <p id="vd" style="font-weight:700;min-height:28px"></p>
+   <div class="task" id="tk">🎯 喺「拆唔開」之下，搵出全部用歐盟版開始抵過兩條線嘅比例</div><div id="qq"></div></div>`;
+  const up=()=>{const fix=cheap?10:160, one=200, two=fix+2*s; const mx=Math.max(one,two,1);
+   $('#sv',el).textContent=s+'%';$('#b1',el).style.width=one/380*100+'%';$('#b2',el).style.width=two/380*100+'%';
+   $('#v1',el).textContent='$'+one+' 萬';$('#v2',el).textContent='$'+two+' 萬';
+   el.querySelectorAll('#tg button').forEach(b=>b.classList.toggle('on',+b.dataset.v===+cheap));
+   $('#vd',el).textContent=one<two?'👉 全部改用歐盟版較平：全世界都用歐盟標準（事實上嘅布魯塞爾效應）':one===two?'兩邊一樣':'👉 開兩條線較平：歐盟標準只留喺歐洲';
+   if(step===0&&!cheap&&s===20){step=1;$('#tk',el).innerHTML='✓ 20% 打和；超過 20%（例如筆記例子嘅 30%）全部用歐盟版就較平。🎯 而家撳「生產好易拆」';}
+   if(step===1&&cheap){step=2;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 第二條線好平，要九成半以上賣去歐洲先值得全改：歐盟標準留喺歐洲。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">咁按 Bradford，幾時布魯塞爾效應唔大可能出現？</p><div class="opts"><button class="opt" data-o="a">企業按唔同規則調整生產嘅成本低嘅時候</button><button class="opt" data-o="b">歐盟市場好大嘅時候</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='a';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>產品拆得開，效應就停喺歐洲：例如 Microsoft 推出冇瀏覽器嘅歐洲版 Windows 7 E、汽車、DVD 分區碼。全球合併就相反：法律上拆唔開，最嚴嘅管轄區話晒事。</p><span class="src">出處：筆記 09 §二、§五</span></div>`:`<div class="fb hint"><p>💡 你啱啱見到：市場份額唔變，只係第二條線變平，結果就變咗。</p></div>`; if(ok) done(true);});}};
+  $('#ss',el).oninput=e=>{s=+e.target.value;up();};
+  el.querySelectorAll('#tg button').forEach(b=>b.onclick=()=>{cheap=b.dataset.v==='1';up();});up();
+ },
+ fallback(el,done){
+  let lvl='nat'; const seen=new Set(); let asked=false;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>一個獨立專家機構（例如央行或競爭機關）一連串嘅決定，明顯違反廣大多數人嘅強烈偏好。之後會點？</p></div>
+   <div class="tog" id="tg"><button data-v="nat" class="on">🏛️ 國家層面</button><button data-v="eu">🇪🇺 歐洲層面</button></div>
+   <div id="out" style="margin:12px 0;padding:12px;border-radius:14px;background:var(--card);border:2px solid var(--line);min-height:110px"></div>
+   <div class="task" id="tk">🎯 兩個層面都睇吓</div><div id="qq"></div></div>`;
+  const up=()=>{el.querySelectorAll('#tg button').forEach(b=>b.classList.toggle('on',b.dataset.v===lvl));seen.add(lvl);
+   $('#out',el).innerHTML=lvl==='nat'?`<b>向選民問責嘅官員可以推翻專家判斷。</b><p style="margin:6px 0 0">Bundesbank、聯儲局、Kartellamt、美國獨立監管委員會都可以由普通立法修正：非多數決機構背後有一個<b>多數決後備</b>。</p><span class="src">出處：歐盟筆記 05 §四</span>`
+    :`<b>冇呢個後備。</b><p style="margin:6px 0 0">歐洲嘅非多數決機制更加獨立、冇得被政治推翻，所以正當化力量反而一齊減弱；政治上顯著嘅決定，正當性就要靠有效達成共識目標。</p><span class="src">出處：歐盟筆記 05 §四</span>`;
+   if(seen.size===2&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 分別就喺「多數決後備」。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">咁歐洲政策要有效，Scharpf 話其中一條路係？</p><div class="opts"><button class="opt" data-o="a">低於政治能見度嘅門檻、避開反對（例如司法造法）</button><button class="opt" data-o="b">每項政策都搞歐洲公投</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==='a';b.classList.add(ok?'right':'wrong');
+     $('#fb',el).innerHTML=ok?`<div class="fb ok"><b class="t">啱！</b><p>另外兩條：搵減少衝突嘅方案（委員會程序、政策網絡）；借國家同地方政府嘅正當性。Scharpf 喺註 4 講明，唔相信歐洲範圍公投可以大大加強正當性。</p><span class="src">出處：筆記 e5 §二、§五</span></div>`:`<div class="fb hint"><p>💡 Scharpf 唔相信歐洲範圍嘅公投可以大大加強正當性。</p></div>`; if(ok) done(true);});}};
+  el.querySelectorAll('#tg button').forEach(b=>b.onclick=()=>{lvl=b.dataset.v;up();});up();
+ }
+};
+
+/* ---------- lessons ---------- */
+/* ===== Folder 10 · Part 2 lessons (Week 5: notes 09, 10, 11 + EU 03/05 Scharpf) ===== */
+const SCENE_TAG='<p class="muted" style="font-size:14px">情境係我作嘅（海島國係虛構），概念全部出自筆記。</p>';
+const B1={id:'l09',note:'09',icon:'1',name:'布魯塞爾效應',sub:'筆記 09 · 約 7 分鐘',screens:[
+ {type:'story',h:'歐盟冇簽條約都管到你',html:`<div class="scene"><div class="big">🧸</div><p>海島國玩具商會來電：「歐盟禁咗一種塑化劑，我哋又冇同歐盟簽過條約，點解要跟？」你要解釋乜嘢係「布魯塞爾效應」。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'第三條路',lead:'Bradford 將布魯塞爾效應擺喺邊兩種全球化中間？',
+  opts:['政治全球化（條約）同單邊脅迫（制裁）','私營化同國有化'],ans:0,hint:'歐盟冇主動強加，亦冇談判。',
+  ex:'推動嘅係企業：想同歐盟做生意就要跟歐盟標準，否則放棄成個市場。佢叫呢個做「單邊監管全球化」。',deep:'09-1',src:'筆記 09 §一'},
+ {type:'match',h:'兩種效應',lead:'配對。',pairs:[['事實上（de facto）','企業喺全世界都用返同一套歐盟標準'],['法律上（de jure）','出口企業返本國游說政府立同一套法'],['加州效應（Vogel）','加州市場大又嚴，有時定咗全美標準']],deep:'09-1',src:'筆記 09 §一'},
+ {type:'flips',h:'五個條件',lead:'撳開睇。',items:[
+  ['🛒 市場力量','大本土市場（歐盟：世界最大進口市場），但唔會自動變成規管權力。'],
+  ['🏗️ 監管能力','有制度結構有效制定同執行規例；只限成員國交咗權限畀歐盟嘅範疇。'],
+  ['🔒 偏好嚴格','嚴到單憑「最嚴」就壓過寬鬆標準。'],
+  ['⚓ 管走唔甩嘅對象','消費市場搬唔走；資本可以走。'],
+  ['🔗 拆唔開','法律上、技術上或經濟上冇辦法喺唔同市場維持唔同標準。']],deep:'09-2',src:'筆記 09 §二'},
+ {type:'widget',h:'一條線定兩條線？',lead:'拉動滑桿。',w:'brussels',deep:'09-2|09-5'},
+ {type:'mcq',h:'GE/Honeywell',lead:'兩間美國公司合併，美國批咗、歐盟禁咗。結果點？',
+  opts:['合併唔可以逐個國家完成，歐盟話晒事','美國嘅批准優先'],ans:0,hint:'法律上拆唔開。',
+  ex:'Bradford：歐盟反壟斷法經常成為事實上嘅全球標準。分別唔在能力，而在偏好。',deep:'09-2|09-3',src:'筆記 09 §二、§三'},
+ {type:'sort',h:'效應完唔完全？',lead:'分類。',cats:['好強／全球','有限或唔完全'],items:[
+  ['全球合併（反壟斷）',0,'法律上拆唔開。'],['REACH 化學品：「冇數據，冇市場」',0,'拆唔開來自規模經濟；法律上效應較有限。'],
+  ['基改生物',1,'美國喺 WTO 告贏，但部分美國農夫索性只種歐盟批准嘅品種：唔完全。'],
+  ['Windows 7 E（冇瀏覽器歐洲版）',1,'產品拆得開。']],deep:'09-3|09-5',src:'筆記 09 §三、§五'},
+ {type:'mcq',h:'點解係歐盟？',lead:'美國較怕「假陽性」規例（管錯咗）。歐盟就較怕……',
+  opts:['唔行動嘅成本同「假陰性」（應管而唔管）','規例太多'],ans:0,hint:'預防原則。',
+  ex:'歐盟厭惡風險、承諾社會市場經濟，奉行預防原則。中國嘅監管能力同保護意願冇隨經濟一齊快速增長。',deep:'09-4',src:'筆記 09 §四'},
+ {type:'mcq',h:'規管帝國主義？',lead:'Bradford 話最有說服力嘅動機係……',
+  opts:['刻意統治世界','內部動機：保住單一市場，對外影響係副產品'],ans:1,hint:'成員國規則唔一致威脅單一市場。',
+  ex:'佢話「規管帝國主義」嘅指控係誤導。協調標準往往係先行成員國嘅偏好，再由效應帶去第三國。',deep:'09-4',src:'筆記 09 §四'},
+ {type:'mcq',h:'邊個限制到歐盟？',lead:'外部限制（市場、其他國家、WTO）好弱。最大嘅約束喺邊？',
+  opts:['美國','歐盟內部'],ans:1,hint:'冇權限、冇偏好、內部分歧。',
+  ex:'例如金融交易稅：英國反對，冇監管傾向。市場推動協調比政治協調有優勢：締約成本低、執行成本有限。',deep:'09-5',src:'筆記 09 §五'},
+ {type:'mcq',h:'好定唔好？',lead:'如果其他地方嘅規例本來已經最適當，布魯塞爾效應會……',
+  opts:['令全球監管過高、損害全球福利','一定改善福利'],ans:0,hint:'睇其他地方原本嘅規則。',
+  ex:'相反，如果其他地方太寬鬆或執行太弱，單邊監管全球化可能係凌駕偏低規例嘅可取方法。Bradford 話篇文係描述性，刻意唔判。',deep:'09-6',src:'筆記 09 §六'},
+ {type:'review',h:'快速溫習',ids:[1,2,3,4,12,14,17]}
+],take:['布魯塞爾效應：靠市場，唔靠條約或脅迫；企業先改、立法者後跟。','五個條件：市場、能力、嚴格偏好、管走唔甩嘅對象、拆唔開。','動機係內部（單一市場）；最大約束亦喺內部。','好唔好睇其他地方原本嘅規則。']};
+
+const B2={id:'l10',note:'10',icon:'2',name:'GDPR 行出歐洲',sub:'筆記 10 · 約 5 分鐘',screens:[
+ {type:'story',h:'一個 app 兩個版本？',html:`<div class="scene"><div class="big">📱</div><p>海島國一間 app 公司開始有歐洲用戶。工程師問：「歐洲用戶要預設唔追蹤，我哋要唔要寫兩個版本？」</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'大公司點揀？',lead:'大部分全球營運嘅數碼服務供應商點樣回應 GDPR？',
+  opts:['只係對歐洲客戶跟','聲稱全球都跟 GDPR 標準'],ans:1,hint:'筆記例子：app 公司索性全球預設唔追蹤。',
+  ex:'美國用戶冇投過票，都受咗歐洲規則保護。',deep:'10-1|10-2',src:'筆記 10 §一、§二'},
+ {type:'match',h:'消極定積極整合？',lead:'按 Scharpf 嘅分法配對。',pairs:[['消極整合（市場建構）','統一以前限制歐洲內部數據流動嘅零碎規例'],['積極整合（市場塑造）','畀資料當事人權利、對處理者加義務']],deep:'10-1',src:'筆記 10 §一'},
+ {type:'mcq',h:'加州效應',lead:'1980 年代加州訂嚴格汽車排放標準，車廠最後點做？',
+  opts:['行一套較高標準服務全部市場','行兩套標準'],ans:0,hint:'一套平過兩套。',
+  ex:'資料保護今日一樣：離開歐洲市場唔係選項，兩套規則負擔極大，數據又流動。作者加條件：長遠睇 GDPR 喺歐盟內執行得幾嚴。',deep:'10-2',src:'筆記 10 §二'},
+ {type:'flips',h:'單靠市場唔夠',lead:'歐盟仲加咗乜？撳開睇。',items:[
+  ['🌐 地域範圍','涵蓋歐盟境內所有處理，同埋喺外地處理、直接針對歐盟客戶或向佢哋賣廣告嘅情況。'],
+  ['✅ 充分性協議','容許將個人資料傳去保護水平同歐盟相當嘅第三國；Schrems 之後要睇法律上同事實上兩面。'],
+  ['💶 罰款','最高全年營業額 4% 或 2,000 萬歐元，以較高者為準。']],deep:'10-3',src:'筆記 10 §三'},
+ {type:'mcq',h:'點樣辯護？',lead:'作者話，冇國家單方面介入，消費者利益會點？',
+  opts:['好易被忽略，陷入逐底競爭（特拉華效應）','自然受保護'],ans:0,hint:'組織良好嘅資本 vs 分散嘅消費者（Olson）。',
+  ex:'所以對外效應嘅替代品唔係民主或良好管治，而係市場主導、唔理消費者。',deep:'10-4',src:'筆記 10 §四'},
+ {type:'mcq',h:'代價',lead:'歐盟透過 GDPR 開咗咩先例？',
+  opts:['有影響力嘅域外適用先例，雖然以前批評過美國咁做','冇任何先例'],ans:0,hint:'美國 CLOUD Act 係平行例子。',
+  ex:'作者預計其他主要經濟體會更願意立有域外效力嘅法律，助長碎片化；建議重視盡職義務，當作國際關係嘅最低公分母。',deep:'10-5',src:'筆記 10 §五'},
+ {type:'review',h:'快速溫習',ids:[21,22,23,25,29,31]}
+],take:['GDPR 既係市場建構，亦係市場塑造。','加州效應：一套高標準平過兩套。','歐盟仲用地域範圍、充分性協議同貿易協定。','辯護：保護消費者、對抗逐底競爭；代價：域外先例同碎片化。']};
+
+const B3={id:'l11',note:'11',icon:'3',name:'歐盟環境法點樣伸出境外',sub:'筆記 11 · 約 5 分鐘',screens:[
+ {type:'story',h:'木材出口商嘅煩惱',html:`<div class="scene"><div class="big">🪵</div><p>海島國有木材出口商賣去歐洲，突然要做盡職審查、保存追溯紀錄。佢問：「歐盟管到我哋森林咩？」</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'歐盟點做？',lead:'Diz 同 Araújo 話歐盟……',
+  opts:['經常直接聲稱域外管轄','好少直接聲稱域外管轄，多數靠本身冇域外元素嘅本地法'],ans:1,hint:'做法細緻得多。',
+  ex:'所以域外問題要睇實質：一套框架有幾大能力將義務加落生產商身上，做入市條件。',deep:'11-1',src:'筆記 11 §一'},
+ {type:'mcq',h:'Scott 嘅標準',lead:'一項措施幾時算「域外」？',
+  opts:['將義務加諸同立法國冇相關領土連繫嘅人','只要影響到外國人'],ans:0,hint:'睇領土連繫。',
+  ex:'有域外含意嘅本地措施同本國有領土連繫，但一樣影響外國行為。',deep:'11-2',src:'筆記 11 §二'},
+ {type:'sort',h:'放喺邊？',lead:'分類。',cats:['有域外含意嘅本地措施（有領土連繫）','冇領土連繫，算域外'],items:[
+  ['基改產品要追溯同標籤，先入得歐盟市場',0,'唔入歐盟市場就唔受管，只係含意上「域外」。'],
+  ['航空 ETS：計埋歐盟空域以外嘅排放',0,'有域外元素，但航班一定喺歐盟機場起降。'],
+  ['將義務加諸同歐盟冇任何領土連繫嘅人',1,'Scott 嘅定義。']],deep:'11-2|11-4',src:'筆記 11 §二、§四'},
+ {type:'mcq',h:'點解行得通？',lead:'作者話歐盟單邊推動環境全球治理嘅能力，同乜有因果關係？',
+  opts:['歐盟市場力量','歐盟軍力'],ans:0,hint:'消費市場避唔到。',
+  ex:'危險廢物係反例：生產商有路走。所以歐盟集中規管同消費市場掛鈎嘅範疇。筆記嘅例子：商場要求租戶標明致敏原，連鎖店全線分店都跟。',deep:'11-3',src:'筆記 11 §三'},
+ {type:'flips',h:'木材規例（EUTR）',lead:'撳開睇。',items:[
+  ['📋 三個義務','禁止非法木材上市；盡職審查（風險評估）；保存追溯紀錄。'],
+  ['🤝 有條件','簽咗自願夥伴協議（VPA）攞 FLEGT 許可證就可以避開禁令。'],
+  ['❓ CBDR','符唔符合「共同但有區別責任」仍然成疑；Morgera 話歐盟係共同創造者，亦有學者話只係化約式參與。作者兩邊都報告。']],deep:'11-5',src:'筆記 11 §五'},
+ {type:'mcq',h:'公平嗎？',lead:'作者話歐盟標準唔一定帶嚟公平競爭。原因之一係……',
+  opts:['歐盟公司有資助、補助同貸款幫手符合標準，非歐盟公司原則上冇','非歐盟公司標準更高'],ans:0,hint:'保護水平同資源錯配。',
+  ex:'入市機會冇真正去到所有非歐盟國家；保護環境嘅論述同保護本地市場之間有二分。',deep:'11-6',src:'筆記 11 §六'},
+ {type:'review',h:'快速溫習',ids:[36,37,38,39,45,48]}
+],take:['歐盟好少直接域外管轄，多數靠有域外含意嘅本地措施。','睇實質唔係形式：入市條件可以加幾多義務。','能力同市場力量有因果關係。','EUTR：有條件單邊行動；CBDR 同公平競爭仍有疑問。']};
+
+const B4={id:'le5',note:'e5',icon:'4',name:'歐盟嘅正當性：輸入同輸出',sub:'歐盟筆記 05 · 約 6 分鐘',screens:[
+ {type:'story',h:'點解要聽布魯塞爾？',html:`<div class="scene"><div class="big">🗳️</div><p>海島國報紙社論：「歐盟官員冇人選過，憑乜管全世界？連歐洲人自己都質疑。」你搵 Scharpf 嚟答：正當性有兩副面孔。</p>${SCENE_TAG}</div>`},
+ {type:'match',h:'兩副面孔',lead:'用筆記嘅屋苑例子配對。',pairs:[['輸入：由人民管治','業主大會投票揀咗管理公司，所以佢有資格管'],['輸出：為人民管治','管得好、電梯唔壞，所以大家收貨']],deep:'e5-1',src:'歐盟筆記 05 §一（例子出自筆記）'},
+ {type:'mcq',h:'多數決點解可以接受？',lead:'Scharpf 話少數肯接受多數話事，前提係……',
+  opts:['大家有「厚」集體身份，偏好入面計埋所有人嘅福祉','多數人比較聰明'],ans:0,hint:'相信「我哋」本質上一樣。',
+  ex:'歐盟離呢種厚身份仲好遠；冇呢個，制度改革都唔會大大增加多數決決定嘅輸入正當性。',deep:'e5-2',src:'歐盟筆記 05 §二'},
+ {type:'mcq',h:'輸出呢？',lead:'輸出正當性需要乜身份？',
+  opts:['「薄」身份已夠：覺得有一段夠闊、夠穩定嘅共同利益','一樣要厚身份'],ans:0,hint:'以利益為基礎。',
+  ex:'代價：制度上要求更高、實質範圍更有限。',deep:'e5-3',src:'歐盟筆記 05 §三'},
+ {type:'widget',h:'專家出錯，邊個推翻？',lead:'轉吓層面。',w:'fallback',deep:'e5-4|e5-5'},
+ {type:'mcq',h:'低調嘅代價',lead:'歐洲法院司法造法呢種幾乎睇唔見嘅權力，主要只可以用嚟……',
+  opts:['擴展負面整合：禁止國家設置自由市場障礙','做正面整合'],ans:0,hint:'正面整合要理事會同議會作政治上更顯眼嘅決定。',
+  ex:'各國政府利益衝突時，政治上顯著嘅政策好可能喺部長理事會被卡住。',deep:'e5-5',src:'歐盟筆記 05 §五'},
+ {type:'mcq',h:'全球化同負面整合',lead:'Scharpf 話各國監管制度之間嘅競爭似乜？',
+  opts:['囚徒困境：個個都向資本同商界讓步多過原本想','合作遊戲'],ans:0,hint:'歐盟成員國連偏袒本國生產者嘅選項都冇咗。',
+  ex:'經濟全球化對國家政策嘅限制，喺歐共體入面被負面整合嘅法律效力再收緊。呢點同 Bendiek 同 Römer 講嘅逐底競爭可以對照。',deep:'e5-6',src:'歐盟筆記 05 §六；連結係我整嘅'},
+ {type:'review',h:'快速溫習',ids:[50,52,54,56,61,62,65,69]}
+],take:['輸入（由人民）要厚身份，歐盟冇；輸出（為人民）薄身份已夠，但要求高、範圍窄。','國家層面專家背後有多數決後備；歐洲冇。','歐洲政策三條路：低調、避衝突、借國家正當性。','全球化＋負面整合 → 監管競爭似囚徒困境。']};
+
+const LESSONS=[B1,B2,B3,B4];
+
+
+const LNAME={};LESSONS.forEach((l,k)=>{LNAME[l.note]=`第 ${k+1} 課：${l.name}`;});window.__S.LNAME=LNAME;
+
+
+/* ---------- home ---------- */
+const GROUPS={"0": "一、歐盟單方面輸出規則", "3": "二、歐盟憑乜正當"};
+function home(){
+  const st=S();
+  const open=k=>k===0||st.done[LESSONS[k-1].id];
+  const allDone=LESSONS.every(l=>st.done[l.id]);
+  const nodes=LESSONS.map((l,k)=>{const d=st.done[l.id],o=open(k);
+    return (GROUPS[k]?`<div class="grp">${GROUPS[k]}</div>`:'')+`<div class="node ${d?'done':o?'open':'locked'}"><button class="dot" data-l="${k}" ${o?'':'disabled'} aria-label="${l.name}">${d?'✓':o?l.icon:'🔒'}</button><div class="nm">${l.name}</div><div class="sub">${l.sub}</div></div>`;}).join('');
+  app.innerHTML=`<div class="home">
+   <div class="stats"><a href="../" class="brand" style="text-decoration:none;color:inherit" aria-label="返去課程目錄">⌂ 國際規則 · 2</a><span class="pills"><span class="pill" title="連續學習日數">🔥 ${st.streak}</span><span class="pill" title="經驗值">⭐ ${st.xp}</span><button class="pill" id="menu" aria-label="選單">☰</button></span></div>
+   <div class="course"><span class="eyebrow">Regulatory Law · 國際規則制定 · Part 2 / 2 · 第 5 週 · 4 課</span><h1>歐盟點樣將規則推出歐洲</h1>
+    <p class="muted">跟 7FFLL582 第 5 週（The EU as a regulatory state）嘅延伸閱讀：布魯塞爾效應（Bradford）、GDPR 點樣影響全世界（Bendiek 同 Römer）、歐盟環境法點樣伸出境外（Diz 同 Araújo），加上歐盟 vault 嘅 Scharpf：歐盟管治憑乜正當。第 5 週其餘讀物（Majone 1994、Cardwell、Townley 第 2 章、Finger、Wilks）已經喺「規管型國家」Part 1 至 3。故事接住 Part 1：海島國嘅企業發現，歐盟冇同佢哋簽條約都管到佢哋。</p>
+    <p class="muted" style="font-size:14px;margin-top:8px"><b>用法：</b>玩一課 → 好奇就撳「📖 想深入啲」→ 課尾溫卡 → 有空喺選單睇圖解同進度地圖。</p>
+    ${Object.keys(st.done).some(k=>st.done[k])?`<button class="review-btn" id="rev">🔁 溫習已學嘅卡</button>`:''}
+    ${allDone?`<p class="okline" style="margin-top:10px">🎉 第 5 週四課全部完成！去「進度地圖」睇吓仲有邊節未掌握。</p>`:''}</div>
+   <div class="path" id="path">${nodes}</div></div>`;
+  app.querySelectorAll('.dot[data-l]').forEach(b=>b.onclick=()=>play(+b.dataset.l));
+  const r=$('#rev'); if(r) r.onclick=reviewAll;
+  $('#menu').onclick=menu;
+}
+function menu(){
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="選單"><div class="grab"></div><h3>選單</h3>
+   <div class="opts">${[['notes','📖 讀懂版：23 節逐節講解'],['cards','🃏 快速卡：70 張，全部原子命題'],['visuals','🗺️ 圖解：4 幅'],['map','📊 進度地圖：邊節掌握咗']].map(([h,t])=>`<a class="opt" href="#${h}" style="text-decoration:none;color:inherit">${t}</a>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d); d.onclick=e=>{if(e.target===d||e.target.closest('a')) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+/* ---------- player ---------- */
+function play(li){
+  const L=LESSONS[li]; let i=0, xp=0, first=0, total=0;
+  function shell(inner,ready,ctaText){
+    const sc=L.screens[i];
+    app.innerHTML=`<div class="top"><button class="x" id="quit" aria-label="離開">✕</button><div class="bar"><i style="width:${i/L.screens.length*100}%"></i></div><span class="xp">⭐ ${xp}</span></div>
+     <div class="screen" id="sc">${inner}</div>
+     <div class="foot">${sc.deep?`<button class="deep" id="deep">📖 想深入啲</button>`:''}<button class="cta ${ready?'go':''}" id="cta" ${ready?'':'disabled'}>${ctaText||'繼續'}</button></div>`;
+    $('#quit').onclick=()=>{location.hash='';home();};
+    if(sc.deep) $('#deep').onclick=()=>drawer(sc.deep);
+    $('#cta').onclick=()=>{i++; i>=L.screens.length?finish():render();};
+  }
+  const ready=()=>{const c=$('#cta');c.disabled=false;c.classList.add('go');};
+  function render(){
+    const sc=L.screens[i]; const head=`<h2>${sc.h}</h2>${sc.lead?`<p class="lead">${sc.lead}</p>`:''}`;
+    if(sc.type==='story'){shell(head+sc.html,true,'開始');return;}
+    if(sc.type==='mcq'){
+      total++; let tries=0;
+      shell(head+`<div class="opts">${sc.opts.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><div id="fb"></div>`,false);
+      app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(b.disabled) return; tries++;
+        if(j===sc.ans){b.classList.add('right'); if(tries===1){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+          app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+          $('#fb').innerHTML=`<div class="fb ok"><b class="t">${tries===1?'啱！':'啱咗！'}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}
+        else{b.classList.add('wrong');b.disabled=true;
+          if(tries===1) $('#fb').innerHTML=`<div class="fb hint"><b class="t">再諗一諗</b><p>💡 ${sc.hint}</p></div>`;
+          else{const r=app.querySelector(`.opt[data-j="${sc.ans}"]`);r.classList.add('right');app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+            $('#fb').innerHTML=`<div class="fb no"><b class="t">答案係：${sc.opts[sc.ans]}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}}
+      }); return;}
+    if(sc.type==='widget'){
+      total++;
+      shell(head+`<div id="w"></div><div id="aft"></div>`,false);
+      W[sc.w]($('#w'),ok=>{ if(ok){first++;xp+=10;$('.xp').textContent='⭐ '+xp;} if(sc.after) $('#aft').innerHTML=`<div class="fb ok"><p>${sc.after}</p></div>`; ready();});
+      return;}
+    if(sc.type==='flips'){
+      shell(head+`<div class="flips">${sc.items.map((it,j)=>`<button class="flip" data-j="${j}"><span class="h">${it[0]}</span><span class="b">撳一下睇</span></button>`).join('')}</div>${sc.src?`<span class="src">出處：${sc.src}</span>`:''}`,false);
+      const seen=new Set();
+      app.querySelectorAll('.flip').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;b.classList.add('open');b.querySelector('.b').innerHTML=sc.items[j][1];seen.add(j);if(seen.size===sc.items.length) ready();});
+      return;}
+    if(sc.type==='match'){
+      total++; let errs=0, sel=null, matched=0;
+      const R=sc.pairs.map((p,j)=>({t:p[1],j})).sort(()=>Math.random()-.5);
+      shell(head+`<div class="match"><div class="col">${sc.pairs.map((p,j)=>`<button class="mt" data-l="${j}">${p[0]}</button>`).join('')}</div><div class="col">${R.map(r=>`<button class="mt" data-r="${r.j}">${r.t}</button>`).join('')}</div></div><div id="fb"></div>`,false);
+      app.querySelectorAll('.mt[data-l]').forEach(b=>b.onclick=()=>{if(b.classList.contains('done'))return;app.querySelectorAll('.mt[data-l]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=+b.dataset.l;});
+      app.querySelectorAll('.mt[data-r]').forEach(b=>b.onclick=()=>{if(sel===null||b.classList.contains('done'))return;
+        if(+b.dataset.r===sel){b.classList.add('done');const l=app.querySelector(`.mt[data-l="${sel}"]`);l.classList.remove('sel');l.classList.add('done');sel=null;matched++;
+          if(matched===sc.pairs.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+            $('#fb').innerHTML=`<div class="fb ok"><b class="t">全部配啱！</b><span class="src">出處：${sc.src}</span></div>`;ready();}}
+        else{errs++;b.classList.add('err');setTimeout(()=>b.classList.remove('err'),320);}});
+      return;}
+    if(sc.type==='sort'){
+      total++; let errs=0, ok=0;
+      shell(head+`<div class="sortl">${sc.items.map((it,j)=>`<div class="si" data-j="${j}"><div class="st">${it[0]}</div><div class="sc">${sc.cats.map((c,ci)=>`<button class="sb" data-c="${ci}">${c}</button>`).join('')}</div><div class="sw2"></div></div>`).join('')}</div><span class="src">出處：${sc.src}</span>`,false);
+      app.querySelectorAll('.si').forEach(row=>{const j=+row.dataset.j, it=sc.items[j]; let tries=0;
+        row.querySelectorAll('.sb').forEach(b=>b.onclick=()=>{ if(row.classList.contains('done')) return; tries++;
+          if(+b.dataset.c===it[1]){row.classList.add('done');b.classList.add('right');row.querySelector('.sw2').innerHTML=`<span class="okline">✓ ${it[2]}</span>`;ok++;
+            if(ok===sc.items.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp; ready(); }}
+          else{errs++;b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),350);
+            if(tries>=2){row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 答案係「${sc.cats[it[1]]}」：${it[2]}</span>`;}
+            else row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 再諗吓：睇返上面嘅分類標準。</span>`;}});});
+      return;}
+    if(sc.type==='review'){
+      let k=0, flipped=false;
+      const draw=()=>{const c=CARDS[sc.ids[k]];
+        shell(head+`<p class="muted" style="font-size:14px">第 ${k+1} / ${sc.ids.length} 張 · 撳卡反轉。卡背係筆記原文，人名唔使記。</p>
+         <button class="rcard" id="rc">${!flipped?`<span class="q">${c.f}</span><span class="muted" style="font-size:14px">諗好答案，撳一下</span>`
+          :`<span style="font-weight:700">${c.b}</span><blockquote>“${c.q}”</blockquote><span class="src">筆記 ${c.n} §${c.s} · ${c.loc}</span>`}</button>`,
+         flipped&&k===sc.ids.length-1, flipped&&k===sc.ids.length-1?'完成':'繼續');
+        $('#rc').onclick=()=>{ if(!flipped){flipped=true;draw();if(k<sc.ids.length-1){const c2=$('#cta');c2.disabled=false;c2.classList.add('go');c2.onclick=()=>{k++;flipped=false;draw();};}} };
+      }; draw(); return;}
+  }
+  function finish(){
+    const st=S(); const bonus=20; st.xp+=xp+bonus; st.done[L.id]=true; bumpStreak(st); saveAll(st);
+    app.innerHTML=`<div class="done-screen"><div><div class="trophy">🏆</div><h2 style="font-size:26px;margin:6px 0">完成「${L.name}」</h2>
+      <div class="stat3"><div>⭐ XP<b>+${xp+bonus}</b></div><div>🎯 一次答啱<b>${first}/${total}</b></div><div>🔥 連續<b>${st.streak} 日</b></div></div>
+      <div class="take" style="margin:16px auto"><b>帶走呢幾句</b><ul>${L.take.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      ${li+1<LESSONS.length&&L.id!=='rev'?`<button class="cta go" id="nextL" style="width:100%;max-width:520px;margin-bottom:10px">下一課：${LESSONS[li+1].name} →</button>`:''}
+      <button class="cta" id="back" style="width:100%;max-width:520px">返去路線圖</button></div></div>`;
+    confetti(); $('#back').onclick=()=>{location.hash='';home();}; const nl=$('#nextL'); if(nl) nl.onclick=()=>play(li+1);
+  }
+  render();
+}
+function drawer(k){
+  const ks=k.split('|').filter(x=>noteBody(x)); if(!ks.length) return;
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="深入講解"><div class="grab"></div>${ks.map(x=>{const n=noteBody(x);return `<span class="eyebrow">筆記 ${x.replace('-',' §')} · 讀懂版</span><h3>${n.t}</h3><div class="nb" style="margin-bottom:14px">${n.b}</div>`;}).join('')}
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+function reviewAll(){
+  const st=S(); const ids=LESSONS.filter(l=>st.done[l.id]).flatMap(l=>l.screens.find(s=>s.type==='review').ids);
+  const fake={id:'rev',name:'溫習',screens:[{type:'review',h:'溫習已學嘅卡',ids:ids.sort(()=>Math.random()-.5)}],take:['隔幾日再嚟溫一次，記得更牢。']};
+  LESSONS.push(fake); play(LESSONS.length-1); LESSONS.pop();
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=document.createElement('canvas'); c.className='confetti'; document.body.appendChild(c);
+  const x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const cols=['#4B4FD9','#1F9D62','#E5A800','#D2423A'];
+  const ps=Array.from({length:90},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.4,v:2+Math.random()*3,r:Math.random()*6.28,s:5+Math.random()*5,c:cols[Math.floor(Math.random()*4)]}));
+  let t=0; (function fr(){x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore();});
+    if(++t<150) requestAnimationFrame(fr); else c.remove();})();
+}
+function sub(title,fn,arg){
+  app.innerHTML=`<div class="top"><button class="x" id="bk" aria-label="返回">←</button><b style="flex:1">${title}</b></div><div class="home pg" id="pg"></div>`;
+  $('#bk').onclick=()=>{location.hash='';};
+  const P=makePages($('#pg')); P[fn](arg);
+}
+function route(){
+  const h=location.hash.replace('#',''); const base=h.split('-')[0], arg=h.slice(base.length+1);
+  if(base==='notes') sub('讀懂版','notesPage',arg||null);
+  else if(base==='cards') sub('快速卡','cardsPage',arg||'');
+  else if(base==='visuals') sub('圖解','visuals');
+  else if(base==='map') sub('進度地圖','mapPage');
+  else if(base==='lesson'){const k=LESSONS.findIndex(l=>l.note===arg); if(k>=0){const st=S(); const ok=k===0||st.done[LESSONS[k-1].id]; ok?play(k):home();} else home();}
+  else home();
+}
+window.addEventListener('hashchange',route);
+window.__RL={NOTES,CARDS_DATA,LESSONS};
+route();
+})();
+</script>
+<!--TERMS-->
+<script>const TERMS_DATA=[["反壟斷", "antitrust", "m"], ["非正式國際組織", "informal international organisations", "n"], ["正式國際組織", "formal international organisations", "m"], ["功能論", "functionalist", "n"], ["權力論", "power-based", "n"], ["錯配", "mismatch", "m"], ["跨政府網絡", "transgovernmental networks", "n"], ["跨政府", "transgovernmental", "n"], ["監管輸出", "regulatory export", "n"], ["正當性理論", "legitimacy theory", "n"], ["經濟全球化", "economic globalisation", "m"], ["國際組織", "international organisations", "m"], ["國際法", "international law", "m"], ["條約", "treaty", "m"], ["布魯塞爾效應", "Brussels Effect", "n"], ["單邊監管全球化", "unilateral regulatory globalization", "n"], ["加州效應", "California Effect", "n"], ["事實上", "de facto", "n"], ["法律上", "de jure", "n"], ["拆唔開", "nondivisible", "n"], ["市場力量", "market power", "n"], ["監管能力", "regulatory capacity", "n"], ["預防原則", "precautionary principle", "n"], ["社會市場經濟", "social market economy", "n"], ["規管帝國主義", "regulatory imperialism", "n"], ["假陽性", "false positive", "m"], ["假陰性", "false negative", "m"], ["基因改造生物", "genetically modified organisms (GMOs)", "n"], ["排放交易計劃", "Emissions Trading System (ETS)", "n"], ["碳排放交易體系", "Emissions Trading System (ETS)", "n"], ["安全港", "Safe Harbor", "n"], ["私隱盾", "Privacy Shield", "n"], ["履行地法", "lex loci solutionis", "n"], ["消極整合", "negative integration", "n"], ["積極整合", "positive integration", "n"], ["負面整合", "negative integration", "n"], ["正面整合", "positive integration", "n"], ["市場建構", "market making", "n"], ["市場塑造", "market shaping", "n"], ["資料當事人", "data subject", "m"], ["資料處理者", "data controller", "m"], ["向上看齊", "trading up", "n"], ["地域範圍", "territorial scope", "m"], ["充分性協議", "adequacy agreements", "m"], ["充分性", "adequacy", "m"], ["具約束力企業規則", "binding corporate rules", "n"], ["盡職義務", "due diligence", "n"], ["逐底競爭", "race to the bottom", "m"], ["特拉華效應", "Delaware effect", "n"], ["域外", "extraterritorial", "m"], ["域外管轄", "extraterritorial jurisdiction", "m"], ["管轄權", "jurisdiction", "n"], ["領土原則", "territoriality principle", "m"], ["國籍原則", "nationality principle", "m"], ["效果原則", "effects doctrine", "n"], ["普遍管轄", "universal jurisdiction", "m"], ["單邊全球治理", "unilateral global governance", "m"], ["制度複合體", "regime complex", "n"], ["共同但有區別責任", "common but differentiated responsibilities (CBDR)", "n"], ["區別對待", "differentiation", "n"], ["盡職審查", "due diligence", "n"], ["自願夥伴協議", "Voluntary Partnership Agreement (VPA)", "n"], ["木材規例", "EU Timber Regulation (EUTR)", "m"], ["輸入導向", "input-oriented", "m"], ["輸出導向", "output-oriented", "m"], ["集體自決", "collective self-determination", "n"], ["多數決後備", "majoritarian fallback", "n"], ["選舉問責", "electoral accountability", "n"], ["獨立專家", "independent expertise", "n"], ["多元政策網絡", "pluralist policy networks", "n"], ["司法造法", "judicial law-making", "n"], ["委員會程序", "comitology", "n"], ["部長理事會", "Council of Ministers", "m"], ["歐洲議會", "European Parliament", "n"], ["嵌入式自由主義", "embedded liberalism", "n"], ["囚徒困境", "Prisoner's Dilemma", "n"], ["內部市場", "internal market", "m"], ["單一市場", "single market", "m"], ["厚身份", "thick identity", "m"], ["薄身份", "thin identity", "m"], ["壟斷", "monopoly", "n"], ["因地制宜", "context-specific design", "m"], ["規管型國家", "regulatory state", "n"], ["監管機構", "regulatory agency", "m"], ["監管者", "regulator", "m"], ["規則制定", "rule-making", "n"], ["非多數決機構", "non-majoritarian institutions", "n"], ["多數決", "majoritarian", "n"], ["獨立監管機構", "independent regulatory agencies (IRAs)", "n"], ["民主赤字", "democratic deficit", "n"], ["輸入正當性", "input legitimacy", "n"], ["規模經濟", "economies of scale", "n"], ["問責", "accountability", "n"], ["正當性", "legitimacy", "n"], ["政策網絡", "policy networks", "n"], ["比較優勢", "comparative advantage", "m"], ["豁免", "exemption", "m"], ["統一", "uniformity", "m"], ["多元", "diversity", "n"], ["規例", "regulation", "n"], ["指令", "directive", "n"], ["法律同規例嘅帝國", "Bradford2012 p.43", "n"], ["唔可分割", "non-divisible", "n"]];
+(function(){
+/* English key terms: first time a term shows up on a screen / card / panel, add （English） after it. TERMS is injected at build. */
+const T=TERMS_DATA.slice().sort((a,b)=>b[0].length-a[0].length);
+const MAP=new Map(T.map(t=>[t[0],t]));
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const RE=new RegExp(T.map(t=>esc(t[0])).join('|'),'g');
+const DONE=new Map(T.map(t=>[t[0],new RegExp(esc(t[0])+'\\s*[（(]\\s*[A-Za-z]')]));
+const SKIP='h1,h2,h3,.brand,.nm,.sub,.pill,.grp,.dot,svg,script,style,textarea,input,blockquote,.src,.en,.tag,.tabs,.mono,.eyebrow,code,#gate,.termsheet';
+const BOX='#sc,.sheet .in,.fcard,.panel,section,tr,.node,.lvhead,.course,.crs';
+function box(n){const e=n.nodeType===1?n:n.parentElement;return (e&&e.closest(BOX))||document.getElementById('app')||document.body;}
+function gloss(root){
+  if(!root) return;
+  if(root.nodeType===1&&root.closest&&root.closest(SKIP)) return;
+  const tw=document.createTreeWalker(root.nodeType===3?root.parentNode:root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+    if(root.nodeType===3&&n!==root) return NodeFilter.FILTER_REJECT;
+    const p=n.parentElement; if(!p||p.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+    RE.lastIndex=0; return RE.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+  const list=[]; let n; while((n=tw.nextNode())) list.push(n);
+  list.forEach(tn=>{
+    const c=box(tn); const v=tn.nodeValue; RE.lastIndex=0; let m, cut=[];
+    const seen=new Set();
+    while((m=RE.exec(v))){const k=m[0]; if(seen.has(k)) continue; seen.add(k);
+      const after=v.slice(m.index+k.length);
+      if(/^\s*[（(]\s*[A-Za-z]/.test(after)) continue;
+      if(DONE.get(k).test(c.textContent)) continue;
+      cut.push([m.index+k.length,MAP.get(k)]);}
+    if(!cut.length) return;
+    // only one gloss per term per box: re-check in order while inserting
+    let node=tn, offset=0;
+    cut.forEach(([pos,t])=>{
+      if(DONE.get(t[0]).test(c.textContent)) return;
+      const rest=node.splitText(pos-offset); offset=pos;
+      const s=document.createElement('span'); s.className='en'; s.lang='en'; s.textContent='（'+t[1]+'）';
+      rest.parentNode.insertBefore(s,rest); node=rest;});
+  });
+}
+function legend(vp){
+  if(vp.querySelector('.vterms')) return;
+  const svg=vp.querySelector('svg'); if(!svg) return;
+  const txt=svg.textContent; RE.lastIndex=0; const found=[]; const seen=new Set(); let m;
+  while((m=RE.exec(txt))){const t=MAP.get(m[0]); if(!seen.has(t[1])){seen.add(t[1]);found.push(t);}}
+  if(!found.length) return;
+  const p=document.createElement('p'); p.className='vterms muted';
+  p.innerHTML='<b>英文術語：</b>'+found.map(t=>`${t[0]}<span class="en" lang="en">（${t[1]}）</span>`).join(' · ');
+  vp.appendChild(p);
+}
+function sheet(){
+  const d=document.createElement('div'); d.className='sheet termsheet';
+  const rows=T.slice().sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}));
+  d.innerHTML=`<div class="in" role="dialog" aria-label="英文術語表"><div class="grab"></div><h3>🔤 英文術語表</h3>
+   <p class="muted" style="font-size:14px">呢個課程用到嘅術語，按英文排。做 research 時用英文搵。<b>†</b>＝筆記冇寫英文，英文係我加嘅標準譯法。</p>
+   <input id="tq" type="search" placeholder="搵中文或者英文" aria-label="搵術語" style="width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0 10px">
+   <div id="tl">${rows.map(t=>`<div class="trow"><span lang="en"><b>${t[1]}</b>${t[2]==='m'?' †':''}</span><span>${t[0].replace(/[「」]/g,'')}</span></div>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="tcl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; d.querySelector('#tcl').onclick=()=>d.remove();
+  d.querySelector('#tq').oninput=e=>{const q=e.target.value.trim().toLowerCase();d.querySelectorAll('.trow').forEach(r=>{r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none';});};
+}
+function menuHook(el){
+  const inn=el.querySelector('.in[aria-label="選單"]'); if(!inn||inn.querySelector('#tbtn')) return;
+  const opts=inn.querySelector('.opts'); if(!opts) return;
+  const b=document.createElement('button'); b.className='opt'; b.id='tbtn'; b.type='button'; b.textContent=`🔤 英文術語表：${T.length} 個`;
+  b.onclick=()=>{el.remove(); sheet();}; opts.appendChild(b);
+}
+function scan(node){
+  if(node.nodeType===1){
+    if(node.classList&&node.classList.contains('sheet')) menuHook(node);
+    (node.matches&&node.matches('.vispanel')?[node]:[...(node.querySelectorAll?node.querySelectorAll('.vispanel'):[])]).forEach(legend);
+  }
+  gloss(node);
+}
+const st=document.createElement('style');
+st.textContent='.en{font-size:.84em;font-weight:500;color:var(--muted);font-family:var(--f);letter-spacing:0}.opt .en,.cta .en{color:inherit;opacity:.75}.vterms{font-size:13px;margin:10px 2px 0;line-height:1.7}.trow{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:15px}.trow span:last-child{text-align:right;color:var(--muted)}';
+document.head.appendChild(st);
+const mo=new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1&&n.classList&&n.classList.contains('en'))return; scan(n);}));});
+mo.observe(document.body,{childList:true,subtree:true});
+scan(document.body);
+window.__TERMS=T;
+})();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{}));}</script>
+</body>
+</html>
