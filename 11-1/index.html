@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="監管實驗室">
+<meta name="theme-color" content="#141A26">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;-webkit-text-size-adjust:100%}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>業界同持份者 Part 1</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: mobile-first full-screen lesson player — one idea per screen, Continue pinned to the bottom; a course path is home. */
+:root{
+  --bg:#F2F4F8; --card:#FFFFFF; --ink:#141A26; --muted:#5D6779; --line:#D9DEE8; --soft:#E9ECF3;
+  --accent:#4B4FD9; --accent-ink:#FFFFFF; --accent-soft:#E6E7FB;
+  --good:#1F9D62; --good-soft:#DFF4EA; --bad:#D2423A; --bad-soft:#FBE6E4; --warn:#B7790A;
+  --cs:#4B4FD9; --cc:#E5A800; --aa:#D2423A;
+  --f:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131B; --card:#181E2A; --ink:#EAEDF4; --muted:#9AA4B6; --line:#2B3446; --soft:#202838;
+  --accent:#8C90FF; --accent-ink:#0F131B; --accent-soft:#272B52; --good:#4FCB8D; --good-soft:#163527; --bad:#F2766D; --bad-soft:#3A1F1D; --warn:#E9B949;
+  --cs:#8C90FF; --cc:#E9B949; --aa:#F2766D; color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{overflow:hidden;height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+.muted{color:var(--muted)} .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mine{display:inline-block;font-size:12px;font-weight:700;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 6px;margin-left:4px;vertical-align:middle}
+
+/* ---------- home / path ---------- */
+.home{flex:1;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.stats{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{font-weight:900;font-size:22px;letter-spacing:.02em}
+.pills{display:flex;gap:8px}
+.pill{display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px}
+.course{background:var(--card);border-radius:22px;padding:18px;border:1px solid var(--line);margin-bottom:22px}
+.course h1{font-size:24px;line-height:1.3;margin:4px 0 6px;font-weight:900;text-wrap:balance}
+.course p{margin:0}
+.eyebrow{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0 20px}
+.path svg.line{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:220px}
+.node:nth-child(odd){transform:translateX(-60px)} .node:nth-child(even){transform:translateX(60px)}
+.dot{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:900;background:var(--soft);color:var(--muted);border:3px solid var(--line);box-shadow:0 6px 0 var(--line)}
+.node.open .dot{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 6px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.node.done .dot{background:var(--good);color:#fff;border-color:var(--good);box-shadow:0 6px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.node.open .dot{animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.node .nm{font-weight:700;text-align:center;font-size:15.5px;line-height:1.35}
+.node .sub{font-size:13px;color:var(--muted);text-align:center}
+.node.locked{opacity:.55}
+.review-btn{width:100%;margin-top:6px;background:var(--card);border:1.5px dashed var(--accent);color:var(--accent);border-radius:16px;padding:14px;font-weight:700}
+
+/* ---------- lesson player ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+.x{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:var(--muted)}
+.bar{flex:1;height:12px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:999px;transition:width .35s}
+.xp{font-weight:900;font-size:15px;color:var(--warn);min-width:52px;text-align:right}
+.screen{flex:1;overflow-y:auto;padding:10px max(18px,env(safe-area-inset-right,0px)) 24px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.screen h2{font-size:23px;line-height:1.35;margin:4px 0 0;font-weight:900;text-wrap:balance}
+.screen p{margin:0}
+.lead{font-size:17.5px}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:8px}
+.big{font-size:44px;line-height:1}
+.opts{display:grid;gap:10px}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;font-weight:700;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt.sel{border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft);box-shadow:0 4px 0 var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 4px 0 var(--bad);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opt[disabled]{cursor:default}
+.fb{border-radius:16px;padding:14px 16px;display:grid;gap:6px;animation:in .2s ease}
+.fb.ok{background:var(--good-soft)} .fb.no{background:var(--bad-soft)} .fb.hint{background:var(--accent-soft)}
+.fb b.t{font-size:17px}
+.src{font-size:12.5px;color:var(--muted)}
+.foot{padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;border-top:1px solid var(--line);background:var(--bg)}
+.cta{flex:1;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:15px;font-weight:900;font-size:17px;box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.cta:disabled{background:var(--soft);color:var(--muted);box-shadow:0 5px 0 var(--line);cursor:default}
+.cta.go{background:var(--good);color:#fff;box-shadow:0 5px 0 color-mix(in srgb,var(--good) 60%,#000)}
+.deep{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:0 14px;font-weight:700;font-size:14px;color:var(--muted);box-shadow:0 5px 0 var(--line)}
+/* drawer */
+.sheet{position:fixed;inset:0;background:rgba(10,14,22,.45);display:flex;align-items:flex-end;z-index:20;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet .in{background:var(--card);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:78%;overflow-y:auto;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px)}}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h3{margin:0 0 8px;font-size:19px}
+.sheet .nb{display:grid;gap:8px;font-size:15.5px}.sheet ul{margin:0;padding-left:20px;display:grid;gap:6px}
+/* widgets */
+.wid{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
+input[type=range]{width:100%;accent-color:var(--accent);height:30px}
+.lbl{display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.barrow{display:grid;grid-template-columns:76px 1fr 54px;gap:8px;align-items:center;font-size:14.5px}
+.barrow .track{height:22px;background:var(--soft);border-radius:8px;overflow:hidden}
+.barrow .track i{display:block;height:100%;border-radius:8px;transition:width .2s}
+.chart{width:100%;height:auto;display:block}
+.task{font-weight:700;color:var(--accent);font-size:15px;display:flex;gap:8px;align-items:center}
+.task.ok{color:var(--good)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{background:var(--soft);border-radius:12px;padding:8px;text-align:center;font-size:12.5px;color:var(--muted);font-weight:700}
+.nums b{display:block;font-family:var(--mono);font-size:19px;color:var(--ink)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.tog{display:flex;background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.tog button{flex:1;padding:10px;border-radius:11px;font-weight:700;font-size:15px;color:var(--muted)}
+.tog button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.flips{display:grid;gap:10px}
+.flip{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;box-shadow:0 4px 0 var(--line);display:grid;gap:4px}
+.flip .h{font-weight:900}.flip .b{color:var(--muted);font-size:15px}
+.flip.open{border-color:var(--accent)}
+.flip.open .b{color:var(--ink)}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:grid;gap:10px;align-content:start}
+.mt{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;font-weight:700;font-size:15px;text-align:left;box-shadow:0 4px 0 var(--line)}
+.mt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.mt.done{border-color:var(--good);background:var(--good-soft);opacity:.8}
+.mt.err{animation:shake .3s;border-color:var(--bad)}
+.rcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;min-height:210px;display:grid;align-content:center;gap:10px;box-shadow:0 5px 0 var(--line);text-align:left}
+.rcard .q{font-size:21px;font-weight:900;line-height:1.4}
+.rcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+/* complete */
+.done-screen{flex:1;display:grid;place-items:center;text-align:center;padding:24px;gap:10px}
+.done-screen .trophy{font-size:72px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.stat3{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat3 div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 16px;font-weight:700}
+.stat3 b{display:block;font-size:24px}
+.take{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;display:grid;gap:6px;max-width:520px}
+.take ul{margin:0;padding-left:20px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+/* sort screen */
+.sortl{display:grid;gap:12px}
+.si{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:8px}
+.si.done{border-color:var(--good)}
+.si .st{font-weight:700}
+.si .sc{display:flex;flex-wrap:wrap;gap:8px}
+.sb{border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:700;font-size:14.5px;background:var(--bg);min-height:44px}
+.sb.right{border-color:var(--good);background:var(--good-soft)}
+.sb.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s}
+.si.done .sb:not(.right){opacity:.4}
+.okline{color:var(--good);font-weight:700;font-size:14.5px}
+.hintline{color:var(--accent);font-weight:700;font-size:14.5px}
+.grp{z-index:1;font-weight:900;font-size:14px;color:var(--muted);letter-spacing:.06em;background:var(--bg);padding:2px 10px;border-radius:8px}
+button.pill{cursor:pointer}
+/* sub pages (reading notes, cards, visuals, map) */
+.pg{--surface:var(--card);--surface2:var(--soft);--area-cs:var(--cs);--area-c:var(--cc);--area-a:var(--aa);--f-display:var(--f);--r:16px}
+.pg h2{font-size:22px;line-height:1.35;margin:4px 0;font-weight:900;text-wrap:balance}
+.pg h3{font-size:18px;margin:0;line-height:1.35}
+.pg p{margin:0}
+.pg .lvhead{display:grid;gap:8px;margin-bottom:14px}
+.pg .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.pg .stack{display:flex;flex-direction:column;gap:12px}
+.pg .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pg .tabs{display:flex;flex-wrap:wrap;gap:6px}
+.pg .tab{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 11px;font-size:13.5px;font-weight:700;min-height:36px}
+.pg .tab.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.pg .chip{display:inline-block;font-size:13px;font-weight:700;text-decoration:none;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:3px 10px;background:var(--card)}
+.pg .chip.ok{color:var(--good);border-color:var(--good)}
+.pg .links{gap:8px;margin-top:6px}
+.pg .nbody{display:grid;gap:8px;font-size:16px}
+.pg .nbody ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.pg .readchk{font-size:14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.pg .readchk input{width:22px;height:22px}
+.pg .tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);background:var(--soft)}
+.pg .btn{border:1.5px solid var(--ink);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:700;min-height:40px}
+.pg .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pg .btn.ghost{border-color:var(--line)}
+.pg .btn.sm{padding:5px 12px;font-size:13.5px;min-height:36px}
+.pg .progress{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.pg .progress i{display:block;height:100%;background:var(--good)}
+.pg .fcard{min-height:240px;border:2px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);padding:22px 18px;display:grid;align-items:center;cursor:pointer;margin-top:10px}
+.pg .fcard.flip{border-color:var(--accent)}
+.pg .fcard.done{cursor:default;text-align:center}
+.pg .ff,.pg .fcard .fb{display:grid;gap:12px;background:none;padding:0;animation:none;border-radius:0}
+.pg .fq{font-size:21px;font-weight:900;line-height:1.4}
+.pg .fa{font-size:16.5px;font-weight:600}
+.pg .fcard blockquote{margin:0;border-left:3px solid var(--accent);padding:2px 10px;font-size:14px;color:var(--muted);font-style:italic}
+.pg .vis{width:100%;height:auto;display:block;font-family:var(--f)}
+.pg .viswrap{overflow-x:auto;margin-top:8px}
+.pg .viswrap .vis{min-width:560px}
+.pg .fo{font-size:12.5px;line-height:1.45;color:var(--ink);display:grid;gap:4px}
+.pg .fo p{margin:0}.pg .fo.c{text-align:center}
+.pg .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.pg table.map{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+.pg table.map th{text-align:left;font-size:12px;color:var(--muted);padding:10px 12px;border-bottom:1.5px solid var(--line)}
+.pg table.map td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.pg table.map td.c{text-align:center}
+.pg table.map tr.nh td{background:var(--soft)}
+.pg table.map a{color:var(--ink)}
+.pg .okb{font-size:12px;font-weight:700;color:var(--good);border:1.5px solid var(--good);border-radius:5px;padding:0 6px}
+.pg .mono{font-family:var(--mono)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px">
+ <form id="gf" style="display:grid;gap:12px;max-width:320px;width:100%;text-align:center">
+  <div style="font-size:30px;font-weight:900">業界參與 · 1</div>
+  <label for="gp" class="muted">輸入密碼</label>
+  <input id="gp" type="password" inputmode="numeric" autocomplete="current-password" style="font-size:22px;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)">
+  <button class="cta go" type="submit">入去</button>
+  <p id="ge" style="color:var(--bad);min-height:1.4em"></p>
+ </form></div>
+<script>(function(){const H='d83036ffb5b49a153bc391fd12b4a10df06bbb200f39fed97c331b03b6833ce7',K='reglab-ok',g=document.getElementById('gate');
+ try{if(localStorage.getItem(K)===H){g.remove();return;}}catch(e){}
+ document.getElementById('gf').addEventListener('submit',async e=>{e.preventDefault();
+  const v=document.getElementById('gp').value.trim();
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const x=[...new Uint8Array(b)].map(n=>n.toString(16).padStart(2,'0')).join('');
+  if(x===H){try{localStorage.setItem(K,H)}catch(e){} g.remove();} else document.getElementById('ge').textContent='密碼唔啱，再試一次';});
+})();</script>
+<div id="app"></div>
+
+<script>
+const CARDS_DATA=[{"id": 0, "n": "01", "s": 1, "t": "fact", "f": "2015 年按收入計，全球最大 100 個政府同企業入面有幾多個係企業？", "b": "Global Justice Now 嘅 2015 年排名顯示，按收入計全球最大 100 個政府同企業之中有 69 個係企業", "q": "69 of the largest 100 corporate and government entities ranked by revenues were corporations", "loc": "**Global Justice Now**, in Zingales2017 p.113"}, {"id": 1, "n": "01", "s": 1, "t": "evaluation", "f": "Zingales 點評主流經濟學對公司嘅理解？", "b": "Zingales 認為當代主流經濟學對公司嘅理解忽略晒政治同權力", "q": "Yet in contemporary economics, the commonly prevailing view of the firm ignores all these elements of politics and power.", "loc": "Zingales2017 p.113"}, {"id": 2, "n": "01", "s": 1, "t": "fact", "f": "最大嘅現代企業令權力集中喺邊啲人手上？", "b": "Zingales 指出最大嘅現代企業令經濟同政治權力集中喺少數幾乎唔使問責嘅人手上", "q": "The largest modern corporations facilitated a massive concentration of economic (and political) power in the hands of a few people, who are hardly accountable to anyone.", "loc": "Zingales2017 p.114"}, {"id": 3, "n": "01", "s": 1, "t": "normative", "f": "Zingales 嘅中心論點：集中嘅企業權力同政治互動會威脅乜？", "b": "Zingales 主張集中嘅企業權力同政治互動，會威脅自由市場經濟同民主", "q": "I will argue that the interaction of concentrated corporate power and politics is a threat to the functioning of the free market economy and to the economic prosperity it can generate, and a threat to democracy as well.", "loc": "Zingales2017 p.114"}, {"id": 4, "n": "01", "s": 2, "t": "evaluation", "f": "東印度公司嘅專營權故事顯示咗乜？", "b": "Zingales 認為東印度公司 15 年專營權延到 233 年，顯示經濟同政治權力混埋有幾危險", "q": "That a 15-year monopoly right lasted 233 years is a harsh reminder of how dangerous the commingling of economic and political power can be.", "loc": "Zingales2017 p.115"}, {"id": 5, "n": "01", "s": 2, "t": "cause", "f": "經濟越係贏家通食，企業會點？", "b": "Zingales 認為經濟越係贏家通食，企業越有誘因腐化政治系統去爭取細小但決定性嘅優勢", "q": "the more an economy becomes winner-take-all, the bigger the incentives to corrupt the political system to gain a small, but often decisive, advantage", "loc": "Zingales2017 p.116"}, {"id": 6, "n": "01", "s": 2, "t": "fact", "f": "美國商界壓倒性嘅政治權力喺邊兩個時期被馴服？", "b": "Zingales 指出美國商界壓倒性嘅政治權力先後喺進步時代同新政時期被馴服", "q": "The overwhelming political power of business was first tamed during the Progressive Era and later by the New Deal.", "loc": "Zingales2017 p.117"}, {"id": 7, "n": "01", "s": 2, "t": "conceptual", "f": "Alchian 同 Demsetz 點樣理解公司？", "b": "Alchian 同 Demsetz 認為公司冇權威、冇紀律處分權，同兩個人之間普通市場交易冇分別", "q": "The firm has no power of fiat, no authority, no disciplinary action any different in the slightest degree from ordinary market contracting between two people.", "loc": "**Alchian and Demsetz**, in Zingales2017 p.117"}, {"id": 8, "n": "01", "s": 2, "t": "conceptual", "f": "Zingales 話企業幾時先至冇權力？", "b": "Zingales 認為企業只係喺合約可以寫到完全嘅情況下先至冇權力", "q": "corporations are powerless only if there is perfect contractibility", "loc": "Zingales2017 p.117"}, {"id": 9, "n": "01", "s": 2, "t": "cause", "f": "合約同規則唔完全，會帶嚟乜？", "b": "Zingales 認為合約同規則唔完全，經濟參與者就有空間向監管、司法同政治系統施壓去爭大份租金", "q": "If rents are not perfectly allocated in advance by contracts and rules, there is ample space for economic actors to exert pressure on the regulatory, judiciary, and political system to grab a larger share of these rents.", "loc": "Zingales2017 p.119"}, {"id": 10, "n": "01", "s": 3, "t": "fact", "f": "現金賄賂違法，企業影響政治嘅常見機制係乜？", "b": "Zingales 指出，喺現金賄賂違法嘅世界，企業影響政治嘅一個常見機制係暗示將來畀職位", "q": "One common mechanism is, for example, the (implicit) promise of future career opportunities.", "loc": "Zingales2017 p.119"}, {"id": 11, "n": "01", "s": 3, "t": "cause", "f": "企業經濟上越有力，政治上會點？", "b": "Zingales 認為一間企業經濟上越有力，政治上就可以越有力", "q": "the more economically powerful a firm is, the more politically powerful it can be", "loc": "Zingales2017 p.119"}, {"id": 12, "n": "01", "s": 3, "t": "cause", "f": "市場力量越大，企業點解越需要影響政治？", "b": "Zingales 認為企業市場力量越大，就越驚被政治權力充公，所以越需要影響政治", "q": "the greater the market power a firm has, the greater the fear of expropriation by the political power", "loc": "Zingales2017 p.119"}, {"id": 13, "n": "01", "s": 3, "t": "definition", "f": "「Medici 惡性循環」係乜？", "b": "Zingales 將「Medici 惡性循環」界定為用錢攞政治權力、再用政治權力賺更多錢嘅循環", "q": "in which money is … used to gain political power and political power is then used to make more money", "loc": "Zingales2017 p.119"}, {"id": 14, "n": "01", "s": 3, "t": "evaluation", "f": "Zingales 反唔反對靠創新得嚟嘅短暫市場力量？", "b": "Zingales 認為問題唔係靠創新得嚟嘅短暫市場力量", "q": "the problem here is not temporary market power", "loc": "Zingales2017 p.119"}, {"id": 15, "n": "01", "s": 4, "t": "fact", "f": "過去二十年幾多美國行業集中度上升？", "b": "Grullon、Larkin 同 Michaely 發現過去二十年超過 75% 美國行業集中度上升", "q": "In the last two decades, more than 75 percent of US industries experienced an increase in concentration levels", "loc": "**Grullon, Larkin and Michaely**, in Zingales2017 p.120"}, {"id": 16, "n": "01", "s": 4, "t": "fact", "f": "Barkai 發現美國純利份額點變？", "b": "Barkai 發現美國純利份額由 1984 年佔本地生產總值 2% 升到 2014 年 6%", "q": "an increase in the profits share (the residuals), which goes from 2 percent of GDP in 1984 to 6 percent in 2014", "loc": "**Barkai**, in Zingales2017 p.121"}, {"id": 17, "n": "01", "s": 4, "t": "cause", "f": "Zingales 將乜嘢列為美國市場力量上升嘅一個解釋？", "b": "Zingales 將反壟斷執法放軟列為美國市場力量上升嘅一個解釋", "q": "A final explanation is reduced antitrust enforcement.", "loc": "Zingales2017 p.121"}, {"id": 18, "n": "01", "s": 4, "t": "fact", "f": "1970 至 1999 年美國每年平均開幾多單謝爾曼法第 2 條案？", "b": "Grullon、Larkin 同 Michaely 嘅數據顯示 1970 至 1999 年美國司法部同聯邦貿易委員會每年平均開 15.7 單《謝爾曼法》第 2 條案", "q": "During the period 1970–1999, the Department of Justice and the Federal Trade Commission (FTC) together brought an average of 15.7 cases under Section 2.", "loc": "**Grullon, Larkin and Michaely**, in Zingales2017 p.121"}, {"id": 19, "n": "01", "s": 5, "t": "evaluation", "f": "用黨派角度睇政治，企業重唔重要？", "b": "Zingales 認為如果用黨派角度睇政治，企業唔重要，亦唔想重要", "q": "If politics is identified along partisan lines, corporations are not very relevant, nor do they want to be.", "loc": "Zingales2017 p.122"}, {"id": 20, "n": "01", "s": 5, "t": "fact", "f": "企業喺具體議題上需要乜？通常搵唔搵到？", "b": "Zingales 指出企業喺具體議題上需要國會同行政機關有朋友，而且通常唔理黨派都搵到", "q": "Corporations need some friends in Congress (and in the executive branch) on specific issues, and they generally succeed in having them, regardless of the political affiliation.", "loc": "Zingales2017 p.122"}, {"id": 21, "n": "01", "s": 5, "t": "fact", "f": "2014 年 Google 收入同遊說開支各係幾多？", "b": "Zingales 指出 2014 年 Google 收入 800 億美元，遊說開支只係 1,600 萬美元", "q": "in 2014 Google (now Alphabet) had $80 billion in revenues and spent $16 million in lobbying", "loc": "Zingales2017 p.122"}, {"id": 22, "n": "01", "s": 5, "t": "cause", "f": "企業可以用乜威脅向官員施壓？", "b": "Zingales 認為企業可以用官員卸任後喺商界被排擠嘅威脅去施壓", "q": "Corporate interest can use a threat of ostracism from the business world at the end of a public official’s mandate.", "loc": "Zingales2017 p.123"}, {"id": 23, "n": "01", "s": 5, "t": "conceptual", "f": "要量度企業權力，應該睇投入定產出？", "b": "Zingales 認為要量度企業權力，應該睇政策產出，唔好睇遊說投入", "q": "to detect the power of corporations we need to look at output, not inputs", "loc": "Zingales2017 p.123"}, {"id": 24, "n": "01", "s": 5, "t": "evaluation", "f": "追溯延長已故作者嘅版權有冇刺激新作品？", "b": "Zingales 認為追溯延長已故作者嘅版權唔會刺激新作品", "q": "extending retroactively copyright to long-dead authors is not likely to stimulate production of new works", "loc": "Zingales2017 p.123"}, {"id": 25, "n": "01", "s": 5, "t": "fact", "f": "企業喺國會擋唔到法例時，仲可以點？", "b": "Zingales 指出企業喺國會擋唔到唔利法例時，可以控告負責執行嘅監管者去阻止", "q": "If companies do not succeed in preventing unfavorable legislation in Congress, they can stop it by suing the regulators who try to implement it.", "loc": "Zingales2017 p.124"}, {"id": 26, "n": "01", "s": 5, "t": "fact", "f": "Lambert 發現有遊說嘅銀行被執法嘅機會點樣？", "b": "Lambert 發現監管者對有遊說嘅銀行展開執法行動嘅機會低 44.7%", "q": "regulators are 44.7 percent less likely to initiate enforcement actions against lobbying banks", "loc": "**Lambert**, in Zingales2017 p.124"}, {"id": 27, "n": "01", "s": 6, "t": "cause", "f": "市場力量喺影響力遊戲入面畀企業乜？", "b": "Zingales 認為市場力量令企業喺影響力遊戲入面有比較優勢", "q": "Their market power gives them a comparative advantage at the influence game", "loc": "Zingales2017 p.124"}, {"id": 28, "n": "01", "s": 6, "t": "cause", "f": "企業喺政治上越成功，市場力量會點？", "b": "Zingales 認為企業喺政治上越成功，就越可以擋住對手、鞏固自己，市場力量亦越大", "q": "the more effective they are at obtaining what they want from the political system, the greater their market power will be, because they can block competitors and entrench themselves", "loc": "Zingales2017 p.124"}, {"id": 29, "n": "01", "s": 6, "t": "cause", "f": "監管越大越複雜，對既得利益有咩影響？", "b": "Zingales 認為監管嘅規模同複雜度上升，令既得利益更易將賽場傾斜向自己", "q": "the size and complexity of regulation has increased, which makes it easier for vested interests to tilt the playing field to their advantage", "loc": "Zingales2017 p.125"}, {"id": 30, "n": "01", "s": 6, "t": "normative", "f": "Zingales 係咪主張商界唔應該有政治聲音？", "b": "Zingales 表明佢唔係主張商界喺政治過程入面唔應該有聲音", "q": "It is not at all my intention to conclude that business should have no voice in the political process.", "loc": "Zingales2017 p.125"}, {"id": 31, "n": "01", "s": 6, "t": "normative", "f": "Zingales 嘅理想狀態係乜？", "b": "Zingales 主張理想狀態係國家權力同企業權力之間「剛剛好」嘅平衡", "q": "The ideal state of affairs is a “goldilocks” balance between the power of the state and the power of firms.", "loc": "Zingales2017 p.125"}, {"id": 32, "n": "01", "s": 6, "t": "cause", "f": "企業相對國家太強時會點？", "b": "Zingales 認為企業相對國家太強時，會按自己而唔係公眾嘅利益去定義同執行產權", "q": "But when firms are too strong vis-à-vis the state, they may shape the definition of property rights and its enforcement in their own interest and not in the interest of the public at large", "loc": "Zingales2017 p.125"}, {"id": 33, "n": "01", "s": 7, "t": "cause", "f": "乜嘢會加強決定企業影響政治能力嘅所有關鍵因素？", "b": "Zingales 認為企業規模同市場集中度會加強所有決定企業影響政治能力嘅關鍵因素", "q": "a firm’s size and the level of concentration within a market affect positively all the crucial factors that determine a firm’s ability to influence the political system", "loc": "Zingales2017 p.127"}, {"id": 34, "n": "01", "s": 7, "t": "fact", "f": "點解小鎮最大僱主好有政治影響力？", "b": "Zingales 指出一個小鎮或者地區嘅最大僱主好有政治影響力，即使佢喺鎮外嘅市場競爭激烈", "q": "The main employer in a town or jurisdiction is very politically influential, even if the firm sells in a competitive market outside that town.", "loc": "Zingales2017 p.127"}, {"id": 35, "n": "01", "s": 7, "t": "conceptual", "f": "東印度公司統治下嘅印度屬於光譜邊一端？", "b": "Zingales 將極端富豪統治政權（例如東印度公司統治下嘅印度）形容為經濟權力俘虜咗政治職能", "q": "the economic power has captured the functions of the political power", "loc": "Zingales2017 p.127"}, {"id": 36, "n": "01", "s": 7, "t": "evaluation", "f": "Zingales 擔心美國正滑向乜？", "b": "Zingales 認為美國變成垂直政治整合政權嘅風險正在增加", "q": "increasing the risk that the United States becomes a vertical politically integrated regime", "loc": "Zingales2017 p.128"}, {"id": 37, "n": "01", "s": 7, "t": "action", "f": "Zingales 建議邊幾項補救？", "b": "Zingales 建議增加企業活動透明度、改善企業民主、收緊旋轉門規則，同注意科學家被企業俘虜嘅風險", "q": "increases in transparency of corporate activities; improvements in corporate democracy; better rules against revolving doors and more attention to the risk of capture of scientists", "loc": "Zingales2017 p.128"}, {"id": 38, "n": "01", "s": 7, "t": "action", "f": "最重要嘅補救可能係乜？", "b": "Zingales 認為對付企業政治權力最重要嘅補救可能係提高公眾意識", "q": "Yet the single most important remedy may be broader public awareness.", "loc": "Zingales2017 p.129"}, {"id": 39, "n": "02", "s": 1, "t": "fact", "f": "歐洲電訊同能源自由化有冇產生統一嘅歐洲監管模式？", "b": "Coen 指出歐洲電訊同能源市場自由化冇產生統一嘅歐洲監管模式", "q": "the liberalization of the telecommunication and energy markets has not created a uniform European Regulatory model", "loc": "Coen2005 p.375"}, {"id": 40, "n": "02", "s": 1, "t": "fact", "f": "英德監管者同企業嘅關係點樣變？", "b": "Coen 發現英德獨立監管者同企業嘅關係由疏遠對抗，變成以資訊交換同建立信譽為主嘅策略工作關係", "q": "independent regulatory authorities have moved from distant and often confrontational relationships with business to strategic working relationships driven by exchanges of information and reputation building", "loc": "Coen2005 p.375"}, {"id": 41, "n": "02", "s": 1, "t": "cause", "f": "監管學習同信任嘅速度取決於邊四樣？", "b": "Coen 認為監管學習同信任發展嘅速度，取決於監管者數目、權力重疊、諮詢酌情權同監管者存在咗幾耐", "q": "depending on the number of regulatory authorities in a market place, the degree to which there are concurrent powers between authorities, their discretion in the consultation process, and the length of time that regulatory authorities had existed", "loc": "Coen2005 p.375"}, {"id": 42, "n": "02", "s": 1, "t": "fact", "f": "Coen 嘅證據嚟自乜？", "b": "Coen 嘅證據嚟自 50 個對企業同監管官員嘅訪問", "q": "The empirical evidence was collected through 50 interviews of business (both incumbents and new entrants) and regulatory officials", "loc": "Coen2005 p.395"}, {"id": 43, "n": "02", "s": 2, "t": "cause", "f": "監管者同被監管者之間會形成咩關係？", "b": "Coen 引 Coen 同 Héritier、Pfeffer 同 Salancik，認為監管者同被監管者之間會形成資源互相依賴", "q": "Under these conditions a resource dependency between regulators and regulatees emerges", "loc": "**Coen and Héritier; Pfeffer and Salancik**, in Coen2005 p.377"}, {"id": 44, "n": "02", "s": 2, "t": "fact", "f": "國家監管者分別需要前線官員、企業同消費者提供乜？", "b": "Coen 指出國家監管者需要前線官員執行、企業提供成本資料、消費者指出市場失靈", "q": "NRAs require grassroot bureaucrats to implement, firms to supply information on their own and rival production costs, and consumers to highlight market failures", "loc": "Coen2005 p.377"}, {"id": 45, "n": "02", "s": 2, "t": "conceptual", "f": "監管者要喺邊兩樣之間取得平衡？", "b": "Coen 引 Majone，認為喺少數企業提供可靠技術資訊同廣泛代表性諮詢之間取得平衡好難", "q": "Maintaining the balance between a limited number of firms supplying credible information that creates “input legitimacy” (fast, reliable, and technical information) for regulators and interest representativeness giving “output legitimacy” (representative consultation with numerous stakeholders) is a difficult balancing act", "loc": "**Majone**, in Coen2005 p.377"}, {"id": 46, "n": "02", "s": 2, "t": "evaluation", "f": "監管者依賴企業資訊有咩風險？", "b": "Coen 承認監管者依賴企業資訊會帶嚟俘虜同信譽風險", "q": "it is reasonable to assume that capture and credibility risks exist", "loc": "Coen2005 p.377"}, {"id": 47, "n": "02", "s": 2, "t": "cause", "f": "可靠提供資訊嘅企業會變成乜？", "b": "Coen 引 Broscheid 同 Coen，認為可靠提供資訊嘅企業可以變成政策內部人", "q": "those firms that provide this information on a reliable basis can evolve into policy insiders", "loc": "**Broscheid and Coen**, in Coen2005 p.377"}, {"id": 48, "n": "02", "s": 2, "t": "cause", "f": "企業點樣學識協助而唔係阻礙監管討論？", "b": "Coen 認為企業經過試錯同同監管者嘅大衝突，學識協助而唔係阻礙監管討論", "q": "business—through a process of trial and error and high-profile clashes with NRAs—learns to facilitate regulatory discussion rather than hinder it", "loc": "Coen2005 p.377"}, {"id": 49, "n": "02", "s": 2, "t": "cause", "f": "監管者點樣建立公信力、對付唔守承諾嘅企業？", "b": "Coen 認為監管者透過信譽機制建立公信力，並增加排除唔守承諾企業嘅酌情權", "q": "NRAs establish their regulatory credentials and increase their discretion to exclude firms that fail to meet their regulatory bargains", "loc": "Coen2005 p.377"}, {"id": 50, "n": "02", "s": 3, "t": "cause", "f": "點解英國企業同監管者嘅關係容易發展？", "b": "Coen 引 Coen 同 Willman，認為英國企業只有一個主要監管接觸點，大大促進咗企業同監管者關係嘅發展", "q": "Having a single or dominant point of regulatory contact for business has greatly facilitated the development of a business–regulatory relationship in the U.K.", "loc": "**Coen and Willman**, in Coen2005 p.378"}, {"id": 51, "n": "02", "s": 3, "t": "cause", "f": "同單一監管者長期接觸會形成乜？", "b": "Coen 認為同單一監管者長期接觸會形成排他嘅信譽遊戲，提高被排除嘅代價", "q": "Constant contact with a single NRA creates an exclusive reputation game, which over time influences subsequent revisions of regulatory legislation and increases the cost of exclusion.", "loc": "Coen2005 p.378"}, {"id": 52, "n": "02", "s": 3, "t": "fact", "f": "BT 同 British Gas 嘅監管事務部門有幾大？", "b": "Coen 指出 BT 同 British Gas 設立咗六十幾人嘅專責監管事務部門", "q": "dedicated specialist regulatory groups of more than 60-plus individuals", "loc": "Coen2005 p.378"}, {"id": 53, "n": "02", "s": 3, "t": "fact", "f": "英國監管者對邊個可以積極參與諮詢有幾大酌情權？", "b": "Coen 指出英國監管者對邊個可以積極參與諮詢有好大酌情權", "q": "regulators have so much discretion as to who is “actively” involved in the consultation process", "loc": "Coen2005 p.380"}, {"id": 54, "n": "02", "s": 3, "t": "evaluation", "f": "英國用諮詢酌情權做工具有咩問題？", "b": "Coen 認為英國用諮詢酌情權做監管工具好唔透明，亦難以喺講程序嘅歐陸國家複製", "q": "is also seen as a very nontransparent means of regulation and is perhaps hard to replicate in other European countries, which are more procedural and rules-based in their administration", "loc": "Coen2005 p.380"}, {"id": 55, "n": "02", "s": 3, "t": "fact", "f": "1998 年綠皮書辯論，英國監管者同企業企邊？", "b": "Coen 指出英國監管者同企業喺 1998 年綠皮書辯論入面立場一致", "q": "regulators and business appeared to sing from the same hymn sheet", "loc": "Coen2005 p.380"}, {"id": 56, "n": "02", "s": 3, "t": "conceptual", "f": "英國監管者唔再只向政治主人問責，仲要向邊個問責？", "b": "Coen 引 Scott，認為英國監管者唔再只向政治主人問責，而要向下向企業同消費者問責", "q": "NRAs were no longer just accountable to the political principals but were “downwardly” accountable to business regulatees and consumers", "loc": "**Scott**, in Coen2005 p.381"}, {"id": 57, "n": "02", "s": 4, "t": "fact", "f": "Deutsche Telekom 嘅監管事務辦公室有幾大？", "b": "Coen 指出 Deutsche Telekom 設立咗超過八十人嘅監管事務辦公室", "q": "To facilitate these relations DT established a specialist regulatory affairs office of over 80 people.", "loc": "Coen2005 p.382"}, {"id": 58, "n": "02", "s": 4, "t": "evaluation", "f": "大企業喺接觸監管機構上有咩優勢？", "b": "Coen 認為大企業尤其老牌企業，單靠可以動員嘅資源已經喺接觸監管機構上有策略優勢", "q": "Clearly, large firms and especially incumbents have a strategic advantage in accessing the regulatory institutions based purely on the physical resources they can mobilize.", "loc": "Coen2005 p.382"}, {"id": 59, "n": "02", "s": 4, "t": "conceptual", "f": "Coen 點樣理解成功嘅監管？", "b": "Coen 認為成功嘅監管係一個建立信譽同公信力嘅問題", "q": "successful regulation is a question of reputation and credibility building", "loc": "Coen2005 p.384"}, {"id": 60, "n": "02", "s": 4, "t": "evaluation", "f": "德國電訊業界點睇多個監管機構並存？", "b": "Coen 指出德國電訊業界共識認為多個監管機構並存，製造太多企業、機構同政府之間玩監管遊戲嘅機會", "q": "the current multiple institutional agencies provide for too many opportunities for regulatory gaming between firms, institutions, and government", "loc": "Coen2005 p.384"}, {"id": 61, "n": "02", "s": 4, "t": "fact", "f": "德國 RegTP 點樣加強自己裁決嘅公信力？", "b": "Coen 指出德國 RegTP 借歐盟監管者網絡去加強自己裁決嘅公信力", "q": "the RegTP has looked to the network of EU regulators to give its rulings greater credibility", "loc": "Coen2005 p.384"}, {"id": 62, "n": "02", "s": 4, "t": "conceptual", "f": "監管制度嘅政治化程度點樣反映出嚟？", "b": "Coen 認為一個監管制度嘅政治化程度，反映喺佢較重公平定較重效率", "q": "The degree of politicization of a regime reflects itself in the emphasis given to the equity versus efficiency argument in regulation.", "loc": "Coen2005 p.386"}, {"id": 63, "n": "02", "s": 5, "t": "cause", "f": "互相競爭嘅監管機構對資源互相依賴有咩影響？", "b": "Coen 認為互相競爭嘅監管機構會削弱企業同個別監管者之間嘅資源互相依賴", "q": "competing regulatory institutions will weaken the resource dependency between firms and individual regulators", "loc": "Coen2005 p.387"}, {"id": 64, "n": "02", "s": 5, "t": "fact", "f": "企業實際上會集中接觸邊個監管機構？", "b": "Coen 指出企業實際上會集中接觸能夠確立優先地位嘅監管機構", "q": "In reality, firms focus on those bodies that assert their primacy over other regulatory authorities.", "loc": "Coen2005 p.387"}, {"id": 65, "n": "02", "s": 5, "t": "cause", "f": "穩定高效嘅監管制度取決於乜？", "b": "Coen 認為一個穩定高效嘅監管制度取決於佢嘅年資", "q": "a stable and efficient regulatory regime is, as the previous section presented, contingent on its age", "loc": "Coen2005 p.387"}, {"id": 66, "n": "02", "s": 5, "t": "fact", "f": "業界點睇歐盟國家監管者網絡？", "b": "Coen 引 Coen 同 Doyle、Eberlein，指出歐盟電訊同能源國家監管者網絡唔受業界歡迎", "q": "the new EU network forums of NRAs in telecommunications and energy have been poorly received by industry", "loc": "**Coen and Doyle; Eberlein**, in Coen2005 p.387"}, {"id": 67, "n": "02", "s": 5, "t": "fact", "f": "英國 OFTEL 面對權力重疊點做？", "b": "Coen 指出英國 OFTEL 唔同其他機構爭地盤，反而主動叫其他機構調查", "q": "Instead of scrapping over who will monitor an issue, it is actually the other way round, with OFTEL asking the other agencies to investigate.", "loc": "Coen2005 p.388"}, {"id": 68, "n": "02", "s": 5, "t": "cause", "f": "人手不足嘅監管者用乜換企業嘅專業知識？", "b": "Coen 認為人手不足嘅監管者用日後更好嘅諮詢參與權，換取企業提供市場專業知識", "q": "understaffed regulators look to firms to prove expertise on markets in return for improved access over time to the regulatory consultation process", "loc": "Coen2005 p.388"}, {"id": 69, "n": "02", "s": 5, "t": "fact", "f": "德國企業同監管者嘅交鋒喺邊度進行？有咩後果？", "b": "Coen 指出德國好多企業同監管者嘅交鋒喺法庭公開進行，而參與要睇有冇錢", "q": "many of these business–regulator exchanges were played out openly in the courts, where access was a function of funds to pay", "loc": "Coen2005 p.389"}, {"id": 70, "n": "02", "s": 5, "t": "fact", "f": "德國經濟部喺能源協議冇照顧邊啲新利益？", "b": "Coen 指出德國經濟部喺能源協議入面冇照顧能源交易商、新供應商同家庭用戶等新利益", "q": "the BMWi failed to take account of new industrial interests such as the energy traders, new entrant suppliers, and household consumers", "loc": "Coen2005 p.390"}, {"id": 71, "n": "02", "s": 6, "t": "conceptual", "f": "Coen 引 Willman 等人：企業會經歷幾多個監管意識階段？", "b": "Coen 引 Willman 等人，認為企業會經歷四個監管意識階段", "q": "business moves through four phases of regulatory awareness", "loc": "**Willman et al.**, in Coen2005 p.391"}, {"id": 72, "n": "02", "s": 6, "t": "cause", "f": "唔合規嘅企業會點？", "b": "Coen 認為唔合規嘅企業會逐步被懲罰，極端情況下被排除出監管討論", "q": "noncompliant firms are gradually penalized and in extreme cases excluded from the regulatory discussion process", "loc": "Coen2005 p.393"}, {"id": 73, "n": "02", "s": 6, "t": "definition", "f": "「反向俘虜」係乜？", "b": "Coen 將「反向俘虜」界定為企業嘅監管部唔再為公司把關，而同監管者關係太密切", "q": "In the case of reverse capture, the regulation department is no longer seen as a gatekeeper for the firm, but rather has developed too close a relationship with the NRA.", "loc": "Coen2005 p.393"}, {"id": 74, "n": "02", "s": 6, "t": "cause", "f": "明白同監管者合作有機會嘅企業會得到乜？", "b": "Coen 認為明白同監管者合作有機會嘅企業，會取得對對手嘅策略優勢並推動新政策", "q": "firms that recognize that working with NRA provides opportunities will not only gain a strategic advantage over their rivals but also drive new policy initiatives", "loc": "Coen2005 p.393"}, {"id": 75, "n": "02", "s": 6, "t": "fact", "f": "企業會唔會固定喺一格資訊關係？", "b": "Coen 預期企業會視乎監管週期同議題，喺唔同資訊關係之間搖擺", "q": "companies oscillating between the various informational relationships", "loc": "Coen2005 p.393"}, {"id": 76, "n": "02", "s": 7, "t": "conceptual", "f": "監管者向邊幾個方向問責？", "b": "Coen 認為各國監管者向上向政府、橫向向法院同其他監管者、向下向企業問責嘅程度各有不同", "q": "regulators have found that they differ in the degree to which they are upwardly accountable to government, horizontally accountable to courts and policy regulators, or downwardly accountable to business", "loc": "Coen2005 p.394"}, {"id": 77, "n": "02", "s": 7, "t": "cause", "f": "喺德國制度下，企業扣起資訊係咪不理性？", "b": "Coen 認為喺德國年輕、多機構嘅制度下，企業扣起資訊、喺法庭用知識優勢係合乎邏輯嘅", "q": "it has been logical for business to withhold information from the regulators and use its knowledge advantage in the courts", "loc": "Coen2005 p.394"}, {"id": 78, "n": "02", "s": 7, "t": "evaluation", "f": "英國模式對外國同新企業有咩隱形障礙？", "b": "Coen 認為英國模式要求企業學識和解式遊說，成為外國同新企業嘅隱形入場障礙", "q": "it required that business learned a style of conciliatory lobbying, which acted as a hidden access barrier to foreign and new business", "loc": "Coen2005 p.394"}, {"id": 79, "n": "02", "s": 7, "t": "evaluation", "f": "Coen 點答「監管者應唔應該同業界打交道」？", "b": "Coen 認為企業同監管者學識合作時，監管可以係雙贏", "q": "when business and regulators learn to work together, regulation can be a positive sum", "loc": "Coen2005 p.395"}, {"id": 80, "n": "03", "s": 1, "t": "fact", "f": "Yackee 同 Yackee 要驗證乜？", "b": "Yackee 同 Yackee 要驗證聯邦官僚喺公告同評論規則制定入面係咪偏幫商界", "q": "We test the proposition that the federal bureaucracy exhibits a “bias toward business” during notice and comment rulemaking.", "loc": "YackeeYackee2006 p.128"}, {"id": 81, "n": "03", "s": 1, "t": "fact", "f": "美國聯邦機構定嘅規則同國會法律比點？", "b": "Coglianese 指出美國聯邦機構定嘅規則數目係國會通過法律嘅十倍", "q": "federal agencies have adopted 10 times as many rules as Congress has passed laws", "loc": "**Coglianese**, in YackeeYackee2006 p.128"}, {"id": 82, "n": "03", "s": 1, "t": "fact", "f": "美國法律要求聯邦機構定規則前做乜？", "b": "Yackee 同 Yackee 指出美國法律要求聯邦機構喺定大部分最終規則之前收集同考慮市民意見", "q": "Federal agencies are required by law to solicit and take into account the views of concerned citizens prior to the promulgation of most final agency rules.", "loc": "YackeeYackee2006 p.128"}, {"id": 83, "n": "03", "s": 1, "t": "evaluation", "f": "支持者點睇公告同評論程序？", "b": "Croley 同 Harris 同 Milkis 等支持者認為公告同評論程序可以拉平參與同影響嘅機會，抵銷商界嘅天然優勢", "q": "such procedures promise to neutralize the natural advantage of business interests by equalizing opportunities to participate in, and to influence, the formation of agency policy", "loc": "**Croley; Harris and Milkis**, in YackeeYackee2006 p.128"}, {"id": 84, "n": "03", "s": 1, "t": "conceptual", "f": "利益團體組成有偏差，等唔等於政府產出有偏差？", "b": "Salisbury 同 Gray 同 Lowery 指出利益團體組成有偏差，唔等於政府產出有偏差", "q": "bias in the formation of groups does not necessarily mean bias in government outputs", "loc": "**Salisbury; Gray and Lowery**, in YackeeYackee2006 p.130"}, {"id": 85, "n": "03", "s": 2, "t": "cause", "f": "第一個機制：機構會受乜影響？", "b": "Yackee 同 Yackee 預期機構會受商界意見數量影響", "q": "First, agencies are likely to be influenced by the number of comments coming from business interests.", "loc": "YackeeYackee2006 p.130"}, {"id": 86, "n": "03", "s": 2, "t": "cause", "f": "點解商界交咗大部分意見，機構唔理會有風險？", "b": "Yackee 同 Yackee 認為如果商界交咗大部分意見，機構唔理會有風險", "q": "If business interests submit the majority of comments, then agencies ignore these recommendations at their peril.", "loc": "YackeeYackee2006 p.130"}, {"id": 87, "n": "03", "s": 2, "t": "cause", "f": "第二個機制：商界意見可能有咩特點？", "b": "Yackee 同 Yackee 預期商界意見提供更多資訊、顯示更高專業程度", "q": "Second, comments from business-related interests provide more information and signal a greater level of commenter expertise", "loc": "YackeeYackee2006 p.130"}, {"id": 88, "n": "03", "s": 2, "t": "fact", "f": "點解企業意見可能有用？", "b": "Magat、Krupnick 同 Harrington 指出企業往往擁有機構定規則需要嘅數據同專業資訊", "q": "businesses and industries often hold data and expert information that the agencies want and need to promulgate rules", "loc": "**Magat, Krupnick and Harrington**, in YackeeYackee2006 p.131"}, {"id": 89, "n": "03", "s": 3, "t": "fact", "f": "Yackee 同 Yackee 嘅樣本幾大？", "b": "Yackee 同 Yackee 嘅樣本係 40 條規則同 1,693 份意見", "q": "The selected rules totalled 40 with 1,693 comments.", "loc": "YackeeYackee2006 p.131"}, {"id": 90, "n": "03", "s": 3, "t": "definition", "f": "「商界利益」點界定？", "b": "Yackee 同 Yackee 將「商界利益」界定為行業協會或者個別企業嘅成員或代表", "q": "“business interests” (members or representatives of a trade association or individual business)", "loc": "YackeeYackee2006 p.132"}, {"id": 91, "n": "03", "s": 3, "t": "fact", "f": "幾多商界意見者要求減少規管？", "b": "Yackee 同 Yackee 發現超過 83% 商界意見者要求最終規則減少規管", "q": "over 83% of the business commenters in the study sought less regulation in final rules", "loc": "YackeeYackee2006 p.132"}, {"id": 92, "n": "03", "s": 4, "t": "fact", "f": "商界交咗幾多份意見？佔幾多？", "b": "Yackee 同 Yackee 發現商界交咗 1,693 份公眾意見入面嘅 966 份，即超過 57%", "q": "business interests submitted 966 of the 1,693 public comments in our data set—over 57%", "loc": "YackeeYackee2006 p.133"}, {"id": 93, "n": "03", "s": 4, "t": "fact", "f": "公益團體交咗幾多份意見？", "b": "Yackee 同 Yackee 發現公益團體只交咗 95 份意見，佔總數 6%", "q": "public interest groups provided only 95 comments, or 6% of the total comments", "loc": "YackeeYackee2006 p.133"}, {"id": 94, "n": "03", "s": 4, "t": "evaluation", "f": "公告同評論程序有冇喺意見數量上拉平參與？", "b": "Yackee 同 Yackee 認為公告同評論程序冇喺意見數量上拉平參與", "q": "notice and comment procedures do not equalize participation in terms of volume of comments submitted", "loc": "YackeeYackee2006 p.133"}, {"id": 95, "n": "03", "s": 5, "t": "fact", "f": "商界齊心要求減規管時，機構有幾大機會照做？", "b": "Yackee 同 Yackee 發現商界齊心要求減少規管時，機構九成以上會喺最終規則減規管", "q": "When business commenters are united in their desire to see less regulation in a final rule (near the -.9 mark on the X-axis), the figure shows that they will receive less regulation over 90% of the time.", "loc": "YackeeYackee2006 p.135"}, {"id": 96, "n": "03", "s": 5, "t": "evaluation", "f": "「公告同評論喺產出上有拉平作用」嘅說法啱唔啱？", "b": "Yackee 同 Yackee 認為「公告同評論程序喺產出上有拉平作用」嘅說法大致錯咗", "q": "claims of the equalizing effects of notice and comment procedures on agency outputs are largely misplaced", "loc": "YackeeYackee2006 p.135"}, {"id": 97, "n": "03", "s": 5, "t": "fact", "f": "非商界非政府意見同最終規則改動有冇顯著關係？", "b": "Yackee 同 Yackee 發現非商界非政府意見同最終規則改動之間冇統計上顯著嘅關係", "q": "we find no statistically significant relationship between nonbusiness/nongovernment comments and changes in the final rule", "loc": "YackeeYackee2006 p.135"}, {"id": 98, "n": "03", "s": 5, "t": "evaluation", "f": "結果係咪代表商界影響係犧牲非商界偏好得嚟？", "b": "Yackee 同 Yackee 提醒結果唔一定代表商界影響係以犧牲非商界偏好得嚟", "q": "We caution that these results do not necessarily mean that business influence comes at the expense of nonbusiness preferences.", "loc": "YackeeYackee2006 p.135"}, {"id": 99, "n": "03", "s": 6, "t": "fact", "f": "邊個解釋有穩固支持：人多定質素？", "b": "Yackee 同 Yackee 發現商界意見佔比越高，商界影響越大，呢個解釋有穩固支持", "q": "We find solid support for the explanation that business influence is enhanced when there are a high proportion of business comments submitted during the public comment period.", "loc": "YackeeYackee2006 p.136"}, {"id": 100, "n": "03", "s": 6, "t": "fact", "f": "商界意見佔比越高，最終規則點變？", "b": "Yackee 同 Yackee 發現商界意見佔比越高，最終規則越偏向減少政府介入", "q": "as the proportion of business commenters increases, agency outputs become increasingly skewed toward providing less government involvement in final rules", "loc": "YackeeYackee2006 p.136"}, {"id": 101, "n": "03", "s": 6, "t": "fact", "f": "有冇證據支持「商界意見更專業」？", "b": "Yackee 同 Yackee 搵唔到證據支持「商界意見資訊同專業較高」呢個解釋", "q": "In contrast, we found no support for our second explanation regarding business bias", "loc": "YackeeYackee2006 p.136"}, {"id": 102, "n": "03", "s": 6, "t": "cause", "f": "點解專業唔似係商界影響大嘅原因？", "b": "Yackee 同 Yackee 認為商界意見質素唔高過其他人，所以專業唔似係商界影響過大嘅原因", "q": "If business comments are generally of no higher quality than the comments of other kinds of commenters, then it is unlikely that business expertise is behind the disproportionate influence of business commenters.", "loc": "YackeeYackee2006 p.137"}, {"id": 103, "n": "03", "s": 7, "t": "evaluation", "f": "Stewart 點睇廣泛參與權？", "b": "Stewart 認為廣泛參與權唔保證所有相關利益都會喺機構面前有代表", "q": "[b]road participation rights do not, by any means, ensure that all relevant interests will be represented before the agencies", "loc": "**Stewart**, in YackeeYackee2006 p.137"}, {"id": 104, "n": "03", "s": 7, "t": "evaluation", "f": "Pika 點睇有意義嘅公眾參與？", "b": "Pika 認為有意義嘅公眾參與，立法規定容易，做到難", "q": "meaningful public participation is easier to mandate than to achieve", "loc": "**Pika**, in YackeeYackee2006 p.137"}, {"id": 105, "n": "03", "s": 7, "t": "evaluation", "f": "美國行政程序法有冇做到原本目標？", "b": "Yackee 同 Yackee 認為美國行政程序法起碼部分做到限制聯邦機構任意規管嘅原本目標", "q": "the APA has at least partially accomplished one of its primary, original goals: limiting the ability of federal agencies to regulate with impunity", "loc": "YackeeYackee2006 p.137"}, {"id": 106, "n": "03", "s": 7, "t": "action", "f": "點樣可能減少商界喺評論期嘅影響？", "b": "Yackee 同 Yackee 認為其他參與者更積極交意見，商界喺公告同評論期嘅影響可能會下降", "q": "if other types of participants become more active in their submission of comments, business influence over agency policy outputs may decrease during the notice and comment period", "loc": "YackeeYackee2006 p.137"}, {"id": 107, "n": "03", "s": 7, "t": "evaluation", "f": "結果有咩限制（規則類型）？", "b": "Yackee 同 Yackee 承認結果可能只適用於佔機構議程大多數嘅低關注度規則", "q": "our findings may be contingent on our choice to focus on the relatively low salience rulemakings that dominate most agencies’ regulatory agendas", "loc": "YackeeYackee2006 p.137"}, {"id": 108, "n": "03", "s": 7, "t": "evaluation", "f": "結果支持俘虜理論定 Carpenter 修正版？", "b": "Yackee 同 Yackee 對結果支持俘虜理論定 Carpenter 嘅修正版保持中立", "q": "we are agnostic as to whether our results lend support to “capture” theory or to Carpenter’s revision of it", "loc": "YackeeYackee2006 p.137"}, {"id": 109, "n": "03", "s": 7, "t": "action", "f": "最值得研究嘅係乜？", "b": "Yackee 同 Yackee 認為最值得研究嘅係公告同評論程序本身能否設計得更能拉平參與同影響", "q": "whether notice and comment procedures themselves may be more effectively designed to equalize participation and influence is perhaps the question most worthy of further evaluation and empirical scrutiny", "loc": "YackeeYackee2006 p.138"}, {"id": 110, "n": "04", "s": 1, "t": "fact", "f": "Yackee 用咗乜數據測試利益團體嘅直接影響？", "b": "Yackee 用 1,444 份利益團體對 40 條聯邦機構規則嘅意見，測試利益團體嘅直接影響", "q": "I conduct a test of direct interest group influence by analyzing an original data set composed of 1,444 interest group comments in reaction to forty federal agency rules.", "loc": "Yackee2006JPART p.103"}, {"id": 111, "n": "04", "s": 1, "t": "fact", "f": "美國法律畀公眾乜權利、冇畀乜權利？", "b": "Yackee 指出美國法律畀公眾參與規則制定嘅權利，但冇畀影響規則嘅權利", "q": "current law provides the public the right to participate in—but not the right to influence—rulemaking", "loc": "Yackee2006JPART p.104"}, {"id": 112, "n": "04", "s": 1, "t": "evaluation", "f": "學界共識點睇公告同評論期？", "b": "Yackee 指出學界共識低估公告同評論期喺政策執行中嘅重要性", "q": "a scholarly consensus has developed that downplays the importance of the notice and comment period within the policy implementation process", "loc": "Yackee2006JPART p.104"}, {"id": 113, "n": "04", "s": 1, "t": "conceptual", "f": "McCubbins、Noll 同 Weingast 話國會點樣「做牌」？", "b": "McCubbins、Noll 同 Weingast 認為國會透過行政程序為佢偏愛嘅利益團體「做牌」", "q": "Congress ‘‘stacks the deck’’ for its favored interest groups", "loc": "**McCubbins, Noll and Weingast**, in Yackee2006JPART p.106"}, {"id": 114, "n": "04", "s": 1, "t": "conceptual", "f": "「火警鐘」講法係乜？", "b": "McCubbins 同 Schwartz 認為國會利用利益團體監察官僚、通知議員有問題嘅官僚行為", "q": "Congress uses interest groups to police the actions of the bureaucracy and to alert members of Congress of problematic bureaucratic actions", "loc": "**McCubbins and Schwartz**, in Yackee2006JPART p.106"}, {"id": 115, "n": "04", "s": 2, "t": "cause", "f": "官僚點解會聽利益團體意見？", "b": "Yackee 認為官僚聽利益團體意見有兩個原因：意見提供新資訊同專業知識，同埋回應意見可以減少將來嘅法庭挑戰", "q": "First, interest group comments provide a new source of information and expertise to the bureaucracy during the rulemaking process. Second, the bureaucracy can reduce future court challenges by responding to the concerns expressed within comments.", "loc": "Yackee2006JPART p.105"}, {"id": 116, "n": "04", "s": 2, "t": "fact", "f": "法官點樣審查最終規則？", "b": "Funk、Shapiro 同 Weaver 指出法官會審查最終規則係咪草案同書面意見嘅「合乎邏輯延伸」", "q": "judges evaluate whether a final rule was a ‘‘logical outgrowth’’ of the proposed rule and the written comments", "loc": "**Funk, Shapiro and Weaver**, in Yackee2006JPART p.108"}, {"id": 117, "n": "04", "s": 2, "t": "cause", "f": "將來上法庭嘅威脅有咩作用？", "b": "Yackee 認為將來上法庭嘅威脅令利益團體有直接影響力", "q": "the ‘‘threat’’ of future court action provides interest groups with a source of direct influence", "loc": "Yackee2006JPART p.108"}, {"id": 118, "n": "04", "s": 2, "t": "cause", "f": "Schmidt 點講有效參與？", "b": "Schmidt 認為有效參與會逼機構決策者起碼滿足企業或利益團體嘅最低要求", "q": "effective participation compels agency decision makers to satisfy at least the minimum demands of a firm or interest group", "loc": "**Schmidt**, in Yackee2006JPART p.108"}, {"id": 119, "n": "04", "s": 2, "t": "fact", "f": "評論期嘅規則改動通常係加定減？", "b": "West 等指出評論期嘅規則改動通常係刪減，而唔係創新或者增加", "q": "subtractive rather than innovative or additive", "loc": "**West**, in Yackee2006JPART p.108"}, {"id": 120, "n": "04", "s": 3, "t": "fact", "f": "組織化利益交咗幾多份意見？", "b": "Yackee 嘅樣本入面組織化利益交咗 1,693 份意見中嘅 1,444 份，即 85%", "q": "Organized interests submitted 1,444 of the 1,693 total comments (85 percent).", "loc": "Yackee2006JPART p.110"}, {"id": 121, "n": "04", "s": 3, "t": "definition", "f": "Yackee 點界定利益團體？", "b": "Yackee 跟 Kerwin 將利益團體界定為包括企業、行業協會、工會、其他層級政府同公益團體", "q": "companies, business and trade associations, unions, other levels of government, and the so-called public interest groups", "loc": "**Kerwin**, in Yackee2006JPART p.110"}, {"id": 122, "n": "04", "s": 3, "t": "fact", "f": "40 條規則喺評論期內改動程度點分佈？", "b": "Yackee 發現 40 條規則喺評論期內冇改嘅 7 條、細改 13 條、中改 9 條、大改 11 條", "q": "the amount of change between the proposed and final rules ranged from No Change (seven rules), Small Change (thirteen rules), Medium Change (nine rules), to Large Change (eleven rules)", "loc": "Yackee2006JPART p.111"}, {"id": 123, "n": "04", "s": 3, "t": "conceptual", "f": "Yackee 假設官僚點樣處理競爭利益？", "b": "Yackee 假設官僚平衡互相競爭嘅利益團體，並受意見嘅主要訊息影響", "q": "bureaucrats balance the needs and wants of competing interest groups and are influenced by the primary message sent within interest group comments", "loc": "Yackee2006JPART p.112"}, {"id": 124, "n": "04", "s": 4, "t": "fact", "f": "Yackee 有冇發現利益團體意見影響規則？", "b": "Yackee 發現有力證據顯示利益團體意見會影響行政部門機構發出嘅規則", "q": "I find strong evidence that interest group comments influence the bureaucratic rules issued by executive department agencies", "loc": "Yackee2006JPART p.114"}, {"id": 125, "n": "04", "s": 4, "t": "fact", "f": "幾多條規則嘅利益團體意見整體想要少啲規管？", "b": "Yackee 發現 40 條規則入面約 80%（32 條）嘅利益團體意見者整體想要較少規管", "q": "interest group commenters wanted less regulation about 80 percent of the time (thirty-two rules)", "loc": "Yackee2006JPART p.116"}, {"id": 126, "n": "04", "s": 4, "t": "fact", "f": "利益團體大致一致要求減規管時，結果點？", "b": "Yackee 發現利益團體大致一致要求減規管時，九成以上會得到較少規管", "q": "when interest group commenters are largely united in their desire to see less regulation in a final rule, then they receive less regulation over 90 percent of the time", "loc": "Yackee2006JPART p.117"}, {"id": 127, "n": "04", "s": 4, "t": "fact", "f": "機構採納咗幾多項主要建議改變？", "b": "Yackee 發現機構喺最終規則採納咗意見者 183 項主要建議改變入面嘅 90 項，即 49%", "q": "the agencies altered their final rules in response to 90 of the 183 top suggested changes by commenters (49 percent)", "loc": "Yackee2006JPART p.117"}, {"id": 128, "n": "04", "s": 4, "t": "cause", "f": "意見高度一致時，機構有幾大機會修改規則反映佢哋關注？", "b": "Yackee 發現意見高度一致時，機構有 72% 機會修改最終規則去反映意見者嘅主要關注", "q": "there is a 72 percent chance that the agency will change its final rule to reflect the commenters’ top concerns", "loc": "Yackee2006JPART p.117"}, {"id": 129, "n": "04", "s": 5, "t": "evaluation", "f": "Yackee 話學界共識要點？", "b": "Yackee 認為學界對利益團體喺評論期影響力嘅現有共識需要重新評估", "q": "the existing scholarly consensus regarding the importance, or lack thereof, of interest groups’ impact during the notice and comment period of rulemaking needs reevaluation", "loc": "Yackee2006JPART p.119"}, {"id": 130, "n": "04", "s": 5, "t": "evaluation", "f": "喺評論期表達偏好嘅人可以達到乜？", "b": "Yackee 認為喺評論期表達偏好嘅人可以令政府政策產出更貼近佢哋嘅偏好", "q": "In short, those who voice their preferences during the notice and comment period of rulemaking are able to change government policy outputs to better match their preferences.", "loc": "Yackee2006JPART p.119"}, {"id": 131, "n": "04", "s": 5, "t": "normative", "f": "「有意義嘅參與者影響」呢個目標有冇被實現？", "b": "Yackee 認為有證據顯示「有意義嘅參與者影響」呢個目標喺官僚規則制定中正被實現", "q": "some evidence that the goal of meaningful participant influence during bureaucratic rulemaking is being met within the ‘‘fourth branch’’ of government", "loc": "Yackee2006JPART p.119"}, {"id": 132, "n": "04", "s": 5, "t": "action", "f": "Yackee 建議將來研究乜？", "b": "Yackee 建議將來研究評估利益團體喺規則制定所有階段嘅得益", "q": "Future work, for example, should assess the gains made by interest group participants at all stages of rulemaking", "loc": "Yackee2006JPART p.120"}, {"id": 133, "n": "05", "s": 1, "t": "definition", "f": "協商式規則制定係乜？", "b": "Coglianese 將協商式規則制定界定為喺機構發出擬議規則之前、加喺《行政程序法》公告同評論程序之上嘅協商過程", "q": "Negotiated rulemaking supplements the notice-and-comment procedures of the Administrative Procedure Act (APA) … with a negotiation process that takes place before an agency issues a proposed regulation.", "loc": "Coglianese1997 p.1256"}, {"id": 134, "n": "05", "s": 1, "t": "definition", "f": "協商規則制定委員會係乜？", "b": "美國法例將協商規則制定委員會界定為機構成立、為咗喺草擬規則上達成共識而討論嘅諮詢委員會", "q": "an advisory committee established by an agency . . . to consider and discuss issues for the purpose of reaching a consensus in the development of a proposed rule", "loc": "**5 U.S.C. § 562**, in Coglianese1997 p.1256"}, {"id": 135, "n": "05", "s": 1, "t": "evaluation", "f": "協商式規則制定嘅工具性價值係被證明定被聲稱？", "b": "Coglianese 認為協商式規則制定嘅工具性價值多數係被聲稱，而唔係被證明", "q": "the instrumental value of negotiated rulemaking has more often been asserted than demonstrated", "loc": "Coglianese1997 p.1258"}, {"id": 136, "n": "05", "s": 1, "t": "fact", "f": "協商式規則制定嘅兩個主要目標係乜？", "b": "Coglianese 發現協商式規則制定嘅主要目標係減少制定時間同減少司法覆核申請", "q": "My review shows that the chief goals of negotiated rulemaking have been to reduce both rulemaking time and the filing of petitions for judicial review.", "loc": "Coglianese1997 p.1260"}, {"id": 137, "n": "05", "s": 1, "t": "normative", "f": "即使協商慳時間減訴訟，仲可以點樣反對佢？", "b": "Coglianese 指出即使協商大幅減少時間同訴訟，仍然可以基於代表性同政府問責反對佢", "q": "Even if negotiated rulemaking reduced time and litigation substantially, we still might reject it for reasons related to representation and governmental accountability.", "loc": "Coglianese1997 p.1260"}, {"id": 138, "n": "05", "s": 2, "t": "fact", "f": "到 1996 年底有幾多個聯邦機構試過協商？", "b": "Coglianese 指出到 1996 年底只有 17 個聯邦機構曾經啟動協商式規則制定", "q": "By the end of 1996, seventeen federal agencies had initiated at least one negotiated rulemaking process", "loc": "Coglianese1997 p.1273"}, {"id": 139, "n": "05", "s": 2, "t": "fact", "f": "1983 年起協商頒布咗幾多條規則？", "b": "Coglianese 指出 1983 年起聯邦機構只用協商程序頒布咗 35 條規則，即每年約 2.7 條", "q": "federal agencies have promulgated only thirty-five rules using the alternative procedure, or about 2.7 each year", "loc": "Coglianese1997 p.1275"}, {"id": 140, "n": "05", "s": 2, "t": "fact", "f": "平均一個協商式規則制定要幾耐？", "b": "Coglianese 發現平均一個協商式規則制定要差唔多兩年半完成", "q": "The average negotiated rulemaking takes a little less than two and a half years to complete", "loc": "Coglianese1997 p.1279"}, {"id": 141, "n": "05", "s": 2, "t": "fact", "f": "分析 EPA 所有協商規則，最多慳到幾多時間？", "b": "Coglianese 分析 EPA 所有協商規則，發現最多只慳到三個月多啲", "q": "my analysis of all of EPA’s negotiated rules suggests (at most) little more than three months savings", "loc": "Coglianese1997 p.1284"}, {"id": 142, "n": "05", "s": 2, "t": "evaluation", "f": "點解唔可以話協商加快咗監管過程？", "b": "Coglianese 認為協商壓縮員工時間但仍然用唔少過普通程序，所以唔能夠話佢加快咗監管過程", "q": "When negotiated rulemaking compresses staff time in this way and still ends up taking at least as long as conventional rulemaking, it is impossible to conclude that it has successfully increased the speed of the regulatory process.", "loc": "Coglianese1997 p.1286"}, {"id": 143, "n": "05", "s": 3, "t": "fact", "f": "大峽谷能見度規則嘅結局係點？", "b": "Coglianese 指出被視為協商典範嘅大峽谷能見度規則最終都被告上聯邦法院", "q": "the Grand Canyon visibility rule still ended up in federal court", "loc": "Coglianese1997 p.1289"}, {"id": 144, "n": "05", "s": 3, "t": "evaluation", "f": "最初達成共識可唔可以保證冇爭議？", "b": "Coglianese 認為最初達成共識完全保證唔到爭議會消失", "q": "the achievement of an initial consensus by no means guarantees the elimination of controversy", "loc": "Coglianese1997 p.1294"}, {"id": 145, "n": "05", "s": 3, "t": "fact", "f": "「EPA 八成規則被告」呢個數字有冇分析支持？", "b": "Coglianese 發現「EPA 八成規則被告」呢個數字背後冇任何 EPA 分析", "q": "Amazingly, no EPA analyses underlay the origin of this statistic, even though it has taken on a life of its own.", "loc": "Coglianese1997 p.1297"}, {"id": 146, "n": "05", "s": 3, "t": "fact", "f": "EPA 1987 至 1991 年規則幾多被挑戰？", "b": "Coglianese 發現 EPA 1987 至 1991 年發出嘅規則只有 26% 被挑戰", "q": "only 26 percent of rules issued were challenged", "loc": "Coglianese1997 p.1298"}, {"id": 147, "n": "05", "s": 3, "t": "fact", "f": "重要 RCRA 同清潔空氣法規則嘅訴訟率係幾多？", "b": "Coglianese 發現 1980 至 1991 年 220 條全國性重要 RCRA 同《清潔空氣法》規則入面有 77 條被申請覆核，訴訟率 35%", "q": "A total of 220 nationally-applicable significant RCRA and Clean Air Act rules were completed from 1980 to 1991. Of these, petitions for review were filed against 77, yielding an aggregate litigation rate of 35 percent.", "loc": "Coglianese1997 p.1300"}, {"id": 148, "n": "05", "s": 3, "t": "fact", "f": "EPA 12 條協商規則有幾多被申請覆核？", "b": "Coglianese 發現 EPA 12 條以協商方式制定嘅最終規則起碼有 6 條被申請司法覆核", "q": "at least six of EPA’s twelve finalized rules developed using negotiated rulemaking have been subject to petitions for judicial review filed in federal court", "loc": "Coglianese1997 p.1301"}, {"id": 149, "n": "05", "s": 3, "t": "cause", "f": "參與者幾時會申請覆核？", "b": "Coglianese 認為參與者會喺最終規則同協議不符、或者有協商冇處理嘅不利條文時申請覆核", "q": "Participants file judicial petitions when they believe the final rule is inconsistent with the negotiated agreement or when it contains adverse provisions not addressed by the negotiation.", "loc": "Coglianese1997 p.1307"}, {"id": 150, "n": "05", "s": 3, "t": "evaluation", "f": "協商式規則制定喺減少訴訟上有冇可證明嘅成功？", "b": "Coglianese 認為協商式規則制定作為減少訴訟嘅手段，未有任何可證明嘅成功", "q": "As a means of reducing litigation, negotiated rulemaking has yet to show any demonstrable success.", "loc": "Coglianese1997 p.1309"}, {"id": 151, "n": "05", "s": 3, "t": "evaluation", "f": "選樣偏差嘅方向有利邊邊？", "b": "Coglianese 認為選樣偏差嘅方向有利協商規則慳時間同少訴訟，而唔係相反", "q": "there is good reason to believe that any overall selection bias tends in the direction of shorter rulemaking time and less litigation, not the other way around", "loc": "Coglianese1997 p.1313"}, {"id": 152, "n": "05", "s": 4, "t": "evaluation", "f": "Coglianese 點總結協商式規則制定？", "b": "Coglianese 認為以追求共識為特徵嘅協商式規則制定，係一個被誇大問題嘅被過度推銷嘅方案", "q": "negotiated rulemaking, distinguished by its search for consensus, has been an oversold solution to an overstated problem", "loc": "Coglianese1997 p.1321"}, {"id": 153, "n": "05", "s": 4, "t": "cause", "f": "協商式規則制定點解反而製造新衝突？", "b": "Coglianese 認為協商式規則制定雖然旨在減少衝突，實際上製造咗新嘅潛在衝突來源", "q": "First, negotiated rulemaking actually creates new sources of potential conflict in the regulatory process, even though it is ostensibly designed to reduce conflict.", "loc": "Coglianese1997 p.1321"}, {"id": 154, "n": "05", "s": 4, "t": "cause", "f": "將某啲團體排除喺協商委員會之外有咩後果？", "b": "Coglianese 認為將某啲團體排除喺協商委員會之外，帶嚟公告同評論程序冇嘅不滿", "q": "the exclusion of groups from membership on the committees adds a source of discontentment not otherwise present in notice-and-comment rulemaking", "loc": "Coglianese1997 p.1323"}, {"id": 155, "n": "05", "s": 4, "t": "cause", "f": "一個組織可以點樣打破共識？", "b": "Coglianese 指出單一個組織已經可以打破以全體一致為基礎嘅共識，或者申請司法覆核", "q": "One organization alone is capable of upsetting a consensus built on unanimity or filing a petition for judicial review.", "loc": "Coglianese1997 p.1323"}, {"id": 156, "n": "05", "s": 4, "t": "cause", "f": "點解早期共識天生脆弱？", "b": "Coglianese 認為美國行政國家嘅結構有好多機會拆散規則制定早期達成嘅共識，所以共識天生脆弱", "q": "A consensus forged at the earliest stages of the rulemaking process is inherently fragile because the structure of the American administrative state provides numerous opportunities for that consensus to unravel.", "loc": "Coglianese1997 p.1327"}, {"id": 157, "n": "05", "s": 4, "t": "normative", "f": "一個令利益團體交易難以落實嘅程序係好定壞？", "b": "Coglianese 認為一個令利益團體交易難以落實嘅程序可以被視為非常可取", "q": "it can be thought highly desirable to have a process that makes it harder for interest group deals to stick", "loc": "Coglianese1997 p.1329"}, {"id": 158, "n": "05", "s": 4, "t": "evaluation", "f": "普通規則制定喺避免訴訟方面表現點？", "b": "Coglianese 認為普通規則制定喺避免訴訟衝突方面遠比一般認為有效", "q": "conventional rulemaking works far better in avoiding litigated conflict than has been widely believed", "loc": "Coglianese1997 p.1330"}, {"id": 159, "n": "05", "s": 4, "t": "evaluation", "f": "協商式規則制定失敗，係咪代表監管入面嘅協商失敗？", "b": "Coglianese 認為協商式規則制定失敗唔代表監管過程入面嘅協商失敗", "q": "The failure of negotiated rulemaking—with its quest for consensus—by no means implies a failure of negotiation in the regulatory process.", "loc": "Coglianese1997 p.1331"}, {"id": 160, "n": "05", "s": 4, "t": "cause", "f": "普通規則制定有咩好處？", "b": "Coglianese 認為普通規則制定可以令機構更清楚知道各團體利益嘅強弱", "q": "conventional rulemaking can provide agencies with clearer information about the intensities of various groups’ interests", "loc": "Coglianese1997 p.1331"}, {"id": 161, "n": "05", "s": 5, "t": "evaluation", "f": "追求共識帶嚟嘅「了結」同慣用做法比點？", "b": "Coglianese 認為追求共識帶嚟嘅了結少過機構慣用嘅規則制定方式", "q": "The quest for consensus has produced less closure than has the more practiced style of rulemaking on which agencies ordinarily rely.", "loc": "Coglianese1997 p.1334"}, {"id": 162, "n": "05", "s": 5, "t": "fact", "f": "EPA 協商規則嘅訴訟率同其他重要規則比點？", "b": "Coglianese 發現 EPA 協商規則嘅訴訟率其實高過其他重要 EPA 規則", "q": "The litigation rate for negotiated rules issued by the EPA has actually been higher than that for other significant EPA rules.", "loc": "Coglianese1997 p.1335"}, {"id": 163, "n": "05", "s": 5, "t": "action", "f": "Coglianese 建議機構點做？", "b": "Coglianese 建議機構繼續依賴唔靠共識嘅公眾參與方法作監管決策", "q": "agencies’ continued reliance on public participation methods which do not depend on consensus would appear the more sensible approach to making regulatory decisions", "loc": "Coglianese1997 p.1336"}];
+
+const NOTES_META={"01": {"t": "企業嘅政治權力（Zingales）", "q": "企業點樣將經濟權力變成政治權力？幾多先夠？", "read": "謎題；不完全合約；Medici 惡性循環；市場力量上升；睇產出；越嚟越嚴重同剛剛好；制度同出路。"}, "02": {"t": "英德監管遊戲（Coen）", "q": "監管者同企業點樣學識打交道？", "read": "冇統一模式；資源互相依賴；英國信譽遊戲；德國權力重疊同法庭；揀場；四種資訊關係；結論。"}, "03": {"t": "諮詢偏幫商界？（Yackee 同 Yackee）", "q": "公告同評論程序係咪偏幫商界？", "read": "問題；人多同資訊兩個機制；數據方法；邊個參與；邊個有影響；點解商界贏；結論同限制。"}, "04": {"t": "意見改到規則（Yackee）", "q": "利益團體意見真係直接改到最終規則？", "read": "評論期係咪無關痛癢；資訊同法院；數據；結果；意涵同限制。"}, "05": {"t": "協商式規則制定（Coglianese 1997）", "q": "協商式規則制定有冇兌現慳時間同減訴訟？", "read": "係乜同承諾；冇慳時間；訴訟同八成神話；點解失敗；用唔靠共識嘅方法。"}};
+const NOTE_ORDER=["01", "02", "03", "04", "05"];
+const NOTES=[
+{k:"01-1",t:"謎題：大企業大過國家，經濟學點解當佢冇權",lv:[],vis:[],b:`<p>Zingales 一開波就用數字：2015 年按收入排，全球最大 100 個政府同企業入面，69 個係企業。呢啲公司有私人保安、龐大公關同律師團隊，夠錢去影響民選代表。但主流經濟學唔理呢啲。主流觀點將公司當成「一束合約」。</p>
+ <p>Zingales 話呢個講法對細公司或者私人公司可能啱，但對巨型跨國企業就唔啱：最大嘅現代企業令經濟（同政治）權力集中喺幾個人手上，而呢班人差唔多唔使向任何人負責。佢嘅中心論點係：集中嘅企業權力同政治互動，會威脅自由市場，亦會威脅民主。</p>`},
+{k:"01-2",t:"由 Adam Smith 到不完全合約：權力點樣被忘記又返嚟",lv:[],vis:[],b:`<p>經濟學唔係一向都睇唔到企業權力。Adam Smith 好睇唔起當時靠皇室專營權嘅股份公司。東印度公司（East India Company）原本只得 15 年專營權，佢不停遊說同行賄，結果延長咗兩個世紀。到美國鍍金時代（Gilded Age），規模經濟令贏家通食；Zingales 用運動員食禁藥做比喻：贏家獎勵越大，越有誘因作弊。之後進步時代同新政（反壟斷、拆銀行）先至馴服商界權力。</p>
+ <p>二十世紀中經濟冇咁集中，經濟學家就開始話競爭同收購市場會約束公司。Alchian 同 Demsetz 嘅講法最極端：公司同兩個人之間普通交易冇分別，冇權威、冇紀律處分。Zingales 話呢個只係喺合約可以寫到完全時先成立。現實嘅合約通常唔完全，於是 Grossman 同 Hart 嘅「剩餘控制權」就有意義。</p>
+ <p>Zingales 再行一步：如果合約同規則都唔完全，就有空間去遊說同爭租——即係企業會向監管、司法同政治系統施壓，爭大份啲。呢點同 Stigler 嘅「行業爭取監管」係同一條路，不過 Zingales 將佢擴闊到成個「遊戲規則」，見 監管經濟理論 › Stigler 嘅中心命題。</p>`},
+{k:"01-3",t:"Medici 惡性循環：錢買權，權保錢",lv:[],vis:["v-medici"],b:`<p>冇得直接行賄，公司點樣影響政治？一個常見機制係暗示將來畀官員份工。呢種承諾要可信，公司要夠大夠穩陣：金融危機嗰陣 Citigroup 自身難保，承諾冇人信；JP Morgan 就唔同。所以經濟上越強，政治上就越強。</p>
+ <p>反過嚟，市場力量越大，越驚被政治力量「充公」（expropriation），所以越需要影響政治。兩樣加埋就係「Medici 惡性循環」：用錢攞政治權力，再用政治權力賺更多錢。名來自中世紀佛羅倫斯嘅 Medici 家族：富有家族接管咗本來民主嘅城邦。</p>
+ <p>要留意：Zingales 唔係反對所有市場力量。靠創新得嚟嘅短暫優勢係推動進步嘅動力；問題係企業將大量精力放喺遊說而唔係創新。</p>`},
+{k:"01-4",t:"美國企業嘅市場力量真係大咗",lv:[],vis:[],b:`<p>Zingales 引幾份研究話美國經濟越嚟越集中：過去二十年超過 75% 行業集中度上升。集中唔一定等於市場力量，但 Barkai 發現勞動份額跌，唔係因為資本份額升，而係純利份額升。</p>
+ <p>點解會咁？Zingales 列出網絡效應、贏家通食嘅資訊產品、數據互補（例如 Facebook 收購 Instagram），同埋最後一個——反壟斷執法放軟。1970 至 1999 年美國司法部同聯邦貿易委員會每年平均開 15.7 單《謝爾曼法》第 2 條案；2000 至 2014 年得 2.8 單。佢話幾個解釋唔係互相排斥，而係互相加強。</p>`},
+{k:"01-5",t:"企業政治權力要睇產出，唔好睇投入",lv:[],vis:[],b:`<p>好多人以為企業好黨派，其實唔係：如果用黨派角度睇政治，企業唔重要，亦唔想重要。佢哋要嘅係喺具體議題上有朋友，而且通常搵到，唔理邊個黨。例子：Citigroup 喺法律未改之前已經合併 Travelers；推動修改 Glass–Steagall 嘅財長 Rubin 離任後幾個月就以年薪 1,500 萬美元加入 Citigroup。</p>
+ <p>遊說開支好細：2014 年 Google 收入 800 億美元，遊說只用咗 1,600 萬。Zingales 話唔好用投入量度影響力：冇人會用黑手黨畀幾多賄款去量佢嘅勢力。企業嘅威脅係官員卸任之後喺商界被排擠；呢種威脅好少見到真係執行，正正因為佢好有效。所以要睇產出。</p>
+ <p>產出嘅例子：每次米奇老鼠版權快到期，版權期就延長。Zingales 話呢個例子離譜，因為連理念上嘅掩飾都冇：追溯延長已死作者嘅版權唔會刺激新作品。（呢點同第 6 週投影片嘅「版權同人工智能」個案接得上。）其他例子：聯邦貿易委員會放棄 Google 案而歐洲冇放棄；行政人員去白宮之後股價多升 1%；國會擋唔到嘅法例，就告監管者——例如 Business Roundtable 告美國證監會，以冇做成本效益分析為由推翻代理權規則，證監會之後放棄。最後係直接游說監管者唔好執法：有遊說嘅銀行被執法嘅機會低 44.7%。</p>`},
+{k:"01-6",t:"點解越嚟越嚴重，同「剛剛好」嘅平衡",lv:[],vis:["v-medici"],b:`<p>上面嘅手段都要有市場力量先做到。市場力量畀企業喺影響力遊戲入面有比較優勢；而政治上越成功，市場力量又越大，因為可以擋住對手。過去三十年美國情況變差有三個原因：企業規模同市佔率上升；監管越嚟越大越複雜，方便既得利益傾斜賽場；同埋民主黨以前嘅反商界意識形態消失。</p>
+ <p>但 Zingales 唔係話商界唔應該有聲。冇企業聲音，政治可能偏去另一邊；國家亦可能權力過大、唔保護產權。理想係國家同企業權力「剛剛好」。國家太弱，企業要自己用私人暴力執行產權；國家太強，會充公企業；企業太強，就會按自己利益定義產權。呢個答案直接對應 KEATS 第 3 題「監管者應唔應該同業界打交道」：應該有，但要平衡。</p>`},
+{k:"01-7",t:"制度、經濟條件同出路",lv:[],vis:["v-medici"],b:`<p>企業影響力大細要睇制度：傳媒係咪獨立（唔止唔受政府審查，亦唔受企業審查）、選舉同政治捐獻規則、意識形態、檢控同司法獨立。經濟條件就包括公司能唔能夠作長期可信承諾、控制專業人才市場、將私利包裝成崇高理念，同埋透過就業、數據、傳媒、研究資助控制形象。總括嚟講，企業規模同市場集中度會加強所有呢啲因素。連喺全國市場競爭激烈嘅公司，喺一個小鎮做最大僱主都好有政治影響力。</p>
+ <p>佢畫咗一個光譜：一端係共產專政，政治權力俘虜晒經濟權力；另一端係東印度公司統治下嘅印度，經濟權力俘虜咗政治職能。中間係政治庇護型（例如蘇哈托）同「垂直政治整合」型（富商控制政治）。最接近「剛剛好」嘅係今日北歐同二十世紀下半葉嘅美國；Zingales 擔心美國正滑向垂直政治整合。</p>
+ <p>出路：增加企業活動透明度、改善企業民主、收緊旋轉門規則、注意科學家同經濟學家被企業俘虜嘅風險——再加更積極嘅反壟斷同關注傳媒獨立。但最重要係公眾意識。呢啲補救方法對應投影片問題「點樣減少規則制定偏幫商界」；Yackee 同 Yackee 嘅實證答案見 公眾諮詢係咪偏幫商界 › 點解商界贏。</p>`},
+{k:"02-1",t:"問題：自由化冇帶嚟統一嘅歐洲模式",lv:[],vis:[],b:`<p>Coen 嘅出發點：自由化之後監管增加咗，但冇一個統一嘅歐洲監管模式。佢嘅主要發現係：獨立監管者同企業由疏遠、對抗，變成以資訊交換同建立信譽為主嘅策略工作關係。</p>
+ <p>學得幾快，取決於四樣嘢：市場有幾多個監管者、佢哋權力有冇重疊、諮詢過程有幾多酌情權、監管者存在咗幾耐。證據嚟自 50 個訪問，對象係企業（老牌同新入行）同政府部門、獨立監管者、競爭主管機關嘅官員。佢亦用「唔同國家有唔同制度稟賦」去解釋差異，呢點同資本主義多樣性（varieties of capitalism）嘅講法一致。</p>`},
+{k:"02-2",t:"互相依賴：監管者要資訊，企業想影響",lv:[],vis:["v-coen"],b:`<p>點解監管者要同業界打交道？Coen 嘅答案係「資源互相依賴」（resource dependency）。企業想明白監管點運作、可以嘅話影響佢；監管者就需要前線官員執行、企業提供自己同對手嘅成本資料、消費者指出市場失靈。</p>
+ <p>難處係平衡：少數企業提供快、可靠、技術性嘅資訊，同廣泛諮詢好多持份者，兩樣要兼顧。（注意：Coen 呢度用「輸入／輸出正當性」嘅方式同 Scharpf 常見用法唔同——Scharpf 嘅輸入係參與、輸出係效果；Coen 將技術資訊叫輸入、代表性諮詢叫輸出。）Coen 承認有俘虜風險——但人手不足嘅監管者仍然會靠企業提供資訊，可靠嘅企業就會變成政策「內部人」。</p>
+ <p>市場越競爭，監管者揀「內部人」嘅標準越高；監管者會「格價」，揀啲幫到諮詢嘅企業。企業經過試錯同幾次大衝突，學識幫監管討論而唔係阻住。監管者審計同對標（benchmarking）能力提升之後，誤導嘅企業更易被揭穿；監管者亦可以將唔守承諾嘅企業排除出諮詢。</p>`},
+{k:"02-3",t:"英國：成熟、單一、有酌情權嘅監管者同信譽遊戲",lv:[],vis:["v-coen"],b:`<p>英國私有化早歐洲大陸十年，所以係一個成熟嘅制度。OFTEL 同 OFGEM 等行業監管者主導，自主同酌情權高。只有一個主要接觸點，令企業同監管者關係容易發展。長期同一個監管者打交道，就形成排他嘅信譽遊戲，被排除嘅代價越嚟越大。代價係：權力集中喺一個人身上，判斷可能隨人事變動而不一致。</p>
+ <p>資源有不平等：BT 同 British Gas 有六十幾人嘅專責監管事務部門——細嘅新入行者就靠合約律師。企業早期可能喺 RPI-X 價格上限（即係價格每年最多加通脹減 X）低報效率，但監管者遲早會發現誤導，再用審計或者限制參與諮詢去懲罰。英國監管者對邊個可以「積極」參與諮詢有好大酌情權——呢個工具減低企業誤導嘅誘因，但亦被視為好唔透明、喺講程序嘅歐陸國家難以複製。</p>
+ <p>有趣嘅係，1998 年貿工部綠皮書提出「暴利稅」時，監管者同企業企埋一邊——齊齊話呢個係變相重新國有化。Coen 話監管者唔再淨係向政治主人問責，亦要「向下」向企業同消費者問責。後來仲要「橫向」向其他國內機構、「縱向」向歐盟同國際法負責。英國監管者政治化嘅後續發展，見 由「負責任」到「回應型」。</p>`},
+{k:"02-4",t:"德國：年輕、守法條、權力重疊同上法庭",lv:[],vis:["v-coen"],b:`<p>德國重視競爭法、卡特爾局（BKartA）同程序法庭。電訊監管者 RegTP 好年輕，又同卡特爾局、經濟部權力重疊，經常被企業、法院同政府限制。大企業有資源優勢：Deutsche Telekom 開咗八十幾人嘅監管事務部——對手只有十至十二人。Coen 話大企業、尤其老牌企業，單靠動員到嘅資源已經有策略優勢。</p>
+ <p>RegTP 年輕、企業唔信佢獨立，加上佢又唔透明、資訊要求高，企業就唔肯合作。Coen 話成功監管其實係建立信譽同公信力。德國業界共識係：多個機構並存，製造太多「玩嘢」機會。RegTP 於是借歐盟監管者網絡加強自己裁決嘅公信力。能源方面，德國靠業界自願協議（negotiated third-party access），結果收費高、唔透明，卡特爾局資源唔夠，最後 2004 年綠皮書提議喺 RegTP 開能源部門，即係一個事實上嘅「超級監管者」。</p>
+ <p>德國同英國嘅分別亦反映政治化程度：越政治化，越強調公平多過效率。德國重公平同公共服務，畀消費者更大聲音；英國監管者就推效率同競爭。</p>`},
+{k:"02-5",t:"場地選擇：監管者之間嘅競爭",lv:[],vis:[],b:`<p>如果有幾個監管者權力重疊，企業可以「揀場」（venue shopping）。Coen 話咁會削弱企業同個別監管者之間嘅互相依賴。但企業對特定監管者有「沉沒成本」（信譽、專業知識），亦唔想得罪任何一方；現實上佢哋會集中搞掂嗰個能夠確立優先地位嘅機構。確立優先地位要時間，所以一個穩定高效嘅制度取決於佢嘅年資。</p>
+ <p>歐盟層面：歐盟委員會主動開放企業接觸，借此喺議會同成員國面前取得正當性；但歐盟國家監管者網絡就唔受業界歡迎。（呢點答 KEATS 第 5 題：對業界嘅關注點樣「搬」去歐盟同國際層面；國際層面嘅版本見 ICN › NGA 四個機制。）</p>
+ <p>英國：1998 年《競爭法》之後，OFTEL、OFGEM 同公平貿易局（OFT）權力重疊，但佢哋開「並行工作小組」協調；OFTEL 甚至主動叫其他機構調查，而唔係爭地盤。人手不足嘅監管者用改善諮詢參與權換企業嘅專業資訊。德國：規則多過酌情，權力重疊，好多交鋒喺法庭公開進行，而上法庭要錢——所以對抗式訴訟成為新入行者嘅入場障礙。能源業自願協議亦冇照顧新興利益。</p>`},
+{k:"02-6",t:"資訊交換四格：監察、遵從、反向俘虜、策略意識",lv:[],vis:["v-coen"],b:`<p>Coen 用 Willman 等人嘅講法：企業對監管嘅意識會經歷四個階段。佢畫成一個四格圖（Figure 1，p.392），兩條軸係「公司內部流去監管事務部嘅資訊」同「畀監管者嘅資訊」：</p>
+ <ul>
+ <li><b>B 監察（policing）</b>：早期，企業好自信、只顧股東，嚴控畀監管者嘅資訊，關係正式、對抗、常上法庭。英國私有化初期（第一次 RPI-X 價格檢討前後）係咁；Coen 話德國電訊同能源似乎重蹈英國嘅覆轍。</li>
+ <li><b>A 遵從（compliance）</b>：有啲學習但冇互信，焦點係合規，關係靠把關程序同訴訟；Coen 話英國能源同德國電訊可以歸入呢格。唔合作嘅企業會慢慢被懲罰，甚至排除出諮詢。</li>
+ <li><b>C 反向俘虜（reverse capture）</b>：企業嘅監管事務部同監管者行得太埋，唔再幫公司把關。短期監管者可能滿意，長遠政策創新會減少。</li>
+ <li><b>D 策略意識（strategic awareness）</b>：企業主動帶問題同方案去搵監管者，搶先對手，推動新政策。</li>
+ </ul>
+ <p>Coen 補充：現實上公司會喺幾格之間搖擺，視乎監管週期同議題。「反向俘虜」同一般講嘅監管俘虜方向相反：唔係監管者被企業俘虜，而係企業內部嘅監管部被監管者「俘虜」，見 監管俘虜。</p>`},
+{k:"02-7",t:"結論：繼續唔同，學識專業",lv:[],vis:[],b:`<p>Coen 嘅結論：監管者發現自己向上（政府）、橫向（法院同其他監管者）、向下（企業）嘅問責程度各有不同。德國企業喺年輕、多機構嘅制度下，扣起資訊、喺法庭用知識優勢係理性嘅。英國模式表面上對所有企業開放，但要學識一種和解式遊說，呢樣嘢成為外國同新企業嘅隱形入場障礙。</p>
+ <p>Coen 估德國關係都會穩定落嚟，因為企業會明白打官司贏一場仗贏唔到成場戰爭。佢對 KEATS 第 3 題「應唔應該同業界打交道」嘅答案係樂觀嘅：企業同監管者學識合作，監管可以係雙贏。同 Yackee 同 Yackee 嘅實證比較：Coen 由監管者需要資訊嘅角度講合作嘅好處；Yackee 同 Yackee 就話開放諮詢嘅結果偏向商界，見 公眾諮詢係咪偏幫商界。</p>`},
+{k:"03-1",t:"問題：公告同評論程序有冇「民主化」規則制定",lv:[],vis:[],b:`<p>兩位作者要驗證嘅命題係：聯邦官僚喺公告同評論規則制定入面「偏幫商界」。點解重要？因為聯邦機構定嘅規則好多：Coglianese 計過，聯邦機構定嘅規則係國會通過法律嘅十倍。法律要求機構定大部分規則之前收集同考慮市民意見。</p>
+ <p>支持者話呢個程序可以拉平商界嘅天然優勢。甚至有人（Bignami）建議歐盟學美國，用公告同評論程序去醫歐盟嘅「民主赤字」。以往研究（例如 Golden 1998）大多話冇系統性偏幫商界，但樣本細、量度弱；Kerwin 就話咁少個案根本概括唔到。而利益團體文獻一向話商界有持續優勢；不過團體「組成」有偏差，唔等於政府「產出」有偏差。所以要直接量產出。</p>`},
+{k:"03-2",t:"點解預期偏幫商界：人多同資訊好",lv:[],vis:[],b:`<p>作者提出兩個機制。第一，機構會受商界意見嘅數量影響。參與有成本（睇憲報、讀技術數據、寫論點），商界畀得起；而法院要求機構回應反對意見，好多人講同一樣嘢就更難唔理。</p>
+ <p>第二，商界意見可能資訊多啲、專業啲。商界有能力讀複雜數據、有自己嘅數據、請到律師同專家；Magat 等人話企業往往擁有機構定規則需要嘅數據。呢個「資訊依賴」講法同 Coen 講監管者點解要靠企業一致，見 Coen › 互相依賴。</p>`},
+{k:"03-3",t:"數據同方法",lv:[],vis:[],b:`<p>數據來自美國勞工部嘅職業安全與健康管理局（OSHA）同就業標準管理局（ESA），同運輸部嘅聯邦鐵路管理局（FRA）同聯邦公路管理局（FHWA），1994 至 2001 年；只揀收到 2 至 200 份意見嘅規則，專注機構嘅「日常業務」——而唔係極具爭議嘅大規則。最後係 40 條規則、1,693 份意見。（摘要講「超過 30 條規則」，主模型樣本係 39 條，因為有一條冇商界意見。）</p>
+ <p>方法係內容分析：受訓嘅編碼員睇每條規則嘅草案同最終版，用三分制記低規管程度有冇變（多咗 +1、冇變 0、少咗 −1），呢個係依變項「政府介入」；每份意見又用同一套三分制記佢要求加定減規管。意見者分三類：商界（行業協會或者個別企業）——政府，同非商界非政府（市民、公益團體、學界、智庫、專業協會、工會）。值得記住：超過 83% 商界意見者要求最終規則少啲規管。統計用 ordered probit，控制公眾關注度、技術複雜度同部門。</p>`},
+{k:"03-4",t:"邊個參與：商界交咗 57%",lv:[],vis:["v-yackee"],b:`<p>商界交咗 1,693 份意見入面嘅 966 份，即係超過 57%。政府交 19%，非商界非政府 22%，其中公益團體只交咗 95 份、即 6%。結論：公告同評論程序冇拉平參與量。</p>
+ <p>但作者好小心：冇一個基準話非商界「應該」參與幾多，所以唔好急住話佢哋參與太低。更值得問嘅係：參與少啲嘅人，係咪仍然說服到機構改政策。</p>`},
+{k:"03-5",t:"邊個有影響力：只有商界推得郁最終規則",lv:[],vis:["v-yackee"],b:`<p>主模型（Model A）入面，商界意見顯著影響最終規則嘅規管程度。用預測機率講（Figure 1）：如果商界齊心要少啲規管，機構九成以上會減規管。非商界意見（Model B）就唔顯著；政府意見（Model C）顯著但模型擬合差。</p>
+ <p>所以作者話，說公告同評論程序喺產出上有拉平作用，大致係搞錯咗；非商界意見同最終規則改動之間冇統計上顯著嘅關係。三類一齊放入去（Model D），商界仍然有強影響。不過佢哋提醒：呢個唔一定代表商界嘅影響係犧牲非商界偏好得嚟；只係話控制咗其他人嘅偏好之後，商界仍然推得郁規則。</p>`},
+{k:"03-6",t:"點解商界贏：人多有證據，質素冇證據",lv:[],vis:["v-yackee"],b:`<p>第一個解釋（人多）有實證支持。Model E 加入「商界意見佔比」：佔比越高，最終規則越偏向少規管。Table 2 嘅預測機率：商界佔約 10%、50%、90% 時，規則減規管嘅機率分別係 37%、65%、86%。</p>
+ <p>第二個解釋（質素）就冇支持。作者用五個代理指標量度意見質素：自稱專家（律師、醫生、博士、科學家）、超過一頁、有附件、提出多過一項改動、華盛頓「圈內人」地址。五個都同「係唔係商界」冇顯著關係。所以商界意見唔見得質素高啲，專業唔似係原因。（呢點同 Coen 嘅資訊依賴講法有張力：Coen 話監管者靠企業資訊；Yackee 同 Yackee 喺意見表面睇唔到商界資訊特別好。）</p>`},
+{k:"03-7",t:"結論同限制：點樣減少偏差",lv:[],vis:[],b:`<p>結論呼應 Stewart：廣泛參與權唔保證所有相關利益都有人代表；同 Pika：有意義嘅公眾參與，立法要求易，做到難。但唔係全悲觀：市民同公益團體可以參與，本身有民主價值；而且行政程序法起碼部分做到佢原本目標——限制機構任意規管。</p>
+ <p>點樣減少偏差（投影片問題）？既然影響嚟自人數，其他參與者交多啲意見，商界影響就可能下降。限制：只研究低關注度規則；只係一個時期（共和黨國會、克林頓總統）；只係規則制定一個階段。佢哋對結果支持「俘虜理論」定 Carpenter 嘅修正版保持中立。最值得研究嘅問題係：公告同評論程序本身可唔可以設計得更能拉平參與同影響。歐盟同英國嘅諮詢設計同批評見 監管影響評估同公眾諮詢 › 諮詢嘅批評。</p>`},
+{k:"04-1",t:"問題：公告同評論期係咪無關痛癢",lv:[],vis:[],b:`<p>Yackee 嘅研究設計好直接。法律畀公眾參與權，但冇畀影響權：機構冇義務因應意見改規則。學界共識亦低估呢個階段。</p>
+ <p>主流嘅「誰控制官僚」文獻（委託代理理論）話國會透過行政程序替佢偏愛嘅利益團體「做牌」；或者用利益團體做「火警鐘」監察官僚。（火警鐘嘅講法同監管影響評估嗰版一致，見 監管影響評估同公眾諮詢 › 火警鐘。）Yackee 問：利益團體可唔可以唔經國會，直接影響規則？</p>`},
+{k:"04-2",t:"點解機構會聽：資訊同法院",lv:[],vis:[],b:`<p>Yackee 提出兩個理由。</p>
+ <p>第二個理由同法院審查有關：法官會問最終規則係咪草案同意見嘅「合乎邏輯延伸」。規則制定越嚟越「司法化」，所以將來上法庭嘅威脅本身已經係直接影響力。Schmidt 話得更白：真正上到法庭嘅好少，有效參與已經逼到決策者滿足企業或團體嘅最低要求。一個附帶效果：法院令機構較易刪除爭議部分、較難加新要求，所以評論期嘅改動通常係「減法」。由此得出假設。</p>`},
+{k:"04-3",t:"數據同方法",lv:[],vis:[],b:`<p>樣本同 Yackee 同 Yackee 一樣：OSHA、ESA、FRA、FHWA 四個機構 1994 至 2001 年 40 條低關注度規則、1,693 份意見，當中組織化利益交咗 85%。「利益團體」用 Kerwin 嘅定義，包括企業、行業協會、工會、其他層級政府同所謂公益團體。</p>
+ <p>同以往研究唔同，評論期內規則改動唔少：冇改 7 條、細改 13 條、中改 9 條、大改 11 條。兩個依變項：(1)「規管改變」——最終規則規管程度點變（五分制，ordered probit，40 條規則）；(2)「建議改變」——每條規則最多人提嘅五項建議有冇被採納（logit，183 項）。主要自變項係意見者平均想要嘅方向，背後假設係機構會平衡各方，被意見嘅「主要訊息」影響。</p>`},
+{k:"04-4",t:"結果：規則跟住意見郁",lv:[],vis:["v-yackee"],b:`<p>主要發現。利益團體大多數要少啲規管：40 條規則入面 32 條（約 80%）。當佢哋差唔多一致要少規管，九成以上會得到。（Yackee 同 Yackee 嗰篇用同一數據講商界意見有同樣效果，見 Yackee 同 Yackee › 只有商界推得郁。）</p>
+ <p>建議改變方面，機構採納咗 183 項主要建議入面嘅 90 項。共識程度好重要：意見好分散時，機構只係 37% 採納；意見好一致時，機率升到 72%。</p>`},
+{k:"04-5",t:"意涵同限制",lv:[],vis:[],b:`<p>Yackee 話學界對評論期唔重要嘅共識要重新檢討。對民主治理嘅意涵係正面嘅：發聲嘅人可以令政策更貼近佢哋嘅偏好——佢甚至話「有意義嘅參與者影響」呢個目標喺「第四權」入面有咗啲證據。</p>
+ <p>要留意張力：同一批數據，Yackee 同 Yackee 讀成「偏幫商界」，呢篇讀成「有意義嘅參與」。分別在於邊個發聲：如果發聲嘅大多數係商界，「參與有效」同「偏幫商界」可以同時成立。限制方面，佢承認低關注度規則可能令利益團體影響更大（因為公眾睇唔到），亦可能相反visibility；時期只係克林頓同小布殊第一年；將來要研究規則制定所有階段。</p>`},
+{k:"05-1",t:"係乜同承諾咗乜",lv:[],vis:["v-regneg"],b:`<p>協商式規則制定喺《行政程序法》嘅公告同評論程序之前加一個協商過程。法例將委員會界定為機構成立、為咗喺草擬規則上達成共識嘅諮詢委員會。法例亦要求機構先確認受影響利益數目有限而且可以識別。</p>
+ <p>Coglianese 話協商嘅工具性成效多數係講出嚟，而唔係證明出嚟。佢翻查立法歷史，發現兩個主要目標係減少制定時間同減少司法覆核。國會聽證成日引「EPA 每年三百條規則有八成上法庭」。總之協商曾經被包裝成萬應靈丹。Coglianese 特別聲明：佢只用協商自己嘅標準去評；即使真係慳時間減訴訟，仍然可以基於代表性同問責反對佢。（呢點同 Lowi 反對立法過度授權嘅講法接得上。）</p>`},
+{k:"05-2",t:"用得好少，亦冇慳到時間",lv:[],vis:["v-regneg"],b:`<p>用得好少：到 1996 年底只有 17 個聯邦機構試過；1983 年起只完成 35 條規則，即每年約 2.7 條；佔所有最終規則唔夠千分之一（Table 2：47,603 條入面 35 條，0.07%）。</p>
+ <p>時間方面，平均要差唔多兩年半。以往話協商慳 11 個月，係因為只睇咗 EPA 四條特別快嘅規則。睇晒 EPA 12 條，平均 1,013 日，最多慳三個月左右——加埋三條仲未完成嘅，慳時間就消失。仲有，協商將員工時間壓縮到密集嘅談判入面，所以總投入其實更多。</p>`},
+{k:"05-3",t:"訴訟：協商規則照樣被告，「八成」係神話",lv:[],vis:["v-regneg"],b:`<p>個案先行：被譽為協商典範嘅大峽谷能見度規則，最後都上咗聯邦法院——告嘅係冇參與協商嘅灌溉區。另一個「成功」例子新配方汽油規則，就被石油業界、冇代表嘅運油車協會告，仲成為第一條被世貿推翻嘅美國規例。Coglianese 嘅結論：初步共識完全保證唔到冇爭議。</p>
+ <p>「八成」數字點嚟？Coglianese 發現 EPA 從來冇做過分析。用 EPA 1987 至 1991 年訴訟紀錄計，只有 26% 規則被挑戰；用 OMB 數據計更只係 19%。就算淨係睇重要嘅 RCRA 同《清潔空氣法》規則，都只係 35%。即係流行講法剛好倒轉。</p>
+ <p>反而 EPA 12 條協商規則起碼有 6 條被申請覆核，即 50%。告嘅人有參與者——佢哋覺得最終規則同協議唔符，或者有協商冇處理到嘅不利條文；亦有冇參與嘅人。結論。佢仲處理咗揀選偏差：機構揀去協商嘅多數係「第二梯隊」、較易成功嘅規則，所以偏差其實有利協商，結果更加說明問題。</p>`},
+{k:"05-4",t:"點解失敗：新衝突、脆弱嘅共識同普通程序嘅成功",lv:[],vis:["v-regneg"],b:`<p>Coglianese 一句總結。三個原因：</p>
+ <p><b>一、協商製造新衝突。</b> 。邊個入到委員會本身就係衝突來源；Kerwin 同 Langbein 嘅調查有 35% 受訪參與者話起碼一個受影響利益冇代表。仲有協議點解讀、機構有冇跟足協議、同埋投入越多越睇唔過眼嘅「被出賣」感覺。只要一個組織反對，以全體一致為基礎嘅共識就散。</p>
+ <p><b>二、共識好脆弱。</b> 美國行政國家有好多環節可以拆散早期共識：之後嘅公眾評論、OMB、國會、法院、日後修訂。佢形容維持共識好似砌紙牌屋。但佢唔覺得呢點係壞事：一個令利益團體交易難以落實嘅程序，可以係好事。（呢個角度同 Yackee 同 Yackee 嘅商界偏差、同 Zingales 嘅企業權力擔憂一齊讀好有意思。）</p>
+ <p><b>三、普通規則制定其實運作得好。</b> 。監管者一向同受影響組織保持聯絡。所以協商失敗唔等於協商（negotiation）本身失敗。普通程序反而令機構更清楚各方利益嘅強弱——因為協商委員會入面大家都會為交換而喊價。協商仲好貴：大企業平均用 43.2 萬美元做研究、25 萬以上請顧問同律師。</p>`},
+{k:"05-5",t:"結論：用唔靠共識嘅參與方法",lv:[],vis:["v-regneg"],b:`<p>Coglianese 話追求共識帶嚟嘅「了結」反而少過機構慣用嘅做法。EPA 協商規則嘅訴訟率仲高過其他重要規則。所以佢建議：國會同總統唔好再逼機構用；繼續用唔靠共識嘅公眾參與方法（個別會面、公聽會、常設諮詢委員會、工作坊）較合理。</p>
+ <p>同第 6 週其他閱讀對照：Lall 提議喺全球金融層面用「協商式規則制定」減少資訊不對稱（見 Lall › 四個設計原則），但 Coglianese 嘅美國經驗話呢個程序未必兌現承諾。共識式手段喺手段分類法入面嘅位置，見 共識：自我監管、共同監管同企業倫理。</p>
+ <p>Coglianese 喺 2006 年回望呢篇研究，將協商式規則制定形容為上一個「最好嘅嘢」：實證研究顯示佢冇乜分別之後，熱潮就退。佢再用同一種實證方法評網上規則制定，見 公民參與規則制定（Coglianese 2006）。 ^wn-202610282134-04</p>`}
+];
+const CARDS={};CARDS_DATA.forEach(c=>{CARDS[c.id]=c;});
+function makePages(app){
+const {store,$,LNAME}=window.__S;
+/* ===================== VISUALS ===================== */
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" ${o.a?`text-anchor="${o.a}"`:''} font-weight="${o.w||400}" fill="${o.f||'var(--ink)'}">${t}</text>`;
+const box=(x,y,w,h,fill='var(--surface2)',stroke='var(--line)')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const arrow=(x1,y1,x2,y2,c='var(--muted)')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" marker-end="url(#ah)"/>`;
+const DEFS=`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>`;
+const VIS=[ {id:'v-medici',t:'Zingales：Medici 惡性循環同「剛剛好」光譜',n:'01 §三、§六、§七',svg:()=>`<svg viewBox="0 0 680 330" class="vis">${DEFS}
+  ${box(60,20,200,50,'var(--accent-soft)')}${svgT(160,50,'💰 經濟權力（錢）',{a:'middle',w:700})}
+  ${box(420,20,200,50,'var(--bad-soft)')}${svgT(520,50,'🏛️ 政治權力',{a:'middle',w:700})}
+  ${arrow(262,38,418,38)}${svgT(340,30,'用錢攞權（例如將來份工）',{a:'middle',s:11})}
+  ${arrow(418,58,262,58)}${svgT(340,82,'用權保錢、擋住對手',{a:'middle',s:11})}
+  ${svgT(340,116,'問題唔係靠創新得嚟嘅短暫優勢，而係精力放喺遊說唔係創新',{a:'middle',s:12,f:'var(--muted)'})}
+  <line x1="40" y1="190" x2="640" y2="190" stroke="var(--ink)" stroke-width="3"/>
+  ${[[40,'共產專政','政治俘虜經濟'],[190,'政治庇護','例如蘇哈托'],[340,'剛剛好','北歐；二十世紀下半葉美國'],[490,'垂直政治整合','富商控制政治'],[640,'東印度公司下嘅印度','經濟俘虜政治']].map(([x,a,b],k)=>`<circle cx="${x}" cy="190" r="${k===2?11:8}" fill="${k===2?'var(--good)':'var(--accent)'}"/>${svgT(x,k%2?226:150,a,{a:k===0?'start':k===4?'end':'middle',w:700,s:12})}${svgT(x,k%2?244:168,b,{a:k===0?'start':k===4?'end':'middle',s:11})}`).join('')}
+  ${svgT(490,270,'↑ Zingales 擔心美國滑向呢度',{a:'middle',s:12,f:'var(--aa)',w:700})}
+  ${svgT(340,306,'出路：透明、企業民主、收緊旋轉門、反壟斷、傳媒獨立、公眾意識',{a:'middle',s:12})}</svg>`},
+ {id:'v-coen',t:'Coen：英德兩種監管遊戲同四種資訊關係',n:'02 §三–六',svg:()=>`<svg viewBox="0 0 680 330" class="vis">
+  ${box(10,20,320,150,'var(--soft)')}${svgT(170,46,'🇬🇧 英國',{a:'middle',w:700})}${svgT(170,72,'成熟、單一監管者、酌情權大',{a:'middle',s:12})}${svgT(170,96,'排他嘅信譽遊戲：被排除代價大',{a:'middle',s:12})}${svgT(170,120,'BT、British Gas：60 幾人監管部',{a:'middle',s:12})}${svgT(170,144,'重效率同競爭',{a:'middle',s:12})}
+  ${box(350,20,320,150,'var(--soft)')}${svgT(510,46,'🇩🇪 德國',{a:'middle',w:700})}${svgT(510,72,'年輕、權力重疊、守法條',{a:'middle',s:12})}${svgT(510,96,'上法庭：訴訟成為入場障礙',{a:'middle',s:12})}${svgT(510,120,'Deutsche Telekom：80 幾人',{a:'middle',s:12})}${svgT(510,144,'重公平同公共服務',{a:'middle',s:12})}
+  ${[['B 監察','對抗、嚴控資訊'],['A 遵從','合規、冇互信'],['C 反向俘虜','監管部同監管者太埋'],['D 策略意識','主動帶問題同方案']].map(([a,b],k)=>`${box(10+k*168,190,156,70,k===3?'var(--good-soft)':'var(--accent-soft)')}${svgT(88+k*168,218,a,{a:'middle',w:700})}${svgT(88+k*168,242,b,{a:'middle',s:11})}`).join('')}
+  ${svgT(340,290,'核心：資源互相依賴（監管者要資訊，企業想影響）；成功監管＝建立信譽',{a:'middle',s:12})}
+  ${svgT(340,312,'企業會視乎週期同議題喺幾格之間搖擺',{a:'middle',s:11,f:'var(--muted)'})}</svg>`},
+ {id:'v-yackee',t:'公告同評論：邊個參與、邊個有影響',n:'03 §四–六；04 §四',svg:()=>`<svg viewBox="0 0 680 320" class="vis">
+  ${svgT(170,24,'1,693 份意見邊個交',{a:'middle',w:700})}
+  ${[['商界',57,'var(--aa)'],['非商界非政府',22,'var(--accent)'],['政府',19,'var(--cc)'],['（當中公益團體）',6,'var(--muted)']].map(([a,v,c],k)=>`${svgT(10,60+k*34,a,{s:12})}<rect x="130" y="${46+k*34}" width="${v*3}" height="20" rx="4" fill="${c}"/>${svgT(136+v*3,61+k*34,(k===0?'超過 ':'')+v+'%',{s:12})}`).join('')}
+  ${svgT(510,24,'商界佔比 → 規則減規管機率',{a:'middle',w:700})}
+  ${[[10,37],[50,65],[90,86]].map(([s,p],k)=>`<rect x="${400+k*80}" y="${200-p*1.6}" width="50" height="${p*1.6}" rx="4" fill="var(--accent)"/>${svgT(425+k*80,194-p*1.6,p+'%',{a:'middle',s:12,w:700})}${svgT(425+k*80,220,'約 '+s+'%',{a:'middle',s:12})}`).join('')}
+  ${svgT(510,240,'（Table 2 預測機率）',{a:'middle',s:11,f:'var(--muted)'})}
+  ${box(10,262,660,50,'var(--card)')}${svgT(340,284,'解釋：人多 ✓ 有證據；質素 ✗ 冇證據',{a:'middle',w:700,s:13})}${svgT(340,302,'Yackee：一致要求時九成以上照做；建議被採納 49%（一致 72%、分散 37%）',{a:'middle',s:11})}</svg>`},
+ {id:'v-regneg',t:'協商式規則制定：承諾 vs 證據',n:'05 §一–四',svg:()=>`<svg viewBox="0 0 680 300" class="vis">
+  ${box(10,20,320,170,'var(--soft)')}${svgT(170,46,'承諾',{a:'middle',w:700})}${svgT(170,76,'慳時間',{a:'middle',s:13})}${svgT(170,104,'減訴訟（「EPA 八成規則被告」）',{a:'middle',s:13})}${svgT(170,140,'被包裝成萬應靈丹',{a:'middle',s:12,f:'var(--muted)'})}
+  ${box(350,20,320,170,'var(--bad-soft)')}${svgT(510,46,'證據',{a:'middle',w:700})}${svgT(510,72,'平均差唔多兩年半；最多慳約三個月',{a:'middle',s:12})}${svgT(510,96,'「八成」冇分析：實際 26%（OMB 19%）',{a:'middle',s:12})}${svgT(510,120,'重要規則 35%；協商規則起碼 50%',{a:'middle',s:12})}${svgT(510,144,'用得好少：35 條，佔 0.07%',{a:'middle',s:12})}
+  ${svgT(340,220,'點解：製造新衝突（邊個入委員會）· 共識好脆弱（紙牌屋）· 普通程序本身運作得好',{a:'middle',s:12})}
+  ${svgT(340,248,'建議：用唔靠共識嘅參與方法（個別會面、公聽會、常設諮詢委員會、工作坊）',{a:'middle',s:12,w:700})}
+  ${svgT(340,276,'即使有效，仍可基於代表性同問責反對',{a:'middle',s:11,f:'var(--muted)'})}</svg>`}
+];
+function visuals(){
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">圖解 · ${VIS.length} 幅</span><h2>一幅圖睇一個概念</h2>
+   <p class="muted">每幅圖都對應筆記嘅某幾節。讀「讀懂版」或者玩完關卡之後，用嚟一眼溫返。</p></div>
+   <div class="stack">${VIS.map(v=>`<section class="panel vispanel" id="${v.id}"><div class="row" style="justify-content:space-between"><h3>${v.t}</h3><span class="tag">筆記 ${v.n}</span></div><div class="viswrap">${v.svg()}</div></section>`).join('')}</div>`;
+}
+
+/* ===================== READING NOTES ===================== */
+const LVNAME={swipe:'L1 算唔算監管',lobby:'L2 游說集團',families:'L3 四大家族',price:'L4 一個價兩筆數',judge:'L5 判案小法官',agency:'L6 合定拆',develop:'L7 因地制宜'};
+const cardsIn=(n,s)=>CARDS_DATA.filter(c=>c.n===n&&c.s===s);
+function notesPage(note){
+  note=note||NOTE_ORDER[0];
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  const m=NOTES_META[note];
+  const secs=NOTES.filter(x=>x.k.startsWith(note+'-'));
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">讀懂版 · 逐節淺白講解</span>
+    <div class="tabs">${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div></div>
+   <div class="panel stack"><h2>${note} ${m.t}</h2><p><b>呢篇問：</b>${m.q}</p><p class="muted">${m.read}</p></div>
+   <div class="stack" style="margin-top:14px">${secs.map(x=>{const n=+x.k.split('-')[1];const cs=cardsIn(note,n);const kn=cs.filter(c=>known[c.id]).length;
+     return `<section class="panel notesec" id="${x.k}">
+      <div class="row" style="justify-content:space-between"><h3>§${n} ${x.t}</h3>
+        <label class="readchk"><input type="checkbox" id="rd-${x.k}" data-k="${x.k}" ${read[x.k]?'checked':''}> 已讀</label></div>
+      <div class="nbody">${x.b}</div>
+      <div class="row links"><a class="chip" href="#lesson-${note}">▶ ${LNAME[note]}</a>
+        ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">◩ 圖：${VIS.find(z=>z.id===v).t}</a>`).join('')}
+        <a class="chip" href="#cards-${note}-${n}">▣ 呢節 ${cs.length} 張卡（識咗 ${kn}）</a></div></section>`}).join('')}</div>`;
+  app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash='notes-'+b.dataset.n;});
+  app.querySelectorAll('.readchk input').forEach(c=>c.onchange=()=>{const o=store.get().read||{};o[c.dataset.k]=c.checked;store.set('read',o);});
+  bindVisLinks();
+}
+function bindVisLinks(){app.querySelectorAll('[data-vis]').forEach(a=>a.onclick=e=>{e.preventDefault();const id=a.dataset.vis;location.hash='visuals';setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({block:'start'});},60);});}
+
+/* ===================== FLASHCARDS ===================== */
+const TYPE_ZH={action:'行動',fact:'事實',definition:'定義',conceptual:'概念',cause:'因果',evaluation:'評價',normative:'主張'};
+function cardsPage(arg){
+  const [note,sec]=(arg||'').split('-');
+  const pool=CARDS_DATA.filter(c=>(!note||c.n===note)&&(!sec||c.s===+sec));
+  let mode='unknown', order=[], idx=0, flipped=false;
+  function build(){
+    const known=store.get().known||{};
+    order=pool.filter(c=>mode==='all'||!known[c.id]).map(c=>c.id);
+    idx=0; flipped=false;
+  }
+  function shuffle(){for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;flipped=false;render();}
+  function render(){
+    const known=store.get().known||{};
+    const kn=pool.filter(c=>known[c.id]).length;
+    const scope=note?`${note} ${NOTES_META[note].t}${sec?` · §${sec} ${NOTES.find(x=>x.k===note+'-'+sec).t}`:''}`:'全部筆記';
+    let card='';
+    if(!order.length){ card=`<div class="fcard done"><div><h3>呢副卡你已經全部識晒 🎉</h3><p class="muted">轉「全部卡」可以再溫一次。</p></div></div>`; }
+    else{
+      const c=CARDS[order[idx]];
+      card=`<div class="fcard ${flipped?'flip':''}" id="fc" tabindex="0" role="button" aria-label="撳一下反卡">
+        ${!flipped?`<div class="ff"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fq">${c.f}</div><span class="muted" style="font-size:13px">撳一下（或者按空白鍵）睇答案</span></div>`
+        :`<div class="fb"><span class="tag">${TYPE_ZH[c.t]} · 筆記 ${c.n} §${c.s}</span><div class="fa">${c.b}</div><blockquote>“${c.q}”</blockquote><span class="src">原文出處：${c.loc}</span></div>`}
+      </div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn ghost" id="bad">✗ 未識，等陣再嚟</button><button class="btn primary" id="good">✓ 識咗</button></div>`;
+    }
+    app.innerHTML=`<div class="lvhead"><span class="eyebrow">快速卡 · ${scope}</span>
+      <div class="tabs"><button class="tab ${!note?'on':''}" data-n="">全部</button>${NOTE_ORDER.map(n=>`<button class="tab ${n===note?'on':''}" data-n="${n}">${n} ${NOTES_META[n].t}</button>`).join('')}</div>
+      <div class="row" style="justify-content:space-between"><span class="muted">呢副 ${pool.length} 張 · 識咗 ${kn} · 呢輪剩 ${order.length?order.length-idx:0}</span>
+      <div class="row"><button class="btn ghost sm" id="mode">${mode==='all'?'只溫未識':'全部卡'}</button><button class="btn ghost sm" id="shuf">洗牌</button><button class="btn ghost sm" id="reset">清除「識咗」</button></div></div>
+      <div class="progress"><i style="width:${pool.length?kn/pool.length*100:0}%"></i></div></div>
+      ${card}
+      <p class="muted" style="margin-top:14px;font-size:13.5px">卡面係我寫嘅問題；卡背係筆記入面嘅原子命題（中文）同原文英文引文，一字不改。卡背會出現人名，你唔使記，專心睇論點就得。</p>`;
+    app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{location.hash=b.dataset.n?'cards-'+b.dataset.n:'cards';});
+    $('#mode').onclick=()=>{mode=mode==='all'?'unknown':'all';build();render();};
+    $('#shuf').onclick=shuffle;
+    $('#reset').onclick=()=>{const k=store.get().known||{};pool.forEach(c=>delete k[c.id]);store.set('known',k);build();render();};
+    const fc=$('#fc'); if(fc){ fc.onclick=()=>{flipped=!flipped;render();$('#fc')&&$('#fc').focus();}; fc.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();fc.click();}}; }
+    const g=$('#good'), b=$('#bad');
+    if(g) g.onclick=()=>{const k=store.get().known||{};k[order[idx]]=true;store.set('known',k);next(true);};
+    if(b) b.onclick=()=>next(false);
+  }
+  function next(ok){ if(!ok){ order.push(order[idx]); } idx++; flipped=false; if(idx>=order.length){ build(); } render(); }
+  build(); render();
+}
+
+/* ===================== PROGRESS MAP ===================== */
+function mapPage(){
+  const st=store.get(), read=st.read||{}, known=st.known||{};
+  let tot=0, done=0;
+  const rows=NOTE_ORDER.map(n=>{
+    const secs=NOTES.filter(x=>x.k.startsWith(n+'-'));
+    return `<tr class="nh"><td colspan="5"><b>${n} ${NOTES_META[n].t}</b></td></tr>`+secs.map(x=>{
+      const s=+x.k.split('-')[1], cs=cardsIn(n,s), kn=cs.filter(c=>known[c.id]).length;
+      const lvDone=!!(st.done&&st.done['l'+n]);
+      const ok=read[x.k]&&kn===cs.length&&lvDone; tot++; if(ok) done++;
+      return `<tr><td><a href="#notes-${n}" data-sec="${x.k}">§${s} ${x.t}</a></td>
+        <td class="c">${read[x.k]?'✓':'—'}</td>
+        <td class="c mono">${kn}/${cs.length}</td>
+        <td><a class="chip ${lvDone?'ok':''}" href="#lesson-${n}">${LNAME[n]}${lvDone?' ✓':''}</a>
+          ${x.vis.map(v=>`<a class="chip" href="#visuals" data-vis="${v}">圖</a>`).join(' ')}</td>
+        <td class="c">${ok?'<span class="okb">掌握</span>':''}</td></tr>`}).join('');
+  }).join('');
+  app.innerHTML=`<div class="lvhead"><span class="eyebrow">進度地圖 · 筆記每一節都喺度</span><h2>${done} / ${tot} 節已經全部做完</h2>
+    <p class="muted">一節要「讀懂版已讀」＋「嗰節嘅卡全部識咗」＋「嗰篇嘅課完成」，先算掌握。撳節名會跳去嗰節嘅讀懂版。</p>
+    <div class="progress"><i style="width:${done/tot*100}%"></i></div></div>
+    <div class="tablewrap"><table class="map"><thead><tr><th>節</th><th>讀懂版</th><th>卡</th><th>課／圖</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  app.querySelectorAll('[data-sec]').forEach(a=>a.onclick=e=>{e.preventDefault();const k=a.dataset.sec;location.hash='notes-'+k.split('-')[0];setTimeout(()=>{const el=document.getElementById(k);if(el)el.scrollIntoView({block:'start'});},60);});
+  bindVisLinks();
+}
+
+return {visuals,notesPage,cardsPage,mapPage};
+}
+(() => {
+const $=(s,el=document)=>el.querySelector(s);
+const app=$('#app');
+const MINE='<span class="mine">例子係我作嘅</span>';
+const MYNUM='<span class="mine">數字係我設嘅</span>';
+const KEY='reglab-11p1';
+const store={get(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}},
+  set(k,v){const o=this.get();o[k]=v;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}};
+const saveAll=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
+window.__S={store,$};
+const S=()=>Object.assign({xp:0,done:{},streak:0,last:null},store.get());
+function bumpStreak(st){const d=new Date();const today=d.toISOString().slice(0,10);
+  if(st.last===today) return; const y=new Date(d-864e5).toISOString().slice(0,10);
+  st.streak=(st.last===y)?st.streak+1:1; st.last=today;}
+const noteBody=k=>{const n=NOTES.find(x=>x.k===k);return n?{t:n.t,b:n.b}:null;};
+
+/* ---------- shared chart ---------- */
+function chart(P,MC,opt={}){
+  const W=340,H=250,L=34,B=26,T=8,R=8,x=q=>L+(q/100)*(W-L-R),y=p=>H-B-(p/100)*(H-B-T);
+  P=Math.max(P,MC); const Q=100-P;
+  const show=opt.show||['cs','c','a'];
+  let g='';
+  [0,20,40,60,80,100].forEach(t=>{g+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-5}" y="${y(t)+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${t}</text>`;});
+  if(show.includes('cs')) g+=`<polygon points="${x(0)},${y(100)} ${x(0)},${y(P)} ${x(Q)},${y(P)}" fill="var(--cs)" fill-opacity="${opt.dim==='cs'?.15:.5}"/>`;
+  if(show.includes('c')&&P>MC) g+=`<polygon points="${x(0)},${y(MC)} ${x(0)},${y(P)} ${x(Q)},${y(P)} ${x(Q)},${y(MC)}" fill="${opt.cColor||'var(--cc)'}" fill-opacity=".65"/>`;
+  if(show.includes('a')&&P>MC) g+=`<polygon points="${x(Q)},${y(P)} ${x(Q)},${y(MC)} ${x(100-MC)},${y(MC)}" fill="var(--aa)" fill-opacity=".8"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(100)}" x2="${x(100)}" y2="${y(0)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+  g+=`<line x1="${x(0)}" y1="${y(MC)}" x2="${x(100)}" y2="${y(MC)}" stroke="var(--ink)" stroke-dasharray="5 4"/><text x="${x(100)}" y="${y(MC)+13}" text-anchor="end" font-size="11" fill="var(--ink)">成本 ${MC}</text>`;
+  if(opt.old) g+=`<line x1="${x(0)}" y1="${y(opt.old)}" x2="${x(100)}" y2="${y(opt.old)}" stroke="var(--muted)" stroke-dasharray="2 4"/><text x="${x(100)}" y="${y(opt.old)-4}" text-anchor="end" font-size="10" fill="var(--muted)">合併前成本 ${opt.old}</text>`;
+  g+=`<line x1="${x(0)}" y1="${y(P)}" x2="${x(Q)}" y2="${y(P)}" stroke="var(--accent)" stroke-width="2.5"/><circle cx="${x(Q)}" cy="${y(P)}" r="6" fill="var(--accent)"/>`;
+  g+=`<text x="${x(Q)+8}" y="${y(P)-6}" font-size="12" font-weight="700" fill="var(--accent)">售價 ${P}</text>`;
+  if(show.includes('cs')&&Q>10) g+=`<text x="${x(Q*.2)}" y="${y((100+P)/2)+16}" font-size="13" font-weight="900" fill="var(--ink)">CS</text>`;
+  if(show.includes('c')&&P-MC>7) g+=`<text x="${x(Q/2)}" y="${y((P+MC)/2)+5}" text-anchor="middle" font-size="14" font-weight="900" fill="var(--ink)">C</text>`;
+  if(show.includes('a')&&P-MC>12) g+=`<text x="${x(Q+(100-MC-Q)/3)}" y="${y(MC+(P-MC)/3)+5}" text-anchor="middle" font-size="13" font-weight="900" fill="var(--ink)">A</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="需求線、成本線同售價">${g}</svg>`;
+}
+const calc=(P,MC)=>{P=Math.max(P,MC);const Q=100-P;return{Q,CS:.5*Q*(100-P),C:(P-MC)*Q,A:.5*(P-MC)**2,TW:.5*Q*(100-P)+(P-MC)*Q};};
+const f=n=>Math.round(n).toLocaleString('en');
+
+/* ---------- widgets ---------- */
+const W={ balance(el,done){
+  const P=[['共產專政','政治權力俘虜晒經濟權力。'],['政治庇護型','例如蘇哈托。'],['「剛剛好」','國家同企業權力平衡；最接近係今日北歐同二十世紀下半葉嘅美國。'],['垂直政治整合','富商控制政治。'],['東印度公司統治下嘅印度','經濟權力俘虜咗政治職能。']];
+  let v=0, ok=false;
+  el.innerHTML=`<div class="wid"><div class="lbl"><span>國家權力大</span><span>企業權力大</span></div>
+   <input type="range" id="bl" min="0" max="4" step="1" value="0" aria-label="國家同企業權力">
+   <div id="bo" style="margin:10px 0;padding:12px;border-radius:14px;background:var(--card);border:2px solid var(--line);min-height:90px"></div>
+   <div class="task" id="tk">🎯 搵 Zingales 嘅理想位置</div><div id="qq"></div></div>`;
+  const up=()=>{$('#bo',el).innerHTML=`<b>${P[v][0]}</b><p style="margin:6px 0 0">${P[v][1]}</p><span class="src">出處：筆記 01 §六–七</span>`;
+   if(!ok&&v===2){ok=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 國家太弱：企業要自己執行產權；國家太強：充公企業；企業太強：按自己利益定義產權。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">Zingales 擔心美國正滑向邊度？</p><div class="opts"><button class="opt" data-o="a">垂直政治整合</button><button class="opt" data-o="b">共產專政</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const r=b.dataset.o==='a';b.classList.add(r?'right':'wrong');
+     $('#fb',el).innerHTML=r?`<div class="fb ok"><b class="t">啱！</b><p>原因：企業規模同市佔率上升；監管越嚟越大越複雜，方便既得利益傾斜賽場；民主黨以前嘅反商界意識形態消失。</p><span class="src">出處：筆記 01 §六–七</span></div>`:`<div class="fb hint"><p>💡 方向係企業權力越嚟越大。</p></div>`; if(r) done(true);});}};
+  $('#bl',el).oninput=e=>{v=+e.target.value;up();};up();
+ },
+ share(el,done){
+  const D={10:37,50:65,90:86}; let v=10; const seen=new Set();let asked=false;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>Yackee 同 Yackee 嘅 Table 2：一條規則收到嘅意見入面，商界佔幾多，最終規則減規管嘅機率係幾多？（數字出自筆記）</p></div>
+   <div class="lbl"><span>商界意見佔比</span><span class="mono" id="sv"></span></div>
+   <input type="range" id="sh" min="10" max="90" step="40" value="10" aria-label="商界意見佔比">
+   <div class="barrow"><span>規則<br>減規管</span><span class="track"><i id="pb" style="background:var(--aa)"></i></span><span class="mono" id="pv"></span></div>
+   <div class="task" id="tk">🎯 睇晒三個位</div><div id="qq"></div></div>`;
+  const up=()=>{$('#sv',el).textContent='約 '+v+'%';$('#pb',el).style.width=D[v]+'%';$('#pv',el).textContent=D[v]+'%';seen.add(v);
+   if(seen.size===3&&!asked){asked=true;$('#tk',el).className='task ok';$('#tk',el).textContent='✓ 37% → 65% → 86%：商界佔比越高，規則越偏向少規管。';
+    $('#qq',el).innerHTML=`<p style="font-weight:700">作者檢驗咗兩個解釋。邊個有證據？</p><div class="opts"><button class="opt" data-o="a">人多（意見數量）</button><button class="opt" data-o="b">質素（商界意見更專業）</button></div><div id="fb"></div>`;
+    $('#qq',el).querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const r=b.dataset.o==='a';b.classList.add(r?'right':'wrong');
+     $('#fb',el).innerHTML=r?`<div class="fb ok"><b class="t">啱！</b><p>五個質素代理指標（自稱專家、超過一頁、有附件、多過一項改動、華盛頓地址）都同「係唔係商界」冇顯著關係。所以其他參與者交多啲意見，商界影響可能下降。</p><span class="src">出處：筆記 03 §六–七</span></div>`:`<div class="fb hint"><p>💡 作者用五個指標量質素，搵唔到商界意見特別好。</p></div>`; if(r) done(true);});}};
+  $('#sh',el).oninput=e=>{v=+e.target.value;up();};up();
+ },
+ litig(el,done){
+  let g=80, shown=false;
+  el.innerHTML=`<div class="wid"><div class="scene" style="background:var(--soft)"><p>國會聽證成日話：「EPA 每年三百條規則有八成上法庭。」你估 EPA 1987 至 1991 年嘅規則實際有幾多被挑戰？</p></div>
+   <div class="lbl"><span>你估</span><span class="mono" id="gv">80%</span></div>
+   <input type="range" id="gs" min="0" max="100" step="2" value="80" aria-label="估訴訟率">
+   <div class="task" id="tk">🎯 揀好就撳「揭曉」</div><button class="btn primary" id="rv" style="margin:8px 0">揭曉</button><div id="bars"></div></div>`;
+  $('#gs',el).oninput=e=>{g=+e.target.value;$('#gv',el).textContent=g+'%';};
+  $('#rv',el).onclick=()=>{if(shown)return;shown=true;const D=[['講法：「八成」',80,'var(--muted)'],['EPA 紀錄 1987–91',26,'var(--accent)'],['OMB 數據',19,'var(--accent)'],['重要 RCRA／清潔空氣法規則',35,'var(--accent)'],['協商規則（12 條起碼 6 條）',50,'var(--aa)']];
+   $('#bars',el).innerHTML=D.map(([a,b,c])=>`<div class="barrow"><span style="font-size:13px">${a}</span><span class="track"><i style="width:${b}%;background:${c}"></i></span><span class="mono">${b}%</span></div>`).join('')
+    +`<div class="fb ok"><p>${Math.abs(g-26)<=10?'估得好近！':'你估 '+g+'%。'}「八成」背後冇任何 EPA 分析；實際 26%。流行講法剛好倒轉：協商規則嘅訴訟率（起碼 50%）仲高過其他重要規則。</p><span class="src">出處：筆記 05 §三</span></div>`;
+   $('#tk',el).className='task ok';$('#tk',el).textContent='✓ 已揭曉';done(Math.abs(g-26)<=10);};
+ }
+};
+
+/* ---------- lessons ---------- */
+/* ===== Folder 11 · Part 1 lessons (Week 6 core + Yackee, Coglianese 1997: notes 01–05) ===== */
+const SCENE_TAG='<p class="muted" style="font-size:14px">情境係我作嘅（海島國係虛構），概念全部出自筆記。</p>';
+const C1={id:'l01',note:'01',icon:'1',name:'企業嘅政治權力',sub:'筆記 01 · 約 7 分鐘',screens:[
+ {type:'story',h:'新崗位：規則制定組',html:`<div class="scene"><div class="big">🏢</div><p>你由國際事務調返嚟，主管海島國公用事業監管局嘅規則制定組。第一日就收到三間大電訊公司嘅會面邀請。上司提醒你：「同業界打交道係必要，但小心。」點解要小心？</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'大過國家',lead:'2015 年按收入排，全球最大 100 個政府同企業入面，企業佔幾多？',
+  opts:['69 個','19 個'],ans:0,hint:'過半。',
+  ex:'Zingales 話主流經濟學將公司當「一束合約」，忽略晒政治同權力；巨型跨國企業將經濟同政治權力集中喺幾乎唔使問責嘅少數人手上。',deep:'01-1',src:'筆記 01 §一'},
+ {type:'mcq',h:'權力點樣返嚟？',lead:'Zingales 話企業幾時先至真係「冇權力」？',
+  opts:['合約可以寫到完全嘅時候','企業好細嘅時候'],ans:0,hint:'Grossman 同 Hart：剩餘控制權。',
+  ex:'現實合約同規則都唔完全，所以有空間遊說同爭租：企業向監管、司法同政治系統施壓爭大份啲。同 Stigler 嘅「行業爭取監管」同一條路。',deep:'01-2',src:'筆記 01 §二'},
+ {type:'mcq',h:'Medici 惡性循環',lead:'點解市場力量越大，企業越需要影響政治？',
+  opts:['越驚被政治權力「充公」','因為佢哋鍾意政治'],ans:0,hint:'加上：經濟越強，政治越強。',
+  ex:'兩樣加埋：用錢攞政治權力，再用政治權力賺更多錢。常見機制：暗示將來畀官員份工；承諾要可信，公司要夠大夠穩陣。',deep:'01-3',src:'筆記 01 §三'},
+ {type:'mcq',h:'量投入定產出？',lead:'2014 年 Google 收入 800 億美元，遊說只用咗 1,600 萬。咁係咪話企業冇乜影響力？',
+  opts:['唔係：要睇政策產出，唔好睇遊說投入','係：用得少即係影響細'],ans:0,hint:'冇人用黑手黨畀幾多賄款去量佢嘅勢力。',
+  ex:'產出例子：米奇老鼠版權期一再延長；告監管者推翻代理權規則；有遊說嘅銀行被執法機會低 44.7%。',deep:'01-5',src:'筆記 01 §五'},
+ {type:'flips',h:'點解越嚟越嚴重？',lead:'撳開三個原因。',items:[
+  ['📈 規模','企業規模同市佔率上升（過去二十年超過 75% 行業集中度上升）。'],
+  ['📚 監管複雜','監管越大越複雜，方便既得利益傾斜賽場。'],
+  ['🧭 意識形態','民主黨以前嘅反商界意識形態消失。']],deep:'01-4|01-6',src:'筆記 01 §四、§六'},
+ {type:'widget',h:'國家同企業：幾多先夠？',lead:'拉動滑桿。',w:'balance',deep:'01-6|01-7'},
+ {type:'mcq',h:'咁仲應唔應該見業界？',lead:'Zingales 係咪話商界喺政治過程唔應該有聲？',
+  opts:['唔係：冇企業聲音，政治可能偏去另一邊；要「剛剛好」','係：完全唔應該見'],ans:0,hint:'平衡。',
+  ex:'出路：增加透明度、改善企業民主、收緊旋轉門、注意科學家被俘虜，最重要係公眾意識。',deep:'01-6|01-7',src:'筆記 01 §六–七'},
+ {type:'review',h:'快速溫習',ids:[3,9,13,23,26,31,37]}
+],take:['主流經濟學忽略企業權力；合約唔完全就有爭租空間。','Medici 惡性循環：錢買權、權保錢。','睇產出唔好睇投入。','理想係國家同企業權力「剛剛好」。']};
+
+const C2={id:'l02',note:'02',icon:'2',name:'監管者同企業學識玩遊戲',sub:'筆記 02 · 約 7 分鐘',screens:[
+ {type:'story',h:'電訊公司嘅監管事務部',html:`<div class="scene"><div class="big">📞</div><p>最大嘅電訊公司話佢有一個幾十人嘅「監管事務部」，可以畀晒成本數據你。細公司就得一個合約律師。你要決定點樣同佢哋打交道。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'點解要打交道？',lead:'Coen 嘅答案係……',
+  opts:['資源互相依賴：監管者要資訊，企業想明白同影響監管','法律規定'],ans:0,hint:'成本資料喺企業手。',
+  ex:'監管者要前線官員執行、企業提供自己同對手嘅成本資料、消費者指出市場失靈。難處：少數企業可靠嘅技術資訊同廣泛代表性諮詢點平衡。',deep:'02-1|02-2',src:'筆記 02 §一–二'},
+ {type:'mcq',h:'監管者手上嘅工具',lead:'企業誤導監管者，英國監管者可以點罰？',
+  opts:['審計揭穿，或者限制佢參與諮詢','冇辦法'],ans:0,hint:'信譽遊戲。',
+  ex:'可靠企業會變成政策「內部人」；同單一監管者長期接觸形成排他嘅信譽遊戲，被排除代價越嚟越大。代價：好唔透明，難喺講程序嘅歐陸複製。',deep:'02-2|02-3',src:'筆記 02 §二–三'},
+ {type:'sort',h:'英國定德國？',lead:'分類。',cats:['英國','德國'],items:[
+  ['成熟、單一主要接觸點、酌情權大',0,'私有化早歐洲大陸十年。'],
+  ['年輕監管者、同卡特爾局同經濟部權力重疊',1,'RegTP。'],
+  ['好多交鋒喺法庭公開進行，訴訟成為新入行者入場障礙',1,'規則多過酌情。'],
+  ['重效率同競爭',0,'越政治化越重公平；德國重公平同公共服務。'],
+  ['監管者主動叫其他機構調查，唔爭地盤',0,'OFTEL；開並行工作小組。']],deep:'02-3|02-4|02-5',src:'筆記 02 §三–五'},
+ {type:'mcq',h:'揀場',lead:'有幾個監管者權力重疊，企業可以「揀場」。結果企業實際上會……',
+  opts:['集中搞掂能夠確立優先地位嘅機構','同時同所有人鬧交'],ans:0,hint:'企業對特定監管者有沉沒成本。',
+  ex:'確立優先地位要時間，所以穩定高效嘅制度取決於年資。業界唔歡迎歐盟國家監管者網絡；歐盟委員會就主動開放企業接觸，借此取得正當性。',deep:'02-5',src:'筆記 02 §五'},
+ {type:'sort',h:'四種資訊關係',lead:'將描述分去啱嘅階段。',cats:['監察','遵從','反向俘虜','策略意識'],items:[
+  ['嚴控畀監管者嘅資訊，關係對抗、常上法庭',0,'英國私有化初期；德國似乎重蹈覆轍。'],
+  ['有啲學習但冇互信，焦點係合規',1,'英國能源同德國電訊。'],
+  ['企業監管部同監管者行得太埋，唔再幫公司把關',2,'同一般監管俘虜方向相反。'],
+  ['主動帶問題同方案去搵監管者，搶先對手',3,'取得策略優勢、推動新政策。']],deep:'02-6',src:'筆記 02 §六'},
+ {type:'mcq',h:'Coen 嘅結論',lead:'英國模式表面上對所有企業開放。但對外國同新企業……',
+  opts:['要學識和解式遊說，成為隱形入場障礙','完全冇障礙'],ans:0,hint:'遊戲規則唔寫出嚟。',
+  ex:'Coen 對「應唔應該同業界打交道」嘅答案係樂觀嘅：學識合作，監管可以係雙贏。對照 Yackee 同 Yackee：開放諮詢嘅結果偏向商界。',deep:'02-7',src:'筆記 02 §七'},
+ {type:'review',h:'快速溫習',ids:[40,43,47,51,58,63,73,79]}
+],take:['監管者同企業資源互相依賴。','英國：單一監管者、信譽遊戲；德國：權力重疊、上法庭。','四種資訊關係：監察、遵從、反向俘虜、策略意識。','學識合作可以雙贏，但有隱形入場障礙。']};
+
+const C3={id:'l03',note:'03',icon:'3',name:'公眾諮詢係咪偏幫商界',sub:'筆記 03 · 約 6 分鐘',screens:[
+ {type:'story',h:'第一次公開諮詢',html:`<div class="scene"><div class="big">📮</div><p>你為一條新規則開公開諮詢。上司話：「公開諮詢可以拉平大企業嘅優勢，人人都可以交意見。」真係咁？美國有研究。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'點解要研究？',lead:'美國聯邦機構定嘅規則同國會通過嘅法律比……',
+  opts:['大約十倍','差唔多'],ans:0,hint:'Coglianese 計過。',
+  ex:'法律要求機構定大部分規則前收集同考慮市民意見。支持者話咁可以拉平商界優勢；有人甚至建議歐盟學。',deep:'03-1',src:'筆記 03 §一'},
+ {type:'mcq',h:'組成同產出',lead:'利益團體組成有偏差（商界多），係咪等於政府產出有偏差？',
+  opts:['唔等於，所以要直接量產出','一定等於'],ans:0,hint:'所以作者直接睇最終規則。',
+  ex:'樣本：40 條低關注度規則、1,693 份意見；比較草案同最終版嘅規管程度。',deep:'03-1|03-2|03-3',src:'筆記 03 §一–三'},
+ {type:'mcq',h:'邊個交意見？',lead:'1,693 份意見入面，商界交咗幾多？',
+  opts:['超過 57%','大約 20%'],ans:0,hint:'公益團體只得 6%。',
+  ex:'超過 83% 商界意見者要求少啲規管。但作者小心：冇基準話非商界「應該」參與幾多；更值得問嘅係少參與嘅人有冇說服到機構。',deep:'03-3|03-4',src:'筆記 03 §三–四'},
+ {type:'widget',h:'人多就贏？',lead:'拉動滑桿。',w:'share',deep:'03-5|03-6'},
+ {type:'mcq',h:'非商界意見呢？',lead:'非商界非政府意見同最終規則改動……',
+  opts:['冇統計上顯著嘅關係','有好強嘅關係'],ans:0,hint:'只有商界推得郁。',
+  ex:'所以「公告同評論喺產出上有拉平作用」大致錯咗。但作者提醒：唔一定代表商界影響係犧牲非商界偏好得嚟。',deep:'03-5',src:'筆記 03 §五'},
+ {type:'mcq',h:'點樣減少偏差？',lead:'既然影響嚟自人數，作者話……',
+  opts:['其他參與者交多啲意見，商界影響可能下降','禁止商界交意見'],ans:0,hint:'睇返解釋。',
+  ex:'限制：只係低關注度規則、一個時期、規則制定一個階段；對俘虜理論定 Carpenter 修正版保持中立。最值得研究：程序本身可唔可以設計得更拉平。',deep:'03-7',src:'筆記 03 §七'},
+ {type:'review',h:'快速溫習',ids:[84,92,95,96,99,101,106]}
+],take:['商界交咗超過 57% 意見，超過 83% 要求少規管。','只有商界意見推得郁最終規則。','原因係人多，唔係質素。','程序冇拉平產出；可以鼓勵其他人多參與。']};
+
+const C4={id:'l04',note:'04',icon:'4',name:'意見真係改到規則',sub:'筆記 04 · 約 5 分鐘',screens:[
+ {type:'story',h:'意見有冇用？',html:`<div class="scene"><div class="big">✍️</div><p>同事話：「法例只係畀人交意見嘅權，冇話我哋要跟。評論期只係走過場。」你搵 Yackee 另一篇研究。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'參與權 vs 影響權',lead:'美國法律畀公眾……',
+  opts:['參與規則制定嘅權，但冇影響規則嘅權','參與權同影響權'],ans:0,hint:'機構冇義務因應意見改。',
+  ex:'學界共識亦低估評論期。主流文獻講國會點樣透過程序「做牌」，或者用利益團體做「火警鐘」。',deep:'04-1',src:'筆記 04 §一'},
+ {type:'flips',h:'點解機構會聽？',lead:'撳開兩個理由。',items:[
+  ['💡 資訊','意見提供新資訊同專業知識。'],
+  ['⚖️ 法院','法官問最終規則係咪草案同意見嘅「合乎邏輯延伸」；將來上法庭嘅威脅本身已經係影響力。所以改動通常係刪減。']],deep:'04-2',src:'筆記 04 §二'},
+ {type:'mcq',h:'規則有冇郁？',lead:'40 條規則喺評論期內……',
+  opts:['大部分都有改：細改 13、中改 9、大改 11，冇改得 7','全部冇改'],ans:0,hint:'改動唔少。',
+  ex:'組織化利益交咗 85% 意見。',deep:'04-3',src:'筆記 04 §三'},
+ {type:'mcq',h:'共識嘅威力',lead:'意見好一致時，機構有幾大機會修改規則反映佢哋嘅主要關注？',
+  opts:['72%','37%'],ans:0,hint:'37% 係意見好分散嘅時候。',
+  ex:'整體採納咗 183 項主要建議入面 90 項（49%）；利益團體大致一致要少規管時，九成以上會得到。',deep:'04-4',src:'筆記 04 §四'},
+ {type:'mcq',h:'同一批數據，兩種讀法',lead:'Yackee 同 Yackee 讀成「偏幫商界」，Yackee 讀成「有意義嘅參與」。點樣兩樣都成立？',
+  opts:['如果發聲嘅大多數係商界，「參與有效」同「偏幫商界」可以同時成立','一定有一篇錯'],ans:0,hint:'睇邊個發聲。',
+  ex:'Yackee 話學界共識要重新評估；將來要研究規則制定所有階段。',deep:'04-5',src:'筆記 04 §五'},
+ {type:'review',h:'快速溫習',ids:[111,115,117,126,127,128,131]}
+],take:['法律畀參與權，冇畀影響權，但意見實際上改到規則。','機構聽：資訊同法院審查。','一致嘅意見最有力（72% vs 37%）。','發聲嘅多數係商界時，「有效參與」同「偏幫商界」可以同時成立。']};
+
+const C5={id:'l05',note:'05',icon:'5',name:'協商式規則制定',sub:'筆記 05 · 約 6 分鐘',screens:[
+ {type:'story',h:'坐埋一齊傾掂佢？',html:`<div class="scene"><div class="big">🤝</div><p>有顧問建議：「唔好再開公開諮詢，邀請業界同消費者代表入委員會，先傾到共識，再出草案。咁會慳時間、冇人告。」你搵 Coglianese 嘅研究。</p>${SCENE_TAG}</div>`},
+ {type:'mcq',h:'承諾咗乜？',lead:'協商式規則制定嘅兩個主要目標係……',
+  opts:['減少制定時間同減少司法覆核','增加透明同參與'],ans:0,hint:'立法歷史。',
+  ex:'Coglianese 只用協商自己嘅標準評；即使做到，仍然可以基於代表性同問責反對。',deep:'05-1',src:'筆記 05 §一'},
+ {type:'mcq',h:'慳到時間？',lead:'睇晒 EPA 12 條協商規則，最多慳到幾多？',
+  opts:['三個月左右；加埋未完成嘅就消失','11 個月'],ans:0,hint:'11 個月只係睇咗四條特別快嘅。',
+  ex:'平均差唔多兩年半；協商壓縮員工時間，總投入其實更多。用得好少：35 條，佔所有規則 0.07%。',deep:'05-2',src:'筆記 05 §二'},
+ {type:'widget',h:'「八成規則被告」？',lead:'估吓先。',w:'litig',deep:'05-3'},
+ {type:'flips',h:'點解失敗？',lead:'撳開三個原因。',items:[
+  ['⚔️ 新衝突','邊個入委員會本身係衝突來源；35% 受訪參與者話起碼一個受影響利益冇代表；一個組織反對，共識就散。'],
+  ['🃏 共識脆弱','公眾評論、OMB、國會、法院、日後修訂都可以拆散早期共識，好似砌紙牌屋。'],
+  ['✅ 普通程序其實得','普通規則制定令機構更清楚各方利益強弱；協商仲好貴。']],deep:'05-4',src:'筆記 05 §四'},
+ {type:'mcq',h:'脆弱係壞事？',lead:'Coglianese 點睇「利益團體交易難以落實」？',
+  opts:['可以係非常可取嘅','一定係壞事'],ans:0,hint:'可以同 Zingales、Yackee 同 Yackee 一齊讀。',
+  ex:'一個令利益團體交易難以落實嘅程序，可以被視為好事。',deep:'05-4',src:'筆記 05 §四'},
+ {type:'mcq',h:'建議',lead:'Coglianese 建議機構點做？',
+  opts:['繼續用唔靠共識嘅參與方法：個別會面、公聽會、常設諮詢委員會、工作坊','所有規則都用協商'],ans:0,hint:'協商失敗唔等於監管入面嘅協商失敗。',
+  ex:'佢 2006 年回望，形容協商式規則制定係上一個「最好嘅嘢」，實證顯示冇乜分別之後熱潮就退。',deep:'05-5',src:'筆記 05 §五'},
+ {type:'review',h:'快速溫習',ids:[135,140,145,148,152,156,163]}
+],take:['協商承諾慳時間同減訴訟，但多數係講出嚟、唔係證明出嚟。','冇慳時間；「八成被告」係神話；協商規則反而更多被告。','原因：新衝突、脆弱共識、普通程序本身得。','用唔靠共識嘅參與方法。']};
+
+const LESSONS=[C1,C2,C3,C4,C5];
+
+
+const LNAME={};LESSONS.forEach((l,k)=>{LNAME[l.note]=`第 ${k+1} 課：${l.name}`;});window.__S.LNAME=LNAME;
+
+
+/* ---------- home ---------- */
+const GROUPS={"0": "一、企業權力同監管遊戲", "2": "二、公眾諮詢同協商"};
+function home(){
+  const st=S();
+  const open=k=>k===0||st.done[LESSONS[k-1].id];
+  const allDone=LESSONS.every(l=>st.done[l.id]);
+  const nodes=LESSONS.map((l,k)=>{const d=st.done[l.id],o=open(k);
+    return (GROUPS[k]?`<div class="grp">${GROUPS[k]}</div>`:'')+`<div class="node ${d?'done':o?'open':'locked'}"><button class="dot" data-l="${k}" ${o?'':'disabled'} aria-label="${l.name}">${d?'✓':o?l.icon:'🔒'}</button><div class="nm">${l.name}</div><div class="sub">${l.sub}</div></div>`;}).join('');
+  app.innerHTML=`<div class="home">
+   <div class="stats"><a href="../" class="brand" style="text-decoration:none;color:inherit" aria-label="返去課程目錄">⌂ 業界參與 · 1</a><span class="pills"><span class="pill" title="連續學習日數">🔥 ${st.streak}</span><span class="pill" title="經驗值">⭐ ${st.xp}</span><button class="pill" id="menu" aria-label="選單">☰</button></span></div>
+   <div class="course"><span class="eyebrow">Regulatory Law · 業界同持份者參與規則制定 · Part 1 / 4 · 第 6 週 · 5 課</span><h1>業界點樣影響規則</h1>
+    <p class="muted">跟 7FFLL582 第 6 週（Industry in public rule-making）：企業嘅政治權力（Zingales）、英德監管者同企業點樣學識玩監管遊戲（Coen）、美國公眾諮詢係咪偏幫商界（Yackee 同 Yackee；Yackee）、協商式規則制定有冇兌現承諾（Coglianese 1997）。大問題：監管者應唔應該同業界打交道？規則制定點解會偏幫商界？點樣減少？第 6 週嘅 Townley、Guidi 同 Tavares（2022）喺「國際規則制定 Part 1」ICN 嗰課。故事接住：你主管海島國公用事業監管局嘅規則制定組。Part 2 講金融業、顧問同歐盟私人執法。</p>
+    <p class="muted" style="font-size:14px;margin-top:8px"><b>用法：</b>玩一課 → 好奇就撳「📖 想深入啲」→ 課尾溫卡 → 有空喺選單睇圖解同進度地圖。</p>
+    ${Object.keys(st.done).some(k=>st.done[k])?`<button class="review-btn" id="rev">🔁 溫習已學嘅卡</button>`:''}
+    ${allDone?`<p class="okline" style="margin-top:10px">🎉 Part 1 五課全部完成！之後可以去 Part 2。去「進度地圖」睇吓仲有邊節未掌握。</p>`:''}</div>
+   <div class="path" id="path">${nodes}</div></div>`;
+  app.querySelectorAll('.dot[data-l]').forEach(b=>b.onclick=()=>play(+b.dataset.l));
+  const r=$('#rev'); if(r) r.onclick=reviewAll;
+  $('#menu').onclick=menu;
+}
+function menu(){
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="選單"><div class="grab"></div><h3>選單</h3>
+   <div class="opts">${[['notes','📖 讀懂版：31 節逐節講解'],['cards','🃏 快速卡：164 張，全部原子命題'],['visuals','🗺️ 圖解：4 幅'],['map','📊 進度地圖：邊節掌握咗']].map(([h,t])=>`<a class="opt" href="#${h}" style="text-decoration:none;color:inherit">${t}</a>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d); d.onclick=e=>{if(e.target===d||e.target.closest('a')) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+/* ---------- player ---------- */
+function play(li){
+  const L=LESSONS[li]; let i=0, xp=0, first=0, total=0;
+  function shell(inner,ready,ctaText){
+    const sc=L.screens[i];
+    app.innerHTML=`<div class="top"><button class="x" id="quit" aria-label="離開">✕</button><div class="bar"><i style="width:${i/L.screens.length*100}%"></i></div><span class="xp">⭐ ${xp}</span></div>
+     <div class="screen" id="sc">${inner}</div>
+     <div class="foot">${sc.deep?`<button class="deep" id="deep">📖 想深入啲</button>`:''}<button class="cta ${ready?'go':''}" id="cta" ${ready?'':'disabled'}>${ctaText||'繼續'}</button></div>`;
+    $('#quit').onclick=()=>{location.hash='';home();};
+    if(sc.deep) $('#deep').onclick=()=>drawer(sc.deep);
+    $('#cta').onclick=()=>{i++; i>=L.screens.length?finish():render();};
+  }
+  const ready=()=>{const c=$('#cta');c.disabled=false;c.classList.add('go');};
+  function render(){
+    const sc=L.screens[i]; const head=`<h2>${sc.h}</h2>${sc.lead?`<p class="lead">${sc.lead}</p>`:''}`;
+    if(sc.type==='story'){shell(head+sc.html,true,'開始');return;}
+    if(sc.type==='mcq'){
+      total++; let tries=0;
+      shell(head+`<div class="opts">${sc.opts.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><div id="fb"></div>`,false);
+      app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j; if(b.disabled) return; tries++;
+        if(j===sc.ans){b.classList.add('right'); if(tries===1){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+          app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+          $('#fb').innerHTML=`<div class="fb ok"><b class="t">${tries===1?'啱！':'啱咗！'}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}
+        else{b.classList.add('wrong');b.disabled=true;
+          if(tries===1) $('#fb').innerHTML=`<div class="fb hint"><b class="t">再諗一諗</b><p>💡 ${sc.hint}</p></div>`;
+          else{const r=app.querySelector(`.opt[data-j="${sc.ans}"]`);r.classList.add('right');app.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+            $('#fb').innerHTML=`<div class="fb no"><b class="t">答案係：${sc.opts[sc.ans]}</b><p>${sc.ex}</p><span class="src">出處：${sc.src}</span></div>`; ready();}}
+      }); return;}
+    if(sc.type==='widget'){
+      total++;
+      shell(head+`<div id="w"></div><div id="aft"></div>`,false);
+      W[sc.w]($('#w'),ok=>{ if(ok){first++;xp+=10;$('.xp').textContent='⭐ '+xp;} if(sc.after) $('#aft').innerHTML=`<div class="fb ok"><p>${sc.after}</p></div>`; ready();});
+      return;}
+    if(sc.type==='flips'){
+      shell(head+`<div class="flips">${sc.items.map((it,j)=>`<button class="flip" data-j="${j}"><span class="h">${it[0]}</span><span class="b">撳一下睇</span></button>`).join('')}</div>${sc.src?`<span class="src">出處：${sc.src}</span>`:''}`,false);
+      const seen=new Set();
+      app.querySelectorAll('.flip').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;b.classList.add('open');b.querySelector('.b').innerHTML=sc.items[j][1];seen.add(j);if(seen.size===sc.items.length) ready();});
+      return;}
+    if(sc.type==='match'){
+      total++; let errs=0, sel=null, matched=0;
+      const R=sc.pairs.map((p,j)=>({t:p[1],j})).sort(()=>Math.random()-.5);
+      shell(head+`<div class="match"><div class="col">${sc.pairs.map((p,j)=>`<button class="mt" data-l="${j}">${p[0]}</button>`).join('')}</div><div class="col">${R.map(r=>`<button class="mt" data-r="${r.j}">${r.t}</button>`).join('')}</div></div><div id="fb"></div>`,false);
+      app.querySelectorAll('.mt[data-l]').forEach(b=>b.onclick=()=>{if(b.classList.contains('done'))return;app.querySelectorAll('.mt[data-l]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=+b.dataset.l;});
+      app.querySelectorAll('.mt[data-r]').forEach(b=>b.onclick=()=>{if(sel===null||b.classList.contains('done'))return;
+        if(+b.dataset.r===sel){b.classList.add('done');const l=app.querySelector(`.mt[data-l="${sel}"]`);l.classList.remove('sel');l.classList.add('done');sel=null;matched++;
+          if(matched===sc.pairs.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp;
+            $('#fb').innerHTML=`<div class="fb ok"><b class="t">全部配啱！</b><span class="src">出處：${sc.src}</span></div>`;ready();}}
+        else{errs++;b.classList.add('err');setTimeout(()=>b.classList.remove('err'),320);}});
+      return;}
+    if(sc.type==='sort'){
+      total++; let errs=0, ok=0;
+      shell(head+`<div class="sortl">${sc.items.map((it,j)=>`<div class="si" data-j="${j}"><div class="st">${it[0]}</div><div class="sc">${sc.cats.map((c,ci)=>`<button class="sb" data-c="${ci}">${c}</button>`).join('')}</div><div class="sw2"></div></div>`).join('')}</div><span class="src">出處：${sc.src}</span>`,false);
+      app.querySelectorAll('.si').forEach(row=>{const j=+row.dataset.j, it=sc.items[j]; let tries=0;
+        row.querySelectorAll('.sb').forEach(b=>b.onclick=()=>{ if(row.classList.contains('done')) return; tries++;
+          if(+b.dataset.c===it[1]){row.classList.add('done');b.classList.add('right');row.querySelector('.sw2').innerHTML=`<span class="okline">✓ ${it[2]}</span>`;ok++;
+            if(ok===sc.items.length){ if(errs===0){first++;xp+=10;}else xp+=5; $('.xp').textContent='⭐ '+xp; ready(); }}
+          else{errs++;b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),350);
+            if(tries>=2){row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 答案係「${sc.cats[it[1]]}」：${it[2]}</span>`;}
+            else row.querySelector('.sw2').innerHTML=`<span class="hintline">💡 再諗吓：睇返上面嘅分類標準。</span>`;}});});
+      return;}
+    if(sc.type==='review'){
+      let k=0, flipped=false;
+      const draw=()=>{const c=CARDS[sc.ids[k]];
+        shell(head+`<p class="muted" style="font-size:14px">第 ${k+1} / ${sc.ids.length} 張 · 撳卡反轉。卡背係筆記原文，人名唔使記。</p>
+         <button class="rcard" id="rc">${!flipped?`<span class="q">${c.f}</span><span class="muted" style="font-size:14px">諗好答案，撳一下</span>`
+          :`<span style="font-weight:700">${c.b}</span><blockquote>“${c.q}”</blockquote><span class="src">筆記 ${c.n} §${c.s} · ${c.loc}</span>`}</button>`,
+         flipped&&k===sc.ids.length-1, flipped&&k===sc.ids.length-1?'完成':'繼續');
+        $('#rc').onclick=()=>{ if(!flipped){flipped=true;draw();if(k<sc.ids.length-1){const c2=$('#cta');c2.disabled=false;c2.classList.add('go');c2.onclick=()=>{k++;flipped=false;draw();};}} };
+      }; draw(); return;}
+  }
+  function finish(){
+    const st=S(); const bonus=20; st.xp+=xp+bonus; st.done[L.id]=true; bumpStreak(st); saveAll(st);
+    app.innerHTML=`<div class="done-screen"><div><div class="trophy">🏆</div><h2 style="font-size:26px;margin:6px 0">完成「${L.name}」</h2>
+      <div class="stat3"><div>⭐ XP<b>+${xp+bonus}</b></div><div>🎯 一次答啱<b>${first}/${total}</b></div><div>🔥 連續<b>${st.streak} 日</b></div></div>
+      <div class="take" style="margin:16px auto"><b>帶走呢幾句</b><ul>${L.take.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      ${li+1<LESSONS.length&&L.id!=='rev'?`<button class="cta go" id="nextL" style="width:100%;max-width:520px;margin-bottom:10px">下一課：${LESSONS[li+1].name} →</button>`:''}
+      <button class="cta" id="back" style="width:100%;max-width:520px">返去路線圖</button></div></div>`;
+    confetti(); $('#back').onclick=()=>{location.hash='';home();}; const nl=$('#nextL'); if(nl) nl.onclick=()=>play(li+1);
+  }
+  render();
+}
+function drawer(k){
+  const ks=k.split('|').filter(x=>noteBody(x)); if(!ks.length) return;
+  const d=document.createElement('div'); d.className='sheet';
+  d.innerHTML=`<div class="in" role="dialog" aria-label="深入講解"><div class="grab"></div>${ks.map(x=>{const n=noteBody(x);return `<span class="eyebrow">筆記 ${x.replace('-',' §')} · 讀懂版</span><h3>${n.t}</h3><div class="nb" style="margin-bottom:14px">${n.b}</div>`;}).join('')}
+   <button class="cta" style="width:100%;margin-top:14px" id="cl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; $('#cl',d).onclick=()=>d.remove();
+}
+function reviewAll(){
+  const st=S(); const ids=LESSONS.filter(l=>st.done[l.id]).flatMap(l=>l.screens.find(s=>s.type==='review').ids);
+  const fake={id:'rev',name:'溫習',screens:[{type:'review',h:'溫習已學嘅卡',ids:ids.sort(()=>Math.random()-.5)}],take:['隔幾日再嚟溫一次，記得更牢。']};
+  LESSONS.push(fake); play(LESSONS.length-1); LESSONS.pop();
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=document.createElement('canvas'); c.className='confetti'; document.body.appendChild(c);
+  const x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const cols=['#4B4FD9','#1F9D62','#E5A800','#D2423A'];
+  const ps=Array.from({length:90},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.4,v:2+Math.random()*3,r:Math.random()*6.28,s:5+Math.random()*5,c:cols[Math.floor(Math.random()*4)]}));
+  let t=0; (function fr(){x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore();});
+    if(++t<150) requestAnimationFrame(fr); else c.remove();})();
+}
+function sub(title,fn,arg){
+  app.innerHTML=`<div class="top"><button class="x" id="bk" aria-label="返回">←</button><b style="flex:1">${title}</b></div><div class="home pg" id="pg"></div>`;
+  $('#bk').onclick=()=>{location.hash='';};
+  const P=makePages($('#pg')); P[fn](arg);
+}
+function route(){
+  const h=location.hash.replace('#',''); const base=h.split('-')[0], arg=h.slice(base.length+1);
+  if(base==='notes') sub('讀懂版','notesPage',arg||null);
+  else if(base==='cards') sub('快速卡','cardsPage',arg||'');
+  else if(base==='visuals') sub('圖解','visuals');
+  else if(base==='map') sub('進度地圖','mapPage');
+  else if(base==='lesson'){const k=LESSONS.findIndex(l=>l.note===arg); if(k>=0){const st=S(); const ok=k===0||st.done[LESSONS[k-1].id]; ok?play(k):home();} else home();}
+  else home();
+}
+window.addEventListener('hashchange',route);
+window.__RL={NOTES,CARDS_DATA,LESSONS};
+route();
+})();
+</script>
+<!--TERMS-->
+<script>const TERMS_DATA=[["反壟斷", "antitrust", "m"], ["利益團體", "interest groups", "n"], ["旋轉門", "revolving door", "m"], ["工作小組", "working group", "m"], ["競爭主管機關", "competition authority", "n"], ["國際法", "international law", "m"], ["事實上", "de facto", "n"], ["市場力量", "market power", "n"], ["一束合約", "nexus of contracts", "m"], ["不完全合約", "incomplete contracts", "m"], ["剩餘控制權", "residual control rights", "n"], ["爭租", "rent-seeking", "m"], ["Medici 惡性循環", "Medici vicious circle", "n"], ["贏家通食", "winner-take-all", "m"], ["鍍金時代", "Gilded Age", "n"], ["進步時代", "Progressive Era", "m"], ["新政", "New Deal", "m"], ["純利份額", "pure profit share", "m"], ["勞動份額", "labour share", "m"], ["網絡效應", "network effects", "m"], ["垂直政治整合", "vertical political integration", "m"], ["政治庇護", "political patronage", "m"], ["產權", "property rights", "m"], ["企業民主", "corporate democracy", "m"], ["資源互相依賴", "resource dependency", "n"], ["內部人", "insiders", "m"], ["信譽", "reputation", "m"], ["對標", "benchmarking", "n"], ["價格上限", "price cap", "m"], ["暴利稅", "windfall tax", "m"], ["卡特爾局", "Bundeskartellamt (BKartA)", "n"], ["揀場", "venue shopping", "n"], ["沉沒成本", "sunk costs", "n"], ["監察", "policing", "n"], ["遵從", "compliance", "n"], ["反向俘虜", "reverse capture", "n"], ["策略意識", "strategic awareness", "n"], ["資本主義多樣性", "varieties of capitalism", "n"], ["和解式遊說", "conciliatory lobbying", "m"], ["公告同評論", "notice and comment", "m"], ["行政程序法", "Administrative Procedure Act (APA)", "m"], ["公益團體", "public interest groups", "m"], ["行業協會", "trade associations", "m"], ["內容分析", "content analysis", "m"], ["做牌", "stacking the deck", "m"], ["火警鐘", "fire alarm", "m"], ["合乎邏輯延伸", "logical outgrowth", "m"], ["協商式規則制定", "negotiated rulemaking", "m"], ["諮詢委員會", "advisory committee", "m"], ["萬應靈丹", "panacea", "m"], ["共識", "consensus", "m"], ["遊說", "lobbying", "m"], ["司法覆核", "judicial review", "n"], ["監管俘虜", "regulatory capture", "n"], ["壟斷", "monopoly", "n"], ["資訊不對稱", "information asymmetry", "m"], ["卡特爾", "cartel", "m"], ["競爭法", "competition law", "m"], ["因地制宜", "context-specific design", "m"], ["監管機構", "regulatory agency", "m"], ["監管者", "regulator", "m"], ["規則制定", "rule-making", "n"], ["酌情權", "discretion", "n"], ["可信承諾", "credible commitment", "n"], ["委託代理理論", "principal–agent theory", "n"], ["民主赤字", "democratic deficit", "n"], ["規模經濟", "economies of scale", "n"], ["問責", "accountability", "n"], ["正當性", "legitimacy", "n"], ["比較優勢", "comparative advantage", "m"], ["分權", "decentralisation", "m"], ["授權", "delegation", "m"], ["私有化", "privatisation", "m"], ["自由化", "liberalisation", "m"], ["統一", "uniformity", "m"], ["規例", "regulation", "n"], ["充公", "expropriation", "n"]];
+(function(){
+/* English key terms: first time a term shows up on a screen / card / panel, add （English） after it. TERMS is injected at build. */
+const T=TERMS_DATA.slice().sort((a,b)=>b[0].length-a[0].length);
+const MAP=new Map(T.map(t=>[t[0],t]));
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const RE=new RegExp(T.map(t=>esc(t[0])).join('|'),'g');
+const DONE=new Map(T.map(t=>[t[0],new RegExp(esc(t[0])+'\\s*[（(]\\s*[A-Za-z]')]));
+const SKIP='h1,h2,h3,.brand,.nm,.sub,.pill,.grp,.dot,svg,script,style,textarea,input,blockquote,.src,.en,.tag,.tabs,.mono,.eyebrow,code,#gate,.termsheet';
+const BOX='#sc,.sheet .in,.fcard,.panel,section,tr,.node,.lvhead,.course,.crs';
+function box(n){const e=n.nodeType===1?n:n.parentElement;return (e&&e.closest(BOX))||document.getElementById('app')||document.body;}
+function gloss(root){
+  if(!root) return;
+  if(root.nodeType===1&&root.closest&&root.closest(SKIP)) return;
+  const tw=document.createTreeWalker(root.nodeType===3?root.parentNode:root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+    if(root.nodeType===3&&n!==root) return NodeFilter.FILTER_REJECT;
+    const p=n.parentElement; if(!p||p.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+    RE.lastIndex=0; return RE.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+  const list=[]; let n; while((n=tw.nextNode())) list.push(n);
+  list.forEach(tn=>{
+    const c=box(tn); const v=tn.nodeValue; RE.lastIndex=0; let m, cut=[];
+    const seen=new Set();
+    while((m=RE.exec(v))){const k=m[0]; if(seen.has(k)) continue; seen.add(k);
+      const after=v.slice(m.index+k.length);
+      if(/^\s*[（(]\s*[A-Za-z]/.test(after)) continue;
+      if(DONE.get(k).test(c.textContent)) continue;
+      cut.push([m.index+k.length,MAP.get(k)]);}
+    if(!cut.length) return;
+    // only one gloss per term per box: re-check in order while inserting
+    let node=tn, offset=0;
+    cut.forEach(([pos,t])=>{
+      if(DONE.get(t[0]).test(c.textContent)) return;
+      const rest=node.splitText(pos-offset); offset=pos;
+      const s=document.createElement('span'); s.className='en'; s.lang='en'; s.textContent='（'+t[1]+'）';
+      rest.parentNode.insertBefore(s,rest); node=rest;});
+  });
+}
+function legend(vp){
+  if(vp.querySelector('.vterms')) return;
+  const svg=vp.querySelector('svg'); if(!svg) return;
+  const txt=svg.textContent; RE.lastIndex=0; const found=[]; const seen=new Set(); let m;
+  while((m=RE.exec(txt))){const t=MAP.get(m[0]); if(!seen.has(t[1])){seen.add(t[1]);found.push(t);}}
+  if(!found.length) return;
+  const p=document.createElement('p'); p.className='vterms muted';
+  p.innerHTML='<b>英文術語：</b>'+found.map(t=>`${t[0]}<span class="en" lang="en">（${t[1]}）</span>`).join(' · ');
+  vp.appendChild(p);
+}
+function sheet(){
+  const d=document.createElement('div'); d.className='sheet termsheet';
+  const rows=T.slice().sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}));
+  d.innerHTML=`<div class="in" role="dialog" aria-label="英文術語表"><div class="grab"></div><h3>🔤 英文術語表</h3>
+   <p class="muted" style="font-size:14px">呢個課程用到嘅術語，按英文排。做 research 時用英文搵。<b>†</b>＝筆記冇寫英文，英文係我加嘅標準譯法。</p>
+   <input id="tq" type="search" placeholder="搵中文或者英文" aria-label="搵術語" style="width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0 10px">
+   <div id="tl">${rows.map(t=>`<div class="trow"><span lang="en"><b>${t[1]}</b>${t[2]==='m'?' †':''}</span><span>${t[0].replace(/[「」]/g,'')}</span></div>`).join('')}</div>
+   <button class="cta" style="width:100%;margin-top:14px" id="tcl">收埋</button></div>`;
+  document.body.appendChild(d);
+  d.onclick=e=>{if(e.target===d) d.remove();}; d.querySelector('#tcl').onclick=()=>d.remove();
+  d.querySelector('#tq').oninput=e=>{const q=e.target.value.trim().toLowerCase();d.querySelectorAll('.trow').forEach(r=>{r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none';});};
+}
+function menuHook(el){
+  const inn=el.querySelector('.in[aria-label="選單"]'); if(!inn||inn.querySelector('#tbtn')) return;
+  const opts=inn.querySelector('.opts'); if(!opts) return;
+  const b=document.createElement('button'); b.className='opt'; b.id='tbtn'; b.type='button'; b.textContent=`🔤 英文術語表：${T.length} 個`;
+  b.onclick=()=>{el.remove(); sheet();}; opts.appendChild(b);
+}
+function scan(node){
+  if(node.nodeType===1){
+    if(node.classList&&node.classList.contains('sheet')) menuHook(node);
+    (node.matches&&node.matches('.vispanel')?[node]:[...(node.querySelectorAll?node.querySelectorAll('.vispanel'):[])]).forEach(legend);
+  }
+  gloss(node);
+}
+const st=document.createElement('style');
+st.textContent='.en{font-size:.84em;font-weight:500;color:var(--muted);font-family:var(--f);letter-spacing:0}.opt .en,.cta .en{color:inherit;opacity:.75}.vterms{font-size:13px;margin:10px 2px 0;line-height:1.7}.trow{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:15px}.trow span:last-child{text-align:right;color:var(--muted)}';
+document.head.appendChild(st);
+const mo=new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1&&n.classList&&n.classList.contains('en'))return; scan(n);}));});
+mo.observe(document.body,{childList:true,subtree:true});
+scan(document.body);
+window.__TERMS=T;
+})();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{}));}</script>
+</body>
+</html>
